@@ -1,0 +1,5 @@
+# pg_bigm extension
+comment = 'text index searching based on bigrams'
+default_version = '1.0'
+module_pathname = '$libdir/pg_bigm'
+relocatable = true
