@@ -1,0 +1,144 @@
+body {
+	font-family:
+		'メイリオ',
+		'Meiryo',
+		'ヒラギノ角ゴ Pro W3',
+		'Hiragino Kaku Gothic Pro',
+		'Osaka',
+		'ＭＳ Ｐゴシック',
+		Lucida Grande, Verdana, Arial, Helvetica,
+		sans-serif;
+	color: #202020;
+}
+
+/* give the rule a bit of extra space (above and below), since its being used to divide
+   sections on some pages (project summary) */
+HR { margin: 5px 0px 5px 0px }
+
+
+h2, h3, h4, h5, h6 {
+    color: Black;
+    background: none;
+    padding-top: 0.5em;
+    padding-bottom: 0.17em;
+    border-bottom: 1px solid #aaaaaa;
+}
+H1 { font-size: x-large; }
+H2 { font-size: large; }
+H3 { padding-left: 1em; font-size: medium; }
+H4 { padding-left: 2em; font-size: small; }
+H5 { padding-left: 3em; font-size: x-small; }
+H6 { padding-left: 4em; font-size: xx-small; }
+
+pre {
+	font-family: courier,sans-serif;
+	background-color: #F5F5F5;
+	border: 2px solid #000000;
+	color: black;
+	line-height: 1.1em; padding: 0.5em;
+	overflow: auto;
+}
+
+li {
+	line-height: 1.4em;
+}
+
+dt {
+	padding-left: 1em;
+}
+
+a,
+a:link,
+a:visited,
+a:active {
+    color: #02497E;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #89b229;
+}
+
+table {
+	border: 1px solid #000;
+	border-collapse: collapse;
+}
+
+th, td {
+	border: 1px solid #000;
+	padding: 0.2em;
+}
+
+thead th {
+	background: #aaa;
+	text-align: center;
+}
+
+tbody th {
+	background: #cceeff;
+	text-align: left;
+}
+
+div.index {
+	float:right;
+	border:thin solid black;
+	background-color: white;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	padding-left: 1em;
+	padding-right: 1em;
+	margin-left: 0.5em;
+}
+
+p.padding {
+	padding-left: 1em;
+}
+
+p.footer {
+	text-align: right;
+	font-size: small;
+}
+
+span.param {
+	color: #0000cd;
+}
+
+span.strong {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#navigation
+{
+	display: block;
+	font-weight: bold;
+	font-size:110%;
+	text-align:center;
+	border-top: 1px solid #aaa;
+	border-bottom: 1px solid #aaa;
+}
+
+#navigation ul
+{
+    padding: 0;
+    margin: 0;
+    line-height: 36px;
+}
+
+#navigation li
+{
+    display: inline;
+    margin-left:36px;
+}
+
+#navigation a,
+#navigation a:link,
+#navigation a:visited,
+#navigation a:active {
+    color: #000;
+    text-decoration: none;
+}
+
+#navigation a:hover {
+    text-decoration: underline;
+}
