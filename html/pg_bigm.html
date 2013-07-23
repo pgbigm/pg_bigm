@@ -88,7 +88,7 @@
 <li>(*2) 全文検索インデックスを使える場合もありますが、その場合はフルインデックススキャンが走るため検索性能は非常に低くなります。</li>
 </ul>
 
-<p>pg_trgmとpg_bigmを同じデータベース内で共存させることはできません。 pg_bigmを登録するデータベースには、pg_trgmを同時に登録しないでください。</p>
+<p>pg_bigmのバージョン1.1以降では、pg_trgmとpg_bigmを同じデータベース内で共存させることが可能です。しかし、バージョン1.0では共存できないため、pg_bigmを登録するデータベースには、pg_trgmを同時に登録しないでください。</p>
 
 <h2 id="requirement">動作確認環境</h2>
 <p>pg_bigmは、以下の環境で動作確認をしています。</p>
@@ -160,7 +160,7 @@ $ psql -d &lt;データベース名&gt;
                     List of installed extensions
   Name   | Version | Schema |              Description
 ---------+---------+--------+---------------------------------------
- pg_bigm | 1.0     | public | text index searching based on bigrams
+ pg_bigm | 1.1     | public | text index searching based on bigrams
 (1 row)
 </pre>
 
@@ -173,7 +173,7 @@ $ psql -d &lt;データベース名&gt;
   </ul>
 </li>
 <li>pg_bigmの登録には、<a href="http://www.postgresql.jp/document/current/html/sql-createextension.html">CREATE EXTENSION</a>を使います。 CREATE EXTENSIONはデータベース単位でモジュールを登録するため、pg_bigmを利用したいデータベースすべてにおいて登録が必要です。</li>
-<li>pg_bigmとPostgreSQL付属のcontribモジュールpg_trgmを同じデータベース内で共存させることはできません。 pg_bigmを登録するデータベースには、pg_trgmを同時に登録しないでください。</li>
+<li>pg_bigmのバージョン1.1以降では、pg_bigmとPostgreSQL付属のcontribモジュールpg_trgmを同じデータベース内で共存させることが可能です。しかし、バージョン1.0では共存できないため、pg_bigmを登録するデータベースには、pg_trgmを同時に登録しないでください。</li>
 </ul>
 <p>pg_bigmのインストールは以上で終わりです。</p>
 
