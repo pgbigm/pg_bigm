@@ -14,6 +14,7 @@
       <li><a href="pg_bigm.html">ドキュメント</a></li>
       <li><a href="index.html#community">コミュニティ</a></li>
       <li><a href="index.html#development">開発</a></li>
+      <li><a href="pg_bigm_en.html">English</a></li>
     </ul>
   </div>
 
@@ -105,43 +106,43 @@
 </tr>
 <tr>
   <td>DBMS</td>
-  <td nowrap>PostgreSQL9.1, 9.2</td>
+  <td nowrap>PostgreSQL 9.1, 9.2</td>
 </tr>
 </tbody>
 </table>
 
-<p>pg_bigmは、PostgreSQL9.1と9.2に対応しています。9.0以前には未対応です。</p>
+<p>pg_bigmは、PostgreSQL9.1以降に対応しています。9.0以前には未対応です。</p>
 
 <h2 id="install">インストール</h2>
 
 <h3 id="pg_install">PostgreSQLのインストール</h3>
-<p><a href="http://www.postgresql.org/">PostgreSQLのオフィシャルサイト</a>からバージョン9.1.X(バージョン番号の下一桁Xは、実際の数字に置き換えてください)のソースアーカイブファイル(postgresql-9.1.X.tar.gzをダウンロードし、ビルドとインストールを行います。</p>
+<p><a href="http://www.postgresql.org/">PostgreSQLのオフィシャルサイト</a>からPostgreSQLのソースアーカイブファイルpostgresql-X.Y.Z.tar.gz(X.Y.Zは実際のバージョン番号に置き換えてください)をダウンロードし、ビルドとインストールを行います。</p>
 <pre>
-$ tar zxf postgresql-9.1.X.tar.gz
-$ cd postgresql-9.1.X
-$ ./configure --prefix=/opt/pgsql-9.1.X
+$ tar zxf postgresql-X.Y.Z.tar.gz
+$ cd postgresql-X.Y.Z
+$ ./configure --prefix=/opt/pgsql-X.Y.Z
 $ make
 $ su
 # make install
 # exit</pre>
 <ul>
-<li>--prefix : インストール先ディレクトリを指定します。未指定時のインストール先は/usr/local/pgsqlです。このオプション指定は必須ではありません。</li>
+<li>--prefix : インストール先ディレクトリを指定します。このオプション指定は必須ではありません。未指定時のインストール先は/usr/local/pgsqlです。</li>
 </ul>
-<p>上記手順ではソースコードからPostgreSQLをインストールしています。しかし、RPMなどの他の手順でPostgreSQLをインストールしてもpg_bigmは利用可能です。 RPMインストールのPostgreSQLでpg_bigmを利用するには、postgresql-develパッケージをインストールしなければならないことに注意してください。</p>
+<p>RPMからPostgreSQLをインストールしてもpg_bigmは利用可能です。 この場合、postgresql-develパッケージをインストールしなければならないことに注意してください。</p>
 
 <h3 id="bigm_install">pg_bigmのインストール</h3>
 <p><a href="http://sourceforge.jp/projects/pgbigm/releases/">ここ</a>からpg_bigmのソースアーカイブファイルをダウンロードし、ビルドとインストールを行います。</p>
 <pre>
 $ tar zxf pg_bigm-YYYYMMDD.tar.gz
 $ cd pg_bigm-YYYYMMDD
-$ make USE_PGXS=1 PG_CONFIG=/opt/pgsql-9.1.X/bin/pg_config
+$ make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config
 $ su
-# make USE_PGXS=1 PG_CONFIG=/opt/pgsql-9.1.X/bin/pg_config install
+# make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config install
 # exit
 </pre>
 <ul>
-<li>USE_PGXS : PostgreSQL関連モジュールをコンパイルするときのオマジナイです。1の指定が必須です。</li>
-<li>PG_CONFIG : pg_configコマンド(PostgreSQLインストール先のbinディレクトリに存在)のパスを指定します。pg_configにPATHが通っているのであれば、このオプション指定は不要です。</li>
+<li>USE_PGXS : PostgreSQL関連モジュールをコンパイルするときのオマジナイです。USE_PGXS=1の指定が必須です。</li>
+<li>PG_CONFIG : <a href="http://www.postgresql.jp/document/current/html/app-pgconfig.html">pg_config</a>コマンド(PostgreSQLインストール先のbinディレクトリに存在)のパスを指定します。pg_configにPATHが通っているのであれば、このオプション指定は不要です。</li>
 </ul>
 
 <h3 id="bigm_register">pg_bigmの登録</h3>
@@ -173,7 +174,6 @@ $ psql -d &lt;データベース名&gt;
   </ul>
 </li>
 <li>pg_bigmの登録には、<a href="http://www.postgresql.jp/document/current/html/sql-createextension.html">CREATE EXTENSION</a>を使います。 CREATE EXTENSIONはデータベース単位でモジュールを登録するため、pg_bigmを利用したいデータベースすべてにおいて登録が必要です。</li>
-<li>pg_bigmのバージョン1.1以降では、pg_bigmとPostgreSQL付属のcontribモジュールpg_trgmを同じデータベース内で共存させることが可能です。しかし、バージョン1.0では共存できないため、pg_bigmを登録するデータベースには、pg_trgmを同時に登録しないでください。</li>
 </ul>
 <p>pg_bigmのインストールは以上で終わりです。</p>
 
@@ -191,7 +191,7 @@ $ pg_ctl -D $PGDATA stop
 $ su
 
 # cd &lt;pg_bigmのソースディレクトリ&gt;
-# make USE_PGXS=1 PG_CONFIG=/opt/pgsql-9.1.X/bin/pg_config uninstall
+# make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config uninstall
 # exit
 </pre>
 
@@ -212,7 +212,7 @@ $ su
 
 <h3 id="create_index">インデックスの作成</h3>
 <p>GINインデックスを利用して全文検索用のインデックスを作成します。</p>
-<p>以下の実行例では、PostgreSQL関連ツールの名前と説明を管理するテーブルpg_toolsを作成し、3件データを投入します。その後、ツールの説明に対して全文検索用のインデックスを作成します。</p>
+<p>以下の実行例では、PostgreSQL関連ツールの名前と説明を管理するテーブルpg_toolsを作成し、4件データを投入します。その後、ツールの説明に対して全文検索用のインデックスを作成します。</p>
 
 <pre>
 =# CREATE TABLE pg_tools (tool text, description text);
