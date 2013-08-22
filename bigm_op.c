@@ -154,13 +154,16 @@ find_word(char *str, int lenstr, char **endword, int *charlen)
 	return beginword;
 }
 
-#ifdef USE_WIDE_UPPER_LOWER
+/* 
+ * The function is named compact_bigram to maintain consistency with pg_trgm,
+ * though it does not reduce multibyte characters to hash values like in
+ * compact_trigram.
+ */
 static void
-cnt_bigram(bigm *bptr, char *str, int bytelen)
+compact_bigram(bigm *bptr, char *str, int bytelen)
 {
 	CPBIGM(bptr, str, bytelen);
 }
-#endif
 
 /*
  * Adds bigrams from words (already padded).
@@ -172,25 +175,21 @@ make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 
 	if (charlen < 2)
 	{
-#ifdef USE_WIDE_UPPER_LOWER
-		cnt_bigram(bptr, ptr, pg_mblen(str));
-#else
-		CPBIGM(bptr, ptr, 1);
-#endif
+		compact_bigram(bptr, ptr, pg_mblen(str));
 		bptr->pmatch = true;
 		bptr++;
 		return bptr;
 	}
 
-#ifdef USE_WIDE_UPPER_LOWER
-	if (pg_database_encoding_max_length() > 1)
+	if (bytelen > charlen)
 	{
+		/* Find multibyte character boundaries and call compact_bigram */
 		int			lenfirst = pg_mblen(str),
 					lenlast = pg_mblen(str + lenfirst);
 
 		while ((ptr - str) + lenfirst + lenlast <= bytelen)
 		{
-			cnt_bigram(bptr, ptr, lenfirst + lenlast);
+			compact_bigram(bptr, ptr, lenfirst + lenlast);
 
 			ptr += lenfirst;
 			bptr++;
@@ -200,8 +199,8 @@ make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 		}
 	}
 	else
-#endif
 	{
+		/* Fast path when there are no multibyte characters */
 		Assert(bytelen == charlen);
 
 		while (ptr - str < bytelen - 1 /* number of bigrams = strlen - 1 */ )
