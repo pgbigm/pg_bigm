@@ -1,0 +1,38 @@
+CREATE EXTENSION pg_bigm;
+\pset null '(null)'
+SELECT likequery (NULL);
+ likequery 
+-----------
+ (null)
+(1 row)
+
+SELECT likequery ('');
+ likequery 
+-----------
+ (null)
+(1 row)
+
+SELECT likequery ('aBc023#*^&');
+  likequery   
+--------------
+ %aBc023#*^&%
+(1 row)
+
+SELECT likequery ('ポスグレの全文検索');
+      likequery       
+----------------------
+ %ポスグレの全文検索%
+(1 row)
+
+SELECT likequery ('\_%');
+ likequery 
+-----------
+ %\\\_\%%
+(1 row)
+
+SELECT likequery ('pg_bigmは検索性能を200%向上させました。');
+                  likequery                  
+---------------------------------------------
+ %pg\_bigmは検索性能を200\%向上させました。%
+(1 row)
+
