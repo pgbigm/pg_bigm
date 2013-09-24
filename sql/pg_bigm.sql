@@ -124,7 +124,23 @@ SET pg_bigm.enable_recheck = off;
 SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
 SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
 
+-- tests for pg_bigm.gin_key_limit
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 6;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 5;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 4;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 3;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 2;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+--SET pg_bigm.gin_key_limit = 1;
+--SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+
 SET pg_bigm.enable_recheck = on;
+SET pg_bigm.gin_key_limit = 0;
 
 -- tests with standard_conforming_strings disabled
 SET standard_conforming_strings = off;

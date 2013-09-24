@@ -486,7 +486,75 @@ SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
  東京と京都に行く
 (2 rows)
 
+-- tests for pg_bigm.gin_key_limit
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+               doc               
+---------------------------------
+ And she tore the dress in anger
+(1 row)
+
+SET pg_bigm.gin_key_limit = 6;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+                  doc                  
+---------------------------------------
+ And she tore the dress in anger
+ She sells sea shells on the sea shore
+(2 rows)
+
+SET pg_bigm.gin_key_limit = 5;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+                  doc                  
+---------------------------------------
+ And she tore the dress in anger
+ She sells sea shells on the sea shore
+ Those orchids are very special to her
+(3 rows)
+
+SET pg_bigm.gin_key_limit = 4;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+                              doc                              
+---------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ And she tore the dress in anger
+ She sells sea shells on the sea shore
+ Those orchids are very special to her
+ Did you not see the wet floor sign?
+(5 rows)
+
+SET pg_bigm.gin_key_limit = 3;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+                              doc                               
+----------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ \w FILE outputs the current query buffer to the file specified
+ And she tore the dress in anger
+ She sells sea shells on the sea shore
+ Those orchids are very special to her
+ Did you not see the wet floor sign?
+ The stylist refused them politely
+(7 rows)
+
+SET pg_bigm.gin_key_limit = 2;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+                               doc                                
+------------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ You can create an index for full text search by using GIN index.
+ \w FILE outputs the current query buffer to the file specified
+ And she tore the dress in anger
+ She sells sea shells on the sea shore
+ Those orchids are very special to her
+ Did you not see the wet floor sign?
+ The stylist refused them politely
+ You will get into deep trouble for staying out late
+ He is awaiting trial
+ It was a trivial mistake
+(11 rows)
+
+--SET pg_bigm.gin_key_limit = 1;
+--SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
 SET pg_bigm.enable_recheck = on;
+SET pg_bigm.gin_key_limit = 0;
 -- tests with standard_conforming_strings disabled
 SET standard_conforming_strings = off;
 SELECT likequery('\\_%');
