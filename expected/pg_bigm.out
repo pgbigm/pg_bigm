@@ -114,8 +114,9 @@ SELECT show_bigm ('pg_bigmは検索性能を200%向上させました');
  {させ,した,せま,"た ",は検,まし,を2,上さ,向上,性能,検索,索性,能を," p",%向,0%,00,20,_b,bi,g_,gm,ig,mは,pg}
 (1 row)
 
--- tests for full-text search
+-- tests for creation of full-text search index
 CREATE TABLE test_bigm (doc text, tag text);
+CREATE INDEX test_bigm_idx ON test_bigm USING gin (doc gin_bigm_ops);
 INSERT INTO test_bigm VALUES ('pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL', 'pg_trgm');
 INSERT INTO test_bigm VALUES ('pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL', 'pg_bigm');
 INSERT INTO test_bigm VALUES ('pg_bigm has improved the full text search performance by 200%','pg_bigm performance');
@@ -126,7 +127,31 @@ INSERT INTO test_bigm VALUES ('pg_trgm - PostgreSQLで3-gramの全文検索を�
 INSERT INTO test_bigm VALUES ('pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール', 'pg_bigm');
 INSERT INTO test_bigm VALUES ('pg_bigmは検索性能を200%向上させました。', 'pg_bigm 検索性能');
 INSERT INTO test_bigm VALUES ('GINインデックスを利用して全文検索用のインデックスを作成します。', '全文検索');
-CREATE INDEX test_bigm_idx ON test_bigm USING gin (doc gin_bigm_ops);
+INSERT INTO test_bigm VALUES ('And she tore the dress in anger');
+INSERT INTO test_bigm VALUES ('She sells sea shells on the sea shore');
+INSERT INTO test_bigm VALUES ('Those orchids are very special to her');
+INSERT INTO test_bigm VALUES ('Did you not see the wet floor sign?');
+INSERT INTO test_bigm VALUES ('The stylist refused them politely');
+INSERT INTO test_bigm VALUES ('You will get into deep trouble for staying out late');
+INSERT INTO test_bigm VALUES ('He is awaiting trial');
+INSERT INTO test_bigm VALUES ('It was a trivial mistake');
+INSERT INTO test_bigm VALUES ('ここは東京都');
+INSERT INTO test_bigm VALUES ('東京と京都に行く');
+-- tests pg_gin_pending_stats
+SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
+ pages | tuples 
+-------+--------
+     2 |     20
+(1 row)
+
+VACUUM;
+SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
+ pages | tuples 
+-------+--------
+     0 |      0
+(1 row)
+
+-- tests for full-text search
 SET enable_seqscan = off;
 EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('a');
                 QUERY PLAN                
@@ -225,7 +250,11 @@ SELECT doc FROM test_bigm WHERE doc LIKE likequery ('w');
                               doc                               
 ----------------------------------------------------------------
  \w FILE outputs the current query buffer to the file specified
-(1 row)
+ Did you not see the wet floor sign?
+ You will get into deep trouble for staying out late
+ He is awaiting trial
+ It was a trivial mistake
+(5 rows)
 
 SELECT doc FROM test_bigm WHERE doc LIKE likequery ('by');
                                doc                                
@@ -337,7 +366,11 @@ SELECT doc FROM test_bigm WHERE doc LIKE likequery ('w');
                               doc                               
 ----------------------------------------------------------------
  \w FILE outputs the current query buffer to the file specified
-(1 row)
+ Did you not see the wet floor sign?
+ You will get into deep trouble for staying out late
+ He is awaiting trial
+ It was a trivial mistake
+(5 rows)
 
 SELECT doc FROM test_bigm WHERE doc LIKE likequery ('by');
                                doc                                

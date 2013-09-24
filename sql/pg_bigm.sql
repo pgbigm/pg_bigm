@@ -29,8 +29,9 @@ SELECT show_bigm ('検索');
 SELECT show_bigm ('インデックスを作成');
 SELECT show_bigm ('pg_bigmは検索性能を200%向上させました');
 
--- tests for full-text search
+-- tests for creation of full-text search index
 CREATE TABLE test_bigm (doc text, tag text);
+CREATE INDEX test_bigm_idx ON test_bigm USING gin (doc gin_bigm_ops);
 
 INSERT INTO test_bigm VALUES ('pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL', 'pg_trgm');
 INSERT INTO test_bigm VALUES ('pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL', 'pg_bigm');
@@ -42,8 +43,23 @@ INSERT INTO test_bigm VALUES ('pg_trgm - PostgreSQLで3-gramの全文検索を�
 INSERT INTO test_bigm VALUES ('pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール', 'pg_bigm');
 INSERT INTO test_bigm VALUES ('pg_bigmは検索性能を200%向上させました。', 'pg_bigm 検索性能');
 INSERT INTO test_bigm VALUES ('GINインデックスを利用して全文検索用のインデックスを作成します。', '全文検索');
+INSERT INTO test_bigm VALUES ('And she tore the dress in anger');
+INSERT INTO test_bigm VALUES ('She sells sea shells on the sea shore');
+INSERT INTO test_bigm VALUES ('Those orchids are very special to her');
+INSERT INTO test_bigm VALUES ('Did you not see the wet floor sign?');
+INSERT INTO test_bigm VALUES ('The stylist refused them politely');
+INSERT INTO test_bigm VALUES ('You will get into deep trouble for staying out late');
+INSERT INTO test_bigm VALUES ('He is awaiting trial');
+INSERT INTO test_bigm VALUES ('It was a trivial mistake');
+INSERT INTO test_bigm VALUES ('ここは東京都');
+INSERT INTO test_bigm VALUES ('東京と京都に行く');
 
-CREATE INDEX test_bigm_idx ON test_bigm USING gin (doc gin_bigm_ops);
+-- tests pg_gin_pending_stats
+SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
+VACUUM;
+SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
+
+-- tests for full-text search
 SET enable_seqscan = off;
 
 EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('a');
