@@ -1,5 +1,13 @@
 CREATE EXTENSION pg_bigm;
 \pset null '(null)'
+SHOW pg_bigm.last_update;
+ pg_bigm.last_update 
+---------------------
+ 2013.04.05
+(1 row)
+
+SET pg_bigm.last_update = '2013.09.18';
+ERROR:  parameter "pg_bigm.last_update" cannot be changed
 SELECT likequery (NULL);
  likequery 
 -----------

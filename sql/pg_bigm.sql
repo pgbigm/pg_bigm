@@ -1,6 +1,10 @@
 CREATE EXTENSION pg_bigm;
 
 \pset null '(null)'
+
+SHOW pg_bigm.last_update;
+SET pg_bigm.last_update = '2013.09.18';
+
 SELECT likequery (NULL);
 SELECT likequery ('');
 SELECT likequery ('aBc023#*^&');
