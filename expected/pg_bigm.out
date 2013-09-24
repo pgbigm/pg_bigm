@@ -9,6 +9,7 @@ SHOW pg_bigm.last_update;
 SET pg_bigm.last_update = '2013.09.18';
 ERROR:  parameter "pg_bigm.last_update" cannot be changed
 SET standard_conforming_strings = on;
+SET escape_string_warning = off;
 -- tests for likequery
 SELECT likequery (NULL);
  likequery 
@@ -421,6 +422,40 @@ SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
  pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
  pg_bigmは検索性能を200%向上させました。
 (6 rows)
+
+-- tests with standard_conforming_strings disabled
+SET standard_conforming_strings = off;
+SELECT likequery('\\_%');
+ likequery 
+-----------
+ %\\\_\%%
+(1 row)
+
+SELECT show_bigm('\\_%');
+       show_bigm       
+-----------------------
+ {" \\","% ","\\_",_%}
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\\');
+                              doc                               
+----------------------------------------------------------------
+ \dx displays list of installed extensions
+ \w FILE outputs the current query buffer to the file specified
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\\dx');
+                    doc                    
+-------------------------------------------
+ \dx displays list of installed extensions
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('200%');
+                              doc                              
+---------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ pg_bigmは検索性能を200%向上させました。
+(2 rows)
 
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;

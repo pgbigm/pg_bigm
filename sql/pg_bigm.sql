@@ -6,6 +6,7 @@ SHOW pg_bigm.last_update;
 SET pg_bigm.last_update = '2013.09.18';
 
 SET standard_conforming_strings = on;
+SET escape_string_warning = off;
 
 -- tests for likequery
 SELECT likequery (NULL);
@@ -96,6 +97,14 @@ SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
 
 EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
 SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
+
+-- tests with standard_conforming_strings disabled
+SET standard_conforming_strings = off;
+SELECT likequery('\\_%');
+SELECT show_bigm('\\_%');
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\\');
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\\dx');
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('200%');
 
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;
