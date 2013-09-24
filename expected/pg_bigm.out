@@ -113,3 +113,312 @@ SELECT show_bigm ('pg_bigmは検索性能を200%向上させました');
  {させ,した,せま,"た ",は検,まし,を2,上さ,向上,性能,検索,索性,能を," p",%向,0%,00,20,_b,bi,g_,gm,ig,mは,pg}
 (1 row)
 
+-- tests for full-text search
+CREATE TABLE test_bigm (doc text, tag text);
+INSERT INTO test_bigm VALUES ('pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL', 'pg_trgm');
+INSERT INTO test_bigm VALUES ('pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL', 'pg_bigm');
+INSERT INTO test_bigm VALUES ('pg_bigm has improved the full text search performance by 200%','pg_bigm performance');
+INSERT INTO test_bigm VALUES ('You can create an index for full text search by using GIN index.', 'full text search');
+INSERT INTO test_bigm VALUES ('\dx displays list of installed extensions', 'meta command');
+INSERT INTO test_bigm VALUES ('\w FILE outputs the current query buffer to the file specified', 'meta command');
+INSERT INTO test_bigm VALUES ('pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール', 'pg_trgm');
+INSERT INTO test_bigm VALUES ('pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール', 'pg_bigm');
+INSERT INTO test_bigm VALUES ('pg_bigmは検索性能を200%向上させました。', 'pg_bigm 検索性能');
+INSERT INTO test_bigm VALUES ('GINインデックスを利用して全文検索用のインデックスを作成します。', '全文検索');
+CREATE INDEX test_bigm_idx ON test_bigm USING gin (doc gin_bigm_ops);
+SET enable_seqscan = off;
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('a');
+                QUERY PLAN                
+------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%a%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%a%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('am');
+                QUERY PLAN                 
+-------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%am%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%am%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('GIN');
+                 QUERY PLAN                 
+--------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%GIN%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%GIN%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('bigm');
+                 QUERY PLAN                  
+---------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%bigm%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%bigm%'::text)
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery (NULL);
+ doc 
+-----
+(0 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('');
+ doc 
+-----
+(0 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('%');
+                              doc                              
+---------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ pg_bigmは検索性能を200%向上させました。
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\');
+                              doc                               
+----------------------------------------------------------------
+ \dx displays list of installed extensions
+ \w FILE outputs the current query buffer to the file specified
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('_');
+                                      doc                                      
+-------------------------------------------------------------------------------
+ pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL
+ pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL
+ pg_bigm has improved the full text search performance by 200%
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+ pg_bigmは検索性能を200%向上させました。
+(6 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\dx');
+                    doc                    
+-------------------------------------------
+ \dx displays list of installed extensions
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('pg_bigm');
+                                      doc                                      
+-------------------------------------------------------------------------------
+ pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL
+ pg_bigm has improved the full text search performance by 200%
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+ pg_bigmは検索性能を200%向上させました。
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('200%');
+                              doc                              
+---------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ pg_bigmは検索性能を200%向上させました。
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('w');
+                              doc                               
+----------------------------------------------------------------
+ \w FILE outputs the current query buffer to the file specified
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('by');
+                               doc                                
+------------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ You can create an index for full text search by using GIN index.
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('GIN');
+                               doc                                
+------------------------------------------------------------------
+ You can create an index for full text search by using GIN index.
+ GINインデックスを利用して全文検索用のインデックスを作成します。
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('tool');
+ doc 
+-----
+(0 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('Tool');
+                                      doc                                      
+-------------------------------------------------------------------------------
+ pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL
+ pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('performance');
+                              doc                              
+---------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+(1 row)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('使');
+                QUERY PLAN                 
+-------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%使%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%使%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('検索');
+                 QUERY PLAN                  
+---------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%検索%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%検索%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('ツール');
+                  QUERY PLAN                   
+-----------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%ツール%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%ツール%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('全文検索');
+                   QUERY PLAN                    
+-------------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%全文検索%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%全文検索%'::text)
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('使');
+                              doc                               
+----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('検索');
+                               doc                               
+-----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+ pg_bigmは検索性能を200%向上させました。
+ GINインデックスを利用して全文検索用のインデックスを作成します。
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('ツール');
+                              doc                               
+----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('インデックスを作成');
+                               doc                               
+-----------------------------------------------------------------
+ GINインデックスを利用して全文検索用のインデックスを作成します。
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('3-gramの全文検索');
+                              doc                               
+----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+(1 row)
+
+-- check that the search results don't change if enable_recheck is disabled
+-- in order to check that index full search is NOT executed
+SET pg_bigm.enable_recheck = off;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('w');
+                              doc                               
+----------------------------------------------------------------
+ \w FILE outputs the current query buffer to the file specified
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('by');
+                               doc                                
+------------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+ You can create an index for full text search by using GIN index.
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('使');
+                              doc                               
+----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery ('検索');
+                               doc                               
+-----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+ pg_bigmは検索性能を200%向上させました。
+ GINインデックスを利用して全文検索用のインデックスを作成します。
+(4 rows)
+
+SET pg_bigm.enable_recheck = on;
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE '%bigm%';
+                 QUERY PLAN                  
+---------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%bigm%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%bigm%'::text)
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE '%Tool%';
+                                      doc                                      
+-------------------------------------------------------------------------------
+ pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL
+ pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE '%検索%';
+                               doc                               
+-----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+ pg_bigmは検索性能を200%向上させました。
+ GINインデックスを利用して全文検索用のインデックスを作成します。
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
+                QUERY PLAN                
+------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ '%\%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ '%\%'::text)
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
+                              doc                              
+---------------------------------------------------------------
+ pg_bigm has improved the full text search performance by 200%
+(1 row)
+
+EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
+                   QUERY PLAN                   
+------------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (doc ~~ 'pg\___gm%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (doc ~~ 'pg\___gm%'::text)
+(4 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
+                                      doc                                      
+-------------------------------------------------------------------------------
+ pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL
+ pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL
+ pg_bigm has improved the full text search performance by 200%
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+ pg_bigmは検索性能を200%向上させました。
+(6 rows)
+
