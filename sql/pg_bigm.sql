@@ -96,3 +96,7 @@ SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
 
 EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
 SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
+
+-- tests for drop of pg_bigm
+DROP EXTENSION pg_bigm CASCADE;
+SELECT likequery('test');
