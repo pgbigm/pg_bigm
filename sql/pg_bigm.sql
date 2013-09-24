@@ -32,8 +32,8 @@ SELECT show_bigm ('インデックスを作成');
 SELECT show_bigm ('pg_bigmは検索性能を200%向上させました');
 
 -- tests for creation of full-text search index
-CREATE TABLE test_bigm (doc text, tag text);
-CREATE INDEX test_bigm_idx ON test_bigm USING gin (doc gin_bigm_ops);
+CREATE TABLE test_bigm (col1 text, col2 text);
+CREATE INDEX test_bigm_idx ON test_bigm USING gin (col1 gin_bigm_ops);
 
 INSERT INTO test_bigm VALUES ('pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL', 'pg_trgm');
 INSERT INTO test_bigm VALUES ('pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL', 'pg_bigm');
@@ -64,80 +64,80 @@ SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
 -- tests for full-text search
 SET enable_seqscan = off;
 
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('a');
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('am');
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('GIN');
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('bigm');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('a');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('am');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('GIN');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('bigm');
 
-SELECT doc FROM test_bigm WHERE doc LIKE likequery (NULL);
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery (NULL);
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('');
 
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('%');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('_');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\dx');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('pg_bigm');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('200%');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('%');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('\');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('_');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('\dx');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('pg_bigm');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('200%');
 
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('w');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('by');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('GIN');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('tool');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('Tool');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('performance');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('w');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('by');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('GIN');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('tool');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('Tool');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('performance');
 
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('使');
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('検索');
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('ツール');
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE likequery ('全文検索');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('使');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('検索');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('ツール');
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('全文検索');
 
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('使');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('検索');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('ツール');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('インデックスを作成');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('3-gramの全文検索');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('使');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('検索');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('ツール');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('インデックスを作成');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('3-gramの全文検索');
 
 -- check that the search results don't change if enable_recheck is disabled
 -- in order to check that index full search is NOT executed
 SET pg_bigm.enable_recheck = off;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('w');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('by');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('使');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('検索');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('w');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('by');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('使');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('検索');
 SET pg_bigm.enable_recheck = on;
 
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE '%bigm%';
-SELECT doc FROM test_bigm WHERE doc LIKE '%Tool%';
-SELECT doc FROM test_bigm WHERE doc LIKE '%検索%';
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE '%bigm%';
+SELECT col1 FROM test_bigm WHERE col1 LIKE '%Tool%';
+SELECT col1 FROM test_bigm WHERE col1 LIKE '%検索%';
 
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
-SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE '%\%';
+SELECT col1 FROM test_bigm WHERE col1 LIKE '%\%';
 
-EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
-SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE 'pg\___gm%';
+SELECT col1 FROM test_bigm WHERE col1 LIKE 'pg\___gm%';
 
 -- tests for pg_bigm.enable_recheck
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('trial');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('東京都');
 
 SET pg_bigm.enable_recheck = off;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('trial');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('東京都');
 
 -- tests for pg_bigm.gin_key_limit
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.gin_key_limit = 6;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.gin_key_limit = 5;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.gin_key_limit = 4;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.gin_key_limit = 3;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.gin_key_limit = 2;
-SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 --SET pg_bigm.gin_key_limit = 1;
---SELECT doc FROM test_bigm WHERE doc LIKE likequery('she tore');
+--SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
@@ -146,9 +146,21 @@ SET pg_bigm.gin_key_limit = 0;
 SET standard_conforming_strings = off;
 SELECT likequery('\\_%');
 SELECT show_bigm('\\_%');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\\');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('\\dx');
-SELECT doc FROM test_bigm WHERE doc LIKE likequery ('200%');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('\\');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('\\dx');
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('200%');
+
+-- tests for full text search with multi-column index
+CREATE INDEX test_bigm_multi_idx ON test_bigm USING gin (col1 gin_bigm_ops, col2 gin_bigm_ops);
+-- keyword exists only col1 column
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('query');
+SELECT * FROM test_bigm WHERE col2 LIKE likequery('query');
+-- keyword exists only col2 column
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('meta');
+SELECT * FROM test_bigm WHERE col2 LIKE likequery('meta');
+-- keyword exists both columns
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
+SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;
