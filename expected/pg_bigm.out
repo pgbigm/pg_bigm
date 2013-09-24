@@ -10,6 +10,8 @@ SET pg_bigm.last_update = '2013.09.18';
 ERROR:  parameter "pg_bigm.last_update" cannot be changed
 SET standard_conforming_strings = on;
 SET escape_string_warning = off;
+SET pg_bigm.enable_recheck = on;
+SET pg_bigm.gin_key_limit = 0;
 -- tests for likequery
 SELECT likequery (NULL);
  likequery 
@@ -456,6 +458,35 @@ SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
  pg_bigmは検索性能を200%向上させました。
 (6 rows)
 
+-- tests for pg_bigm.enable_recheck
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
+         doc          
+----------------------
+ He is awaiting trial
+(1 row)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
+     doc      
+--------------
+ ここは東京都
+(1 row)
+
+SET pg_bigm.enable_recheck = off;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
+           doc            
+--------------------------
+ He is awaiting trial
+ It was a trivial mistake
+(2 rows)
+
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
+       doc        
+------------------
+ ここは東京都
+ 東京と京都に行く
+(2 rows)
+
+SET pg_bigm.enable_recheck = on;
 -- tests with standard_conforming_strings disabled
 SET standard_conforming_strings = off;
 SELECT likequery('\\_%');

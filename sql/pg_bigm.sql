@@ -7,6 +7,8 @@ SET pg_bigm.last_update = '2013.09.18';
 
 SET standard_conforming_strings = on;
 SET escape_string_warning = off;
+SET pg_bigm.enable_recheck = on;
+SET pg_bigm.gin_key_limit = 0;
 
 -- tests for likequery
 SELECT likequery (NULL);
@@ -113,6 +115,16 @@ SELECT doc FROM test_bigm WHERE doc LIKE '%\%';
 
 EXPLAIN (COSTS off) SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
 SELECT doc FROM test_bigm WHERE doc LIKE 'pg\___gm%';
+
+-- tests for pg_bigm.enable_recheck
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
+
+SET pg_bigm.enable_recheck = off;
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('trial');
+SELECT doc FROM test_bigm WHERE doc LIKE likequery('東京都');
+
+SET pg_bigm.enable_recheck = on;
 
 -- tests with standard_conforming_strings disabled
 SET standard_conforming_strings = off;
