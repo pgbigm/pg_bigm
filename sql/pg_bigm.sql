@@ -136,8 +136,8 @@ SET pg_bigm.gin_key_limit = 3;
 SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.gin_key_limit = 2;
 SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
---SET pg_bigm.gin_key_limit = 1;
---SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 1;
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
 
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;

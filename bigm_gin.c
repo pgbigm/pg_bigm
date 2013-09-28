@@ -192,15 +192,16 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	bool		res;
 	int32		i;
 
+	Assert(nkeys > 0);
+
 	/*
 	 * Don't recheck the heap tuple against the query if either
 	 * pg_bigm.enable_recheck is disabled or the search word is
 	 * the special one so that the index can return the exact
 	 * result.
 	 */
-	*recheck = bigm_enable_recheck;
-	if (nkeys == 1)
-		*recheck = *((bool *) extra_data);
+	*recheck = bigm_enable_recheck &&
+		((nkeys > 1) || *((bool *) extra_data));
 
 	switch (strategy)
 	{

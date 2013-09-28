@@ -551,8 +551,25 @@ SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
  It was a trivial mistake
 (11 rows)
 
---SET pg_bigm.gin_key_limit = 1;
---SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
+SET pg_bigm.gin_key_limit = 1;
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('she tore');
+                                     col1                                      
+-------------------------------------------------------------------------------
+ pg_trgm - Tool that provides 3-gram full text search capability in PostgreSQL
+ pg_bigm - Tool that provides 2-gram full text search capability in PostgreSQL
+ pg_bigm has improved the full text search performance by 200%
+ You can create an index for full text search by using GIN index.
+ \w FILE outputs the current query buffer to the file specified
+ And she tore the dress in anger
+ She sells sea shells on the sea shore
+ Those orchids are very special to her
+ Did you not see the wet floor sign?
+ The stylist refused them politely
+ You will get into deep trouble for staying out late
+ He is awaiting trial
+ It was a trivial mistake
+(13 rows)
+
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
 -- tests with standard_conforming_strings disabled
