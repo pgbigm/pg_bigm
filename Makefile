@@ -16,3 +16,6 @@ top_builddir = ../..
 include $(top_builddir)/src/Makefile.global
 include $(top_srcdir)/contrib/contrib-global.mk
 endif
+
+installcheck-trgm: 
+	$(pg_regress_installcheck) $(REGRESS_OPTS) load_trgm $(REGRESS)
