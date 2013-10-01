@@ -63,7 +63,7 @@ typedef struct
 #define GETARR(x)		( (bigm *)( (char*)x + VARHDRSZ ) )
 #define ARRNELEM(x) ( ( VARSIZE(x) - VARHDRSZ )/sizeof(bigm) )
 
-BIGM	   *generate_bigm(char *str, int slen);
-BIGM	   *generate_wildcard_bigm(const char *str, int slen, bool *removeDups);
+extern BIGM	   *generate_bigm(char *str, int slen);
+extern BIGM	   *generate_wildcard_bigm(const char *str, int slen, bool *removeDups);
 
 #endif   /* __BIGM_H__ */
