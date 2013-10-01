@@ -152,13 +152,13 @@ SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('200%');
 
 -- tests for full text search with multi-column index
 CREATE INDEX test_bigm_multi_idx ON test_bigm USING gin (col1 gin_bigm_ops, col2 gin_bigm_ops);
--- keyword exists only col1 column
+-- keyword exists only in col1. Query on col2 must not return any rows.
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('query');
 SELECT * FROM test_bigm WHERE col2 LIKE likequery('query');
--- keyword exists only col2 column
+-- keyword exists only in col2. All rows with keyword in col2 are returned.
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('meta');
 SELECT * FROM test_bigm WHERE col2 LIKE likequery('meta');
--- keyword exists both columns
+-- keyword exists in both columns. Query on col2 must not return rows with keyword in col1 only.
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 
