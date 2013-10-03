@@ -6,6 +6,11 @@ RETURNS _text
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
+CREATE FUNCTION bigm_similarity(text, text)
+RETURNS float4
+AS 'MODULE_PATHNAME'
+LANGUAGE C STRICT IMMUTABLE;
+
 -- support functions for gin
 CREATE FUNCTION gin_extract_value_bigm(text, internal)
 RETURNS internal

@@ -659,6 +659,61 @@ SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
  pg_bigmは検索性能を200%向上させました。                                       | pg_bigm 検索性能
 (4 rows)
 
+--tests for bigm_similarity
+SELECT bigm_similarity('wow', NULL);
+ bigm_similarity 
+-----------------
+          (null)
+(1 row)
+
+SELECT bigm_similarity('wow', '');
+ bigm_similarity 
+-----------------
+               0
+(1 row)
+
+SELECT bigm_similarity('wow', 'WOWa ');
+ bigm_similarity 
+-----------------
+               0
+(1 row)
+
+SELECT bigm_similarity('wow', ' WOW ');
+ bigm_similarity 
+-----------------
+               0
+(1 row)
+
+SELECT bigm_similarity('wow', ' wow ');
+ bigm_similarity 
+-----------------
+               1
+(1 row)
+
+SELECT bigm_similarity('---', '####---');
+ bigm_similarity 
+-----------------
+             0.4
+(1 row)
+
+SELECT bigm_similarity('東京都', ' 東京都 ');
+ bigm_similarity 
+-----------------
+               1
+(1 row)
+
+SELECT bigm_similarity('東京都', '東京と京都');
+ bigm_similarity 
+-----------------
+        0.666667
+(1 row)
+
+SELECT bigm_similarity('東京と京都', '東京都');
+ bigm_similarity 
+-----------------
+        0.666667
+(1 row)
+
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;
 NOTICE:  drop cascades to 2 other objects

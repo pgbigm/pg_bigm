@@ -162,6 +162,20 @@ SELECT * FROM test_bigm WHERE col2 LIKE likequery('meta');
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 
+--tests for bigm_similarity
+SELECT bigm_similarity('wow', NULL);
+SELECT bigm_similarity('wow', '');
+
+SELECT bigm_similarity('wow', 'WOWa ');
+SELECT bigm_similarity('wow', ' WOW ');
+SELECT bigm_similarity('wow', ' wow ');
+
+SELECT bigm_similarity('---', '####---');
+
+SELECT bigm_similarity('東京都', ' 東京都 ');
+SELECT bigm_similarity('東京都', '東京と京都');
+SELECT bigm_similarity('東京と京都', '東京都');
+
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;
 SELECT likequery('test');

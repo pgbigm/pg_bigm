@@ -39,6 +39,9 @@ Datum		bigmtextcmp(PG_FUNCTION_ARGS);
 PG_FUNCTION_INFO_V1(likequery);
 Datum		likequery(PG_FUNCTION_ARGS);
 
+PG_FUNCTION_INFO_V1(bigm_similarity);
+Datum		bigm_similarity(PG_FUNCTION_ARGS);
+
 void		_PG_init(void);
 void		_PG_fini(void);
 
@@ -537,6 +540,70 @@ show_bigm(PG_FUNCTION_ARGS)
 	PG_FREE_IF_COPY(in, 0);
 
 	PG_RETURN_POINTER(a);
+}
+
+static float4
+cnt_sml_bigm(BIGM *bgm1, BIGM *bgm2)
+{
+	bigm	   *ptr1,
+			   *ptr2;
+	int			count = 0;
+	int			len1,
+				len2;
+
+	ptr1 = GETARR(bgm1);
+	ptr2 = GETARR(bgm2);
+
+	len1 = ARRNELEM(bgm1);
+	len2 = ARRNELEM(bgm2);
+
+	/* explicit test is needed to avoid 0/0 division when both lengths are 0 */
+	if (len1 <= 0 || len2 <= 0)
+		return (float4) 0.0;
+
+	while (ptr1 - GETARR(bgm1) < len1 && ptr2 - GETARR(bgm2) < len2)
+	{
+		int		res = CMPBIGM(ptr1, ptr2);
+
+		if (res < 0)
+			ptr1++;
+		else if (res > 0)
+			ptr2++;
+		else
+		{
+			ptr1++;
+			ptr2++;
+			count++;
+		}
+	}
+
+#ifdef DIVUNION
+	return ((float4) count) / ((float4) (len1 + len2 - count));
+#else
+	return ((float4) count) / ((float4) ((len1 > len2) ? len1 : len2));
+#endif
+}
+
+Datum
+bigm_similarity(PG_FUNCTION_ARGS)
+{
+	text	   *in1 = PG_GETARG_TEXT_P(0);
+	text	   *in2 = PG_GETARG_TEXT_P(1);
+	BIGM	   *bgm1,
+			   *bgm2;
+	float4		res;
+
+	bgm1 = generate_bigm(VARDATA(in1), VARSIZE(in1) - VARHDRSZ);
+	bgm2 = generate_bigm(VARDATA(in2), VARSIZE(in2) - VARHDRSZ);
+
+	res = cnt_sml_bigm(bgm1, bgm2);
+
+	pfree(bgm1);
+	pfree(bgm2);
+	PG_FREE_IF_COPY(in1, 0);
+	PG_FREE_IF_COPY(in2, 1);
+
+	PG_RETURN_FLOAT4(res);
 }
 
 Datum
