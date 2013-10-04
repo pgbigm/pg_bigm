@@ -1,5 +1,11 @@
 CREATE EXTENSION pg_bigm;
 \pset null '(null)'
+SET standard_conforming_strings = on;
+SET escape_string_warning = off;
+SET enable_seqscan = off;
+SET pg_bigm.enable_recheck = on;
+SET pg_bigm.gin_key_limit = 0;
+-- tests for pg_bigm.last_update
 SHOW pg_bigm.last_update;
  pg_bigm.last_update 
 ---------------------
@@ -8,109 +14,105 @@ SHOW pg_bigm.last_update;
 
 SET pg_bigm.last_update = '2013.09.18';
 ERROR:  parameter "pg_bigm.last_update" cannot be changed
-SET standard_conforming_strings = on;
-SET escape_string_warning = off;
-SET pg_bigm.enable_recheck = on;
-SET pg_bigm.gin_key_limit = 0;
 -- tests for likequery
-SELECT likequery (NULL);
+SELECT likequery(NULL);
  likequery 
 -----------
  (null)
 (1 row)
 
-SELECT likequery ('');
+SELECT likequery('');
  likequery 
 -----------
  (null)
 (1 row)
 
-SELECT likequery ('aBc023#*^&');
+SELECT likequery('aBc023#*^&');
   likequery   
 --------------
  %aBc023#*^&%
 (1 row)
 
-SELECT likequery ('ポスグレの全文検索');
+SELECT likequery('ポスグレの全文検索');
       likequery       
 ----------------------
  %ポスグレの全文検索%
 (1 row)
 
-SELECT likequery ('\_%');
+SELECT likequery('\_%');
  likequery 
 -----------
  %\\\_\%%
 (1 row)
 
-SELECT likequery ('pg_bigmは検索性能を200%向上させました。');
+SELECT likequery('pg_bigmは検索性能を200%向上させました。');
                   likequery                  
 ---------------------------------------------
  %pg\_bigmは検索性能を200\%向上させました。%
 (1 row)
 
 -- tests for show_bigm
-SELECT show_bigm (NULL);
+SELECT show_bigm(NULL);
  show_bigm 
 -----------
  (null)
 (1 row)
 
-SELECT show_bigm ('');
+SELECT show_bigm('');
  show_bigm 
 -----------
  {}
 (1 row)
 
-SELECT show_bigm ('i');
+SELECT show_bigm('i');
   show_bigm  
 -------------
  {" i","i "}
 (1 row)
 
-SELECT show_bigm ('ab');
+SELECT show_bigm('ab');
    show_bigm    
 ----------------
  {" a",ab,"b "}
 (1 row)
 
-SELECT show_bigm ('aBc023$&^');
+SELECT show_bigm('aBc023$&^');
               show_bigm              
 -------------------------------------
  {" a",$&,&^,02,23,3$,Bc,"^ ",aB,c0}
 (1 row)
 
-SELECT show_bigm ('\_%');
+SELECT show_bigm('\_%');
        show_bigm       
 -----------------------
  {" \\","% ","\\_",_%}
 (1 row)
 
-SELECT show_bigm ('pg_bigm improves performance by 200%');
+SELECT show_bigm('pg_bigm improves performance by 200%');
                                                             show_bigm                                                            
 ---------------------------------------------------------------------------------------------------------------------------------
  {" 2"," b"," i"," p","% ",0%,00,20,_b,an,bi,by,ce,"e ",er,es,fo,g_,gm,ig,im,"m ",ma,mp,nc,or,ov,pe,pg,pr,rf,rm,ro,"s ",ve,"y "}
 (1 row)
 
-SELECT show_bigm ('木');
+SELECT show_bigm('木');
    show_bigm   
 ---------------
  {"木 "," 木"}
 (1 row)
 
-SELECT show_bigm ('検索');
+SELECT show_bigm('検索');
      show_bigm      
 --------------------
  {検索,"索 "," 検"}
 (1 row)
 
-SELECT show_bigm ('インデックスを作成');
+SELECT show_bigm('インデックスを作成');
                        show_bigm                       
 -------------------------------------------------------
  {を作,イン,クス,スを,ック,デッ,ンデ,作成,"成 "," イ"}
 (1 row)
 
-SELECT show_bigm ('pg_bigmは検索性能を200%向上させました');
+SELECT show_bigm('pg_bigmは検索性能を200%向上させました');
                                                  show_bigm                                                  
 ------------------------------------------------------------------------------------------------------------
  {させ,した,せま,"た ",は検,まし,を2,上さ,向上,性能,検索,索性,能を," p",%向,0%,00,20,_b,bi,g_,gm,ig,mは,pg}
@@ -154,7 +156,6 @@ SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
 (1 row)
 
 -- tests for full-text search
-SET enable_seqscan = off;
 EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('a');
                 QUERY PLAN                 
 -------------------------------------------
@@ -659,7 +660,7 @@ SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
  pg_bigmは検索性能を200%向上させました。                                       | pg_bigm 検索性能
 (4 rows)
 
---tests for bigm_similarity
+-- tests for bigm_similarity
 SELECT bigm_similarity('wow', NULL);
  bigm_similarity 
 -----------------

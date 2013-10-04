@@ -2,34 +2,36 @@ CREATE EXTENSION pg_bigm;
 
 \pset null '(null)'
 
-SHOW pg_bigm.last_update;
-SET pg_bigm.last_update = '2013.09.18';
-
 SET standard_conforming_strings = on;
 SET escape_string_warning = off;
+SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
 
+-- tests for pg_bigm.last_update
+SHOW pg_bigm.last_update;
+SET pg_bigm.last_update = '2013.09.18';
+
 -- tests for likequery
-SELECT likequery (NULL);
-SELECT likequery ('');
-SELECT likequery ('aBc023#*^&');
-SELECT likequery ('ポスグレの全文検索');
-SELECT likequery ('\_%');
-SELECT likequery ('pg_bigmは検索性能を200%向上させました。');
+SELECT likequery(NULL);
+SELECT likequery('');
+SELECT likequery('aBc023#*^&');
+SELECT likequery('ポスグレの全文検索');
+SELECT likequery('\_%');
+SELECT likequery('pg_bigmは検索性能を200%向上させました。');
 
 -- tests for show_bigm
-SELECT show_bigm (NULL);
-SELECT show_bigm ('');
-SELECT show_bigm ('i');
-SELECT show_bigm ('ab');
-SELECT show_bigm ('aBc023$&^');
-SELECT show_bigm ('\_%');
-SELECT show_bigm ('pg_bigm improves performance by 200%');
-SELECT show_bigm ('木');
-SELECT show_bigm ('検索');
-SELECT show_bigm ('インデックスを作成');
-SELECT show_bigm ('pg_bigmは検索性能を200%向上させました');
+SELECT show_bigm(NULL);
+SELECT show_bigm('');
+SELECT show_bigm('i');
+SELECT show_bigm('ab');
+SELECT show_bigm('aBc023$&^');
+SELECT show_bigm('\_%');
+SELECT show_bigm('pg_bigm improves performance by 200%');
+SELECT show_bigm('木');
+SELECT show_bigm('検索');
+SELECT show_bigm('インデックスを作成');
+SELECT show_bigm('pg_bigmは検索性能を200%向上させました');
 
 -- tests for creation of full-text search index
 CREATE TABLE test_bigm (col1 text, col2 text);
@@ -62,8 +64,6 @@ VACUUM;
 SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
 
 -- tests for full-text search
-SET enable_seqscan = off;
-
 EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('a');
 EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('am');
 EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('GIN');
@@ -162,7 +162,7 @@ SELECT * FROM test_bigm WHERE col2 LIKE likequery('meta');
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 SELECT * FROM test_bigm WHERE col2 LIKE likequery('bigm');
 
---tests for bigm_similarity
+-- tests for bigm_similarity
 SELECT bigm_similarity('wow', NULL);
 SELECT bigm_similarity('wow', '');
 
