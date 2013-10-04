@@ -28,6 +28,7 @@ PG_MODULE_MAGIC;
 /* GUC variable */
 bool	bigm_enable_recheck = false;
 int		bigm_gin_key_limit = 0;
+double	bigm_similarity_limit = 0.3;
 char	*bigm_last_update = NULL;
 
 PG_FUNCTION_INFO_V1(show_bigm);
@@ -41,6 +42,9 @@ Datum		likequery(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(bigm_similarity);
 Datum		bigm_similarity(PG_FUNCTION_ARGS);
+
+PG_FUNCTION_INFO_V1(bigm_similarity_op);
+Datum		bigm_similarity_op(PG_FUNCTION_ARGS);
 
 void		_PG_init(void);
 void		_PG_fini(void);
@@ -73,6 +77,19 @@ _PG_init(void)
 							NULL,
 							NULL,
 							NULL);
+
+	DefineCustomRealVariable("pg_bigm.similarity_limit",
+							 "Sets the similarity threshold used by the "
+							 "=% operator.",
+							 NULL,
+							 &bigm_similarity_limit,
+							 0.3,
+							 0.0, 1.0,
+							 PGC_USERSET,
+							 0,
+							 NULL,
+							 NULL,
+							 NULL);
 
 	/* Can't be set in postgresql.conf */
 	DefineCustomStringVariable("pg_bigm.last_update",
@@ -604,6 +621,16 @@ bigm_similarity(PG_FUNCTION_ARGS)
 	PG_FREE_IF_COPY(in2, 1);
 
 	PG_RETURN_FLOAT4(res);
+}
+
+Datum
+bigm_similarity_op(PG_FUNCTION_ARGS)
+{
+	float4		res = DatumGetFloat4(DirectFunctionCall2(bigm_similarity,
+														 PG_GETARG_DATUM(0),
+														 PG_GETARG_DATUM(1)));
+
+	PG_RETURN_BOOL(res >= (float4) bigm_similarity_limit);
 }
 
 Datum

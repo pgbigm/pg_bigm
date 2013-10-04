@@ -17,8 +17,9 @@
 #include "utils/builtins.h"
 
 /* GUC variable */
-extern bool	bigm_enable_recheck;
-extern int	bigm_gin_key_limit;
+extern bool		bigm_enable_recheck;
+extern int		bigm_gin_key_limit;
+extern double	bigm_similarity_limit;
 
 /* options */
 #define LPADDING		1
@@ -26,6 +27,7 @@ extern int	bigm_gin_key_limit;
 
 /* operator strategy numbers */
 #define LikeStrategyNumber			1
+#define SimilarityStrategyNumber	2
 
 typedef struct
 {

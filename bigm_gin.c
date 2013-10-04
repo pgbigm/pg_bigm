@@ -139,6 +139,12 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 				*recheck = true;
 			break;
 		}
+		case SimilarityStrategyNumber:
+		{
+			bgm = generate_bigm(VARDATA(val), VARSIZE(val) - VARHDRSZ);
+			bgmlen = ARRNELEM(bgm);
+			break;
+		}
 		default:
 			elog(ERROR, "unrecognized strategy number: %d", strategy);
 			bgm = NULL;			/* keep compiler quiet */
@@ -191,6 +197,7 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	bool	   *recheck = (bool *) PG_GETARG_POINTER(5);
 	bool		res;
 	int32		i;
+	int32		ntrue;
 
 	Assert(nkeys > 0);
 
@@ -216,6 +223,24 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 					break;
 				}
 			}
+			break;
+		case SimilarityStrategyNumber:
+			/* Count the matches */
+			ntrue = 0;
+			for (i = 0; i < nkeys; i++)
+			{
+				if (check[i])
+					ntrue++;
+			}
+#ifdef DIVUNION
+			res = (nkeys == ntrue) ? true :
+				((((((float4) ntrue) / ((float4) (nkeys - ntrue)))) >=
+				  (float4) bigm_similarity_limit) ? true : false);
+#else
+			res = (nkeys == 0) ? false :
+				((((((float4) ntrue) / ((float4) nkeys))) >=
+				  (float4) bigm_similarity_limit) ? true : false);
+#endif
 			break;
 		default:
 			elog(ERROR, "unrecognized strategy number: %d", strategy);
