@@ -1,0 +1,177 @@
+CREATE EXTENSION pg_bigm;
+\pset null '(null)'
+SET standard_conforming_strings = on;
+SET escape_string_warning = off;
+SET enable_seqscan = off;
+SET pg_bigm.enable_recheck = on;
+SET pg_bigm.gin_key_limit = 0;
+-- tests for likequery
+SELECT likequery('ポスグレの全文検索');
+      likequery       
+----------------------
+ %ポスグレの全文検索%
+(1 row)
+
+SELECT likequery('pg_bigmは検索性能を200%向上させました');
+                 likequery                 
+-------------------------------------------
+ %pg\_bigmは検索性能を200\%向上させました%
+(1 row)
+
+-- tests for show_bigm
+SELECT show_bigm('木');
+   show_bigm   
+---------------
+ {"木 "," 木"}
+(1 row)
+
+SELECT show_bigm('検索');
+     show_bigm      
+--------------------
+ {検索,"索 "," 検"}
+(1 row)
+
+SELECT show_bigm('インデックスを作成');
+                       show_bigm                       
+-------------------------------------------------------
+ {を作,イン,クス,スを,ック,デッ,ンデ,作成,"成 "," イ"}
+(1 row)
+
+SELECT show_bigm('pg_bigmは検索性能を200%向上させました');
+                                                 show_bigm                                                  
+------------------------------------------------------------------------------------------------------------
+ {させ,した,せま,"た ",は検,まし,を2,上さ,向上,性能,検索,索性,能を," p",%向,0%,00,20,_b,bi,g_,gm,ig,mは,pg}
+(1 row)
+
+-- tests for creation of full-text search index
+CREATE INDEX test_bigm_idx ON test_bigm USING gin (col1 gin_bigm_ops);
+\copy test_bigm(col1) from 'data/bigm_ja.csv' with csv
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('値');
+                 QUERY PLAN                 
+--------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 ~~ '%値%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 ~~ '%値%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('最大');
+                  QUERY PLAN                  
+----------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 ~~ '%最大%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 ~~ '%最大%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('ツール');
+                   QUERY PLAN                   
+------------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 ~~ '%ツール%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 ~~ '%ツール%'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('全文検索');
+                    QUERY PLAN                    
+--------------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 ~~ '%全文検索%'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 ~~ '%全文検索%'::text)
+(4 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('値');
+                                col1                                
+--------------------------------------------------------------------
+ 設定値が0(デフォルト値)の場合は、検索文字列のすべての
+ (スーパーユーザに限らずどのユーザからでも)で設定値を変更できます。
+ 引数1がNULLの場合、戻り値はNULLです。
+(3 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('最大');
+                                  col1                                  
+------------------------------------------------------------------------
+ 最大で何個を全文検索インデックスの検索に使うか指定するパラメータです。
+ 2-gram文字列の最大数を制限することで、
+(2 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('ツール');
+                              col1                              
+----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+ pg_bigm - PostgreSQLで2-gramの全文検索を使えるようにするツール
+(2 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('インデックスを作成');
+                             col1                              
+---------------------------------------------------------------
+ GINインデックスを利用して全文検索用のインデックスを作成します
+(1 row)
+
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('3-gramの全文検索');
+                              col1                              
+----------------------------------------------------------------
+ pg_trgm - PostgreSQLで3-gramの全文検索を使えるようにするツール
+(1 row)
+
+-- check that the search results don't change if enable_recheck is disabled
+-- in order to check that index full search is NOT executed
+SET pg_bigm.enable_recheck = off;
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('値');
+                                col1                                
+--------------------------------------------------------------------
+ 設定値が0(デフォルト値)の場合は、検索文字列のすべての
+ (スーパーユーザに限らずどのユーザからでも)で設定値を変更できます。
+ 引数1がNULLの場合、戻り値はNULLです。
+(3 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery ('最大');
+                                  col1                                  
+------------------------------------------------------------------------
+ 最大で何個を全文検索インデックスの検索に使うか指定するパラメータです。
+ 2-gram文字列の最大数を制限することで、
+(2 rows)
+
+SET pg_bigm.enable_recheck = on;
+SELECT col1 FROM test_bigm WHERE col1 LIKE '%最大%';
+                                  col1                                  
+------------------------------------------------------------------------
+ 最大で何個を全文検索インデックスの検索に使うか指定するパラメータです。
+ 2-gram文字列の最大数を制限することで、
+(2 rows)
+
+-- tests for pg_bigm.enable_recheck
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('東京都');
+     col1     
+--------------
+ ここは東京都
+(1 row)
+
+SET pg_bigm.enable_recheck = off;
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('東京都');
+       col1       
+------------------
+ ここは東京都
+ 東京と京都に行く
+(2 rows)
+
+SELECT bigm_similarity('東京都', ' 東京都 ');
+ bigm_similarity 
+-----------------
+               1
+(1 row)
+
+SELECT bigm_similarity('東京都', '東京と京都');
+ bigm_similarity 
+-----------------
+        0.666667
+(1 row)
+
+SELECT bigm_similarity('東京と京都', '東京都');
+ bigm_similarity 
+-----------------
+        0.666667
+(1 row)
+

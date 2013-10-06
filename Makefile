@@ -4,7 +4,7 @@ OBJS = bigm_op.o bigm_gin.o
 EXTENSION = pg_bigm
 DATA = pg_bigm--1.1.sql pg_bigm--1.0--1.1.sql
 
-REGRESS = pg_bigm
+REGRESS = pg_bigm pg_bigm_ja
 
 ifdef USE_PGXS
 PG_CONFIG = pg_config

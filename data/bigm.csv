@@ -1,0 +1,249 @@
+Allows modifications of the structure of system tables.,allow_system_table_mods
+Sets the application name to be reported in statistics and logs.,application_name
+Sets the shell command that will be called to archive a WAL file.,archive_command
+Allows archiving of WAL files using archive_command.,archive_mode
+Forces a switch to the next xlog file if a new file has not been started within N seconds.,archive_timeout
+Enable input of NULL elements in arrays.,array_nulls
+Sets the maximum allowed time to complete client authentication.,authentication_timeout
+Starts the autovacuum subprocess.,autovacuum
+"Number of tuple inserts, updates, or deletes prior to analyze as a fraction of reltuples.",autovacuum_analyze_scale_factor
+"Minimum number of tuple inserts, updates, or deletes prior to analyze.",autovacuum_analyze_threshold
+Age at which to autovacuum a table to prevent transaction ID wraparound.,autovacuum_freeze_max_age
+Sets the maximum number of simultaneously running autovacuum worker processes.,autovacuum_max_workers
+Time to sleep between autovacuum runs.,autovacuum_naptime
+"Vacuum cost delay in milliseconds, for autovacuum.",autovacuum_vacuum_cost_delay
+"Vacuum cost amount available before napping, for autovacuum.",autovacuum_vacuum_cost_limit
+Number of tuple updates or deletes prior to vacuum as a fraction of reltuples.,autovacuum_vacuum_scale_factor
+Minimum number of tuple updates or deletes prior to vacuum.,autovacuum_vacuum_threshold
+"Sets whether ""\'"" is allowed in string literals.",backslash_quote
+Background writer sleep time between rounds.,bgwriter_delay
+Background writer maximum number of LRU pages to flush per round.,bgwriter_lru_maxpages
+Multiple of the average buffer usage to free per round.,bgwriter_lru_multiplier
+Shows the size of a disk block.,block_size
+Enables advertising the server via Bonjour.,bonjour
+Sets the Bonjour service name.,bonjour_name
+Sets the output format for bytea.,bytea_output
+Check function bodies during CREATE FUNCTION.,check_function_bodies
+"Time spent flushing dirty buffers during checkpoint, as fraction of checkpoint interval.",checkpoint_completion_target
+Sets the maximum distance in log segments between automatic WAL checkpoints.,checkpoint_segments
+Sets the maximum time between automatic WAL checkpoints.,checkpoint_timeout
+Enables warnings if checkpoint segments are filled more frequently than this.,checkpoint_warning
+Sets the client's character set encoding.,client_encoding
+Sets the message levels that are sent to the client.,client_min_messages
+Sets the delay in microseconds between transaction commit and flushing WAL to disk.,commit_delay
+Sets the minimum concurrent open transactions before performing commit_delay.,commit_siblings
+Sets the server's main configuration file.,config_file
+Enables the planner to use constraints to optimize queries.,constraint_exclusion
+Sets the planner's estimate of the cost of processing each index entry during an index scan.,cpu_index_tuple_cost
+Sets the planner's estimate of the cost of processing each operator or function call.,cpu_operator_cost
+Sets the planner's estimate of the cost of processing each tuple (row).,cpu_tuple_cost
+Sets the planner's estimate of the fraction of a cursor's rows that will be retrieved.,cursor_tuple_fraction
+Shows whether data checksums are turned on for this cluster,data_checksums
+Sets the server's data directory.,data_directory
+Sets the display format for date and time values.,DateStyle
+Enables per-database user names.,db_user_namespace
+Sets the time to wait on a lock before checking for deadlock.,deadlock_timeout
+Turns on various assertion checks.,debug_assertions
+Indents parse and plan tree displays.,debug_pretty_print
+Logs each query's parse tree.,debug_print_parse
+Logs each query's execution plan.,debug_print_plan
+Logs each query's rewritten parse tree.,debug_print_rewritten
+Sets the default statistics target.,default_statistics_target
+Sets the default tablespace to create tables and indexes in.,default_tablespace
+Sets default text search configuration.,default_text_search_config
+Sets the default deferrable status of new transactions.,default_transaction_deferrable
+Sets the transaction isolation level of each new transaction.,default_transaction_isolation
+Sets the default read-only status of new transactions.,default_transaction_read_only
+Create new tables with OIDs by default.,default_with_oids
+Sets the path for dynamically loadable modules.,dynamic_library_path
+Sets the planner's assumption about the size of the disk cache.,effective_cache_size
+Number of simultaneous requests that can be handled efficiently by the disk subsystem.,effective_io_concurrency
+Enables the planner's use of bitmap-scan plans.,enable_bitmapscan
+Enables the planner's use of hashed aggregation plans.,enable_hashagg
+Enables the planner's use of hash join plans.,enable_hashjoin
+Enables the planner's use of index-only-scan plans.,enable_indexonlyscan
+Enables the planner's use of index-scan plans.,enable_indexscan
+Enables the planner's use of materialization.,enable_material
+Enables the planner's use of merge join plans.,enable_mergejoin
+Enables the planner's use of nested-loop join plans.,enable_nestloop
+Enables the planner's use of sequential-scan plans.,enable_seqscan
+Enables the planner's use of explicit sort steps.,enable_sort
+Enables the planner's use of TID scan plans.,enable_tidscan
+Warn about backslash escapes in ordinary string literals.,escape_string_warning
+Sets the application name used to identify PostgreSQL messages in the event log.,event_source
+Terminate session on any error.,exit_on_error
+Writes the postmaster PID to the specified file.,external_pid_file
+Sets the number of digits displayed for floating-point values.,extra_float_digits
+Sets the FROM-list size beyond which subqueries are not collapsed.,from_collapse_limit
+Forces synchronization of updates to disk.,fsync
+Writes full pages to WAL when first modified after a checkpoint.,full_page_writes
+Enables genetic query optimization.,geqo
+GEQO: effort is used to set the default for other GEQO parameters.,geqo_effort
+GEQO: number of iterations of the algorithm.,geqo_generations
+GEQO: number of individuals in the population.,geqo_pool_size
+GEQO: seed for random path selection.,geqo_seed
+GEQO: selective pressure within the population.,geqo_selection_bias
+Sets the threshold of FROM items beyond which GEQO is used.,geqo_threshold
+Sets the maximum allowed result for exact search by GIN.,gin_fuzzy_search_limit
+"Sets the server's ""hba"" configuration file.",hba_file
+Allows connections and queries during recovery.,hot_standby
+Allows feedback from a hot standby to the primary that will avoid query conflicts.,hot_standby_feedback
+"Sets the server's ""ident"" configuration file.",ident_file
+Continues processing after a checksum failure.,ignore_checksum_failure
+Disables reading from system indexes.,ignore_system_indexes
+Datetimes are integer based.,integer_datetimes
+Sets the display format for interval values.,IntervalStyle
+Sets the FROM-list size beyond which JOIN constructs are not flattened.,join_collapse_limit
+Sets whether Kerberos and GSSAPI user names should be treated as case-insensitive.,krb_caseins_users
+Sets the location of the Kerberos server key file.,krb_server_keyfile
+Sets the name of the Kerberos service.,krb_srvname
+Shows the collation order locale.,lc_collate
+Shows the character classification and case conversion locale.,lc_ctype
+Sets the language in which messages are displayed.,lc_messages
+Sets the locale for formatting monetary amounts.,lc_monetary
+Sets the locale for formatting numbers.,lc_numeric
+Sets the locale for formatting date and time values.,lc_time
+Sets the host name or IP address(es) to listen to.,listen_addresses
+Enables backward compatibility mode for privilege checks on large objects.,lo_compat_privileges
+Lists unprivileged shared libraries to preload into each backend.,local_preload_libraries
+Sets the maximum allowed duration of any wait for a lock.,lock_timeout
+Sets the minimum execution time above which autovacuum actions will be logged.,log_autovacuum_min_duration
+Logs each checkpoint.,log_checkpoints
+Logs each successful connection.,log_connections
+Sets the destination for server log output.,log_destination
+Sets the destination directory for log files.,log_directory
+"Logs end of a session, including duration.",log_disconnections
+Logs the duration of each completed SQL statement.,log_duration
+Sets the verbosity of logged messages.,log_error_verbosity
+Writes executor performance statistics to the server log.,log_executor_stats
+Sets the file permissions for log files.,log_file_mode
+Sets the file name pattern for log files.,log_filename
+Logs the host name in the connection logs.,log_hostname
+Controls information prefixed to each log line.,log_line_prefix
+Logs long lock waits.,log_lock_waits
+Sets the minimum execution time above which statements will be logged.,log_min_duration_statement
+Causes all statements generating error at or above this level to be logged.,log_min_error_statement
+Sets the message levels that are logged.,log_min_messages
+Writes parser performance statistics to the server log.,log_parser_stats
+Writes planner performance statistics to the server log.,log_planner_stats
+Automatic log file rotation will occur after N minutes.,log_rotation_age
+Automatic log file rotation will occur after N kilobytes.,log_rotation_size
+Sets the type of statements logged.,log_statement
+Writes cumulative performance statistics to the server log.,log_statement_stats
+Log the use of temporary files larger than this number of kilobytes.,log_temp_files
+Sets the time zone to use in log messages.,log_timezone
+Truncate existing log files of same name during log rotation.,log_truncate_on_rotation
+Start a subprocess to capture stderr output and/or csvlogs into log files.,logging_collector
+Sets the maximum memory to be used for maintenance operations.,maintenance_work_mem
+Sets the maximum number of concurrent connections.,max_connections
+Sets the maximum number of simultaneously open files for each server process.,max_files_per_process
+Shows the maximum number of function arguments.,max_function_args
+Shows the maximum identifier length.,max_identifier_length
+Shows the maximum number of index keys.,max_index_keys
+Sets the maximum number of locks per transaction.,max_locks_per_transaction
+Sets the maximum number of predicate locks per transaction.,max_pred_locks_per_transaction
+Sets the maximum number of simultaneously prepared transactions.,max_prepared_transactions
+"Sets the maximum stack depth, in kilobytes.",max_stack_depth
+Sets the maximum delay before canceling queries when a hot standby server is processing archived WAL data.,max_standby_archive_delay
+Sets the maximum delay before canceling queries when a hot standby server is processing streamed WAL data.,max_standby_streaming_delay
+Sets the maximum number of simultaneously running WAL sender processes.,max_wal_senders
+Maximum number of concurrent worker processes.,max_worker_processes
+Encrypt passwords.,password_encryption
+Recheck that heap tuples fetched from index match the query.,pg_bigm.enable_recheck
+Sets the maximum number of bi-gram keys allowed to use for GIN index search.,pg_bigm.gin_key_limit
+Shows the last update date of pg_bigm.,pg_bigm.last_update
+Sets the similarity threshold used by the =% operator.,pg_bigm.similarity_limit
+Sets the TCP port the server listens on.,port
+Waits N seconds on connection startup after authentication.,post_auth_delay
+Waits N seconds on connection startup before authentication.,pre_auth_delay
+"When generating SQL fragments, quote all identifiers.",quote_all_identifiers
+Sets the planner's estimate of the cost of a nonsequentially fetched disk page.,random_page_cost
+Reinitialize server after backend crash.,restart_after_crash
+Sets the schema search order for names that are not schema-qualified.,search_path
+Shows the number of pages per disk file.,segment_size
+Sets the planner's estimate of the cost of a sequentially fetched disk page.,seq_page_cost
+Sets the server (database) character set encoding.,server_encoding
+Shows the server version.,server_version
+Shows the server version as an integer.,server_version_num
+Lists shared libraries to preload into each backend.,session_preload_libraries
+Sets the session's behavior for triggers and rewrite rules.,session_replication_role
+Sets the number of shared memory buffers used by the server.,shared_buffers
+Lists shared libraries to preload into server.,shared_preload_libraries
+Causes subtables to be included by default in various commands.,sql_inheritance
+Enables SSL connections.,ssl
+Location of the SSL certificate authority file.,ssl_ca_file
+Location of the SSL server certificate file.,ssl_cert_file
+Sets the list of allowed SSL ciphers.,ssl_ciphers
+Location of the SSL certificate revocation list file.,ssl_crl_file
+Location of the SSL server private key file.,ssl_key_file
+Set the amount of traffic to send and receive before renegotiating the encryption keys.,ssl_renegotiation_limit
+Causes '...' strings to treat backslashes literally.,standard_conforming_strings
+Sets the maximum allowed duration of any statement.,statement_timeout
+Writes temporary statistics files to the specified directory.,stats_temp_directory
+Sets the number of connection slots reserved for superusers.,superuser_reserved_connections
+Enable synchronized sequential scans.,synchronize_seqscans
+Sets the current transaction's synchronization level.,synchronous_commit
+List of names of potential synchronous standbys.,synchronous_standby_names
+"Sets the syslog ""facility"" to be used when syslog enabled.",syslog_facility
+Sets the program name used to identify PostgreSQL messages in syslog.,syslog_ident
+Maximum number of TCP keepalive retransmits.,tcp_keepalives_count
+Time between issuing TCP keepalives.,tcp_keepalives_idle
+Time between TCP keepalive retransmits.,tcp_keepalives_interval
+Sets the maximum number of temporary buffers used by each session.,temp_buffers
+Limits the total size of all temporary files used by each session.,temp_file_limit
+Sets the tablespace(s) to use for temporary tables and sort files.,temp_tablespaces
+Sets the time zone for displaying and interpreting time stamps.,TimeZone
+Selects a file of time zone abbreviations.,timezone_abbreviations
+Generates debugging output for LISTEN and NOTIFY.,trace_notify
+Enables logging of recovery-related debugging information.,trace_recovery_messages
+Emit information about resource usage in sorting.,trace_sort
+Collects information about executing commands.,track_activities
+"Sets the size reserved for pg_stat_activity.query, in bytes.",track_activity_query_size
+Collects statistics on database activity.,track_counts
+Collects function-level statistics on database activity.,track_functions
+Collects timing statistics for database I/O activity.,track_io_timing
+Whether to defer a read-only serializable transaction until it can be executed with no possible serialization failures.,transaction_deferrable
+Sets the current transaction's isolation level.,transaction_isolation
+Sets the current transaction's read-only status.,transaction_read_only
+"Treats ""expr=NULL"" as ""expr IS NULL"".",transform_null_equals
+Sets the directories where Unix-domain sockets will be created.,unix_socket_directories
+Sets the owning group of the Unix-domain socket.,unix_socket_group
+Sets the access permissions of the Unix-domain socket.,unix_socket_permissions
+Updates the process title to show the active SQL command.,update_process_title
+Vacuum cost delay in milliseconds.,vacuum_cost_delay
+Vacuum cost amount available before napping.,vacuum_cost_limit
+Vacuum cost for a page dirtied by vacuum.,vacuum_cost_page_dirty
+Vacuum cost for a page found in the buffer cache.,vacuum_cost_page_hit
+Vacuum cost for a page not found in the buffer cache.,vacuum_cost_page_miss
+"Number of transactions by which VACUUM and HOT cleanup should be deferred, if any.",vacuum_defer_cleanup_age
+Minimum age at which VACUUM should freeze a table row.,vacuum_freeze_min_age
+Age at which VACUUM should scan whole table to freeze tuples.,vacuum_freeze_table_age
+Shows the block size in the write ahead log.,wal_block_size
+Sets the number of disk-page buffers in shared memory for WAL.,wal_buffers
+Sets the number of WAL files held for standby servers.,wal_keep_segments
+Set the level of information written to the WAL.,wal_level
+Sets the maximum interval between WAL receiver status reports to the primary.,wal_receiver_status_interval
+Sets the maximum wait time to receive data from the primary.,wal_receiver_timeout
+Shows the number of pages per write ahead log segment.,wal_segment_size
+Sets the maximum time to wait for WAL replication.,wal_sender_timeout
+Selects the method used for forcing WAL updates to disk.,wal_sync_method
+WAL writer sleep time between WAL flushes.,wal_writer_delay
+Sets the maximum memory to be used for query workspaces.,work_mem
+Sets the number of slots for concurrent xlog insertions.,xloginsert_slots
+Sets how binary values are to be encoded in XML.,xmlbinary
+Sets whether XML data in implicit parsing and serialization operations is to be considered as documents or content fragments.,xmloption
+Continues processing past damaged page headers.,zero_damaged_pages
+pg_trgm -  Tool that provides 3-gram full text search capability in PostgreSQL,pg_trgm
+pg_bigm -  Tool that provides 2-gram full text search capability in PostgreSQL,pg_bigm
+pg_bigm has improved the full text search performance by 200%,pg_bigm performance
+You can create an index for full text search by using GIN index.,full text search
+\dx displays list of installed extensions,meta command
+\w FILE outputs the current query buffer to the file specified,meta command
+And she tore the dress in anger,
+She sells sea shells on the sea shore,
+Those orchids are very special to her,
+Did you not see the wet floor sign?,
+The stylist refused them politely,
+You will get into deep trouble for staying out late,
+He is awaiting trial,
+It was a trivial mistake,
