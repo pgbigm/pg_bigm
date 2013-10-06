@@ -199,8 +199,6 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	int32		i;
 	int32		ntrue;
 
-	Assert(nkeys > 0);
-
 	/*
 	 * Don't recheck the heap tuple against the query if either
 	 * pg_bigm.enable_recheck is disabled or the search word is
@@ -208,7 +206,7 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	 * result.
 	 */
 	*recheck = bigm_enable_recheck &&
-		((nkeys > 1) || *((bool *) extra_data));
+		(*((bool *) extra_data) || (nkeys != 1));
 
 	switch (strategy)
 	{
