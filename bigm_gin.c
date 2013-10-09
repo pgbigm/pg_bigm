@@ -199,18 +199,19 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	int32		i;
 	int32		ntrue;
 
-	/*
-	 * Don't recheck the heap tuple against the query if either
-	 * pg_bigm.enable_recheck is disabled or the search word is
-	 * the special one so that the index can return the exact
-	 * result.
-	 */
-	*recheck = bigm_enable_recheck &&
-		(*((bool *) extra_data) || (nkeys != 1));
-
 	switch (strategy)
 	{
 		case LikeStrategyNumber:
+			/*
+			 * Don't recheck the heap tuple against the query if either
+			 * pg_bigm.enable_recheck is disabled or the search word is
+			 * the special one so that the index can return the exact
+			 * result.
+			 */
+			Assert(extra_data != NULL);
+			*recheck = bigm_enable_recheck &&
+				(*((bool *) extra_data) || (nkeys != 1));
+
 			/* Check if all extracted bigrams are presented. */
 			res = true;
 			for (i = 0; i < nkeys; i++)
@@ -224,6 +225,7 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 			break;
 		case SimilarityStrategyNumber:
 			/* Count the matches */
+			*recheck = bigm_enable_recheck;
 			ntrue = 0;
 			for (i = 0; i < nkeys; i++)
 			{
