@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>pg_bigm: Release 1.1 (2013-10-xx)</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="navigation">
+    <ul>
+      <li><a href="index_en.html">Home</a></li>
+      <li><a href="http://en.sourceforge.jp/projects/pgbigm/releases/">Download</a></li>
+      <li><a href="pg_bigm_en.html">Document</a></li>
+      <li><a href="index_en.html#community">Community</a></li>
+      <li><a href="index_en.html#development">Development</a></li>
+      <li><a href="release-1-1-201310xx.html">日本語</a></li>
+    </ul>
+  </div>
+
+<h1 id="release_note">Release 1.1 (2013-10-xx)</h1>
+<p class="padding"><b>Release Date:</b> 2013-10-xx</p>
+
+<h2 id="migration">Migration to Version 1.1</h2>
+<p>The following command would upgrade the current pg_bigm 1.0 to 1.1.</p>
+<pre>
+ALTER EXTENSION pg_bigm UPDATE TO '1.1';
+</pre>
+<p>Kindly note that if an existing index uses "gin_trgm_ops" in the database then it will not possible to upgrade from 1.0 to 1.1 since the operator class "gin_trgm_ops" is dropped in version 1.1.</p>
+
+<h2 id="changes">Changes</h2>
+<ul>
+<li><p>Make pg_bigm support PostgreSQL 9.2 and 9.3 (Fujii Masao)</p></li>
+<li>
+ <p>Enable pg_bigm to coexist with pg_trgm (Beena Emerson, Fujii Masao)</p>
+ <p>Previously, the modules pg_trgm and pg_bigm could not co-exist
+ in the same database because both declared the same operator class gin_trgm_ops.
+ This operator class was dropped in pg_bigm 1.1</p>
+</li>
+<li><p>Support <a href="pg_bigm_en.html#similarity_search">text similarity search</a> (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
+<li><p>Add <a href="pg_bigm_en.html#bigm_similarity">bigm_similarity()</a> function (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
+<li><p>Remove USE_WIDE_UPPER_LOWER dependency (Beena Emerson)</p></li>
+<li><p>Add English version of documents (Beena Emerson, Fujii Masao)</p></li>
+<li><p>Add regression tests for all functions and parameters of pg_bigm for English and Japanese language (Fujii Masao, Beena Emerson)</p></li>
+<li>
+ <p>Add regression test to check co-existence of pg_bigm with pg_trgm (Beena Emerson, Fujii Masao)</p>
+ <p>A new command "make installcheck-trgm" will check if both modules can co-exist</p></li>
+<li><p>Fix bug in enable_recheck with gin_key_limit = 1 (Fujii Masao, Beena Emerson)</p></li>
+</ul>
+
+<hr>
+<div align="right">Copyright (c) 2012-2013, NTT DATA Corporation</div>
+
+</body>
+</html>
