@@ -5,6 +5,7 @@ SET escape_string_warning = off;
 SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
+SET pg_bigm.similarity_limit = 0.02;
 -- tests for likequery
 SELECT likequery('ポスグレの全文検索');
       likequery       
@@ -173,5 +174,103 @@ SELECT bigm_similarity('東京と京都', '東京都');
  bigm_similarity 
 -----------------
         0.666667
+(1 row)
+
+SET pg_bigm.enable_recheck = on;
+-- tests for text similarity search
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% '値';
+                QUERY PLAN                
+------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% '値'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% '値'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% '最大';
+                 QUERY PLAN                 
+--------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% '最大'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% '最大'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% 'ツール';
+                  QUERY PLAN                  
+----------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% 'ツール'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% 'ツール'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% '全文検索';
+                   QUERY PLAN                   
+------------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% '全文検索'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% '全文検索'::text)
+(4 rows)
+
+SELECT count(*), min(bigm_similarity(col1, '値')) FROM test_bigm WHERE col1 =% '値';
+ count |  min   
+-------+--------
+     0 | (null)
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, '値')) FROM test_bigm WHERE NOT col1 =% '値';
+ count | max 
+-------+-----
+   278 |   0
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, '最大')) FROM test_bigm WHERE col1 =% '最大';
+ count |    min    
+-------+-----------
+     2 | 0.0434783
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, '最大')) FROM test_bigm WHERE NOT col1 =% '最大';
+ count | max 
+-------+-----
+   276 |   0
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, 'ツール')) FROM test_bigm WHERE col1 =% 'ツール';
+ count |    min    
+-------+-----------
+     2 | 0.0681818
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'ツール')) FROM test_bigm WHERE NOT col1 =% 'ツール';
+ count | max 
+-------+-----
+   276 |   0
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, 'インデックスを作成')) FROM test_bigm WHERE col1 =% 'インデックスを作成';
+ count |  min  
+-------+-------
+     9 | 0.125
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'インデックスを作成')) FROM test_bigm WHERE NOT col1 =% 'インデックスを作成';
+ count | max 
+-------+-----
+   269 |   0
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, '3-gramの全文検索')) FROM test_bigm WHERE col1 =% '3-gramの全文検索';
+ count | min  
+-------+------
+    75 | 0.02
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, '3-gramの全文検索')) FROM test_bigm WHERE NOT col1 =% '3-gramの全文検索';
+ count |    max    
+-------+-----------
+   203 | 0.0196078
 (1 row)
 

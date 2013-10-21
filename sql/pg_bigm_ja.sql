@@ -7,6 +7,7 @@ SET escape_string_warning = off;
 SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
+SET pg_bigm.similarity_limit = 0.02;
 
 -- tests for likequery
 SELECT likequery('ポスグレの全文検索');
@@ -51,3 +52,21 @@ SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('東京都');
 SELECT bigm_similarity('東京都', ' 東京都 ');
 SELECT bigm_similarity('東京都', '東京と京都');
 SELECT bigm_similarity('東京と京都', '東京都');
+SET pg_bigm.enable_recheck = on;
+
+-- tests for text similarity search
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% '値';
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% '最大';
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% 'ツール';
+EXPLAIN (COSTS off) SELECT col1 FROM test_bigm WHERE col1 =% '全文検索';
+
+SELECT count(*), min(bigm_similarity(col1, '値')) FROM test_bigm WHERE col1 =% '値';
+SELECT count(*), max(bigm_similarity(col1, '値')) FROM test_bigm WHERE NOT col1 =% '値';
+SELECT count(*), min(bigm_similarity(col1, '最大')) FROM test_bigm WHERE col1 =% '最大';
+SELECT count(*), max(bigm_similarity(col1, '最大')) FROM test_bigm WHERE NOT col1 =% '最大';
+SELECT count(*), min(bigm_similarity(col1, 'ツール')) FROM test_bigm WHERE col1 =% 'ツール';
+SELECT count(*), max(bigm_similarity(col1, 'ツール')) FROM test_bigm WHERE NOT col1 =% 'ツール';
+SELECT count(*), min(bigm_similarity(col1, 'インデックスを作成')) FROM test_bigm WHERE col1 =% 'インデックスを作成';
+SELECT count(*), max(bigm_similarity(col1, 'インデックスを作成')) FROM test_bigm WHERE NOT col1 =% 'インデックスを作成';
+SELECT count(*), min(bigm_similarity(col1, '3-gramの全文検索')) FROM test_bigm WHERE col1 =% '3-gramの全文検索';
+SELECT count(*), max(bigm_similarity(col1, '3-gramの全文検索')) FROM test_bigm WHERE NOT col1 =% '3-gramの全文検索';

@@ -5,6 +5,7 @@ SET escape_string_warning = off;
 SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
+SET pg_bigm.similarity_limit = 0.02;
 -- tests for pg_bigm.last_update
 SHOW pg_bigm.last_update;
  pg_bigm.last_update 
@@ -516,6 +517,163 @@ SELECT bigm_similarity('---', '####---');
  bigm_similarity 
 -----------------
              0.4
+(1 row)
+
+-- tests for text similarity serach
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'a';
+                QUERY PLAN                
+------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% 'a'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% 'a'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'am';
+                QUERY PLAN                
+------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% 'am'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% 'am'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'XML';
+                QUERY PLAN                 
+-------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% 'XML'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% 'XML'::text)
+(4 rows)
+
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'bigm';
+                 QUERY PLAN                 
+--------------------------------------------
+ Bitmap Heap Scan on test_bigm
+   Recheck Cond: (col1 =% 'bigm'::text)
+   ->  Bitmap Index Scan on test_bigm_idx
+         Index Cond: (col1 =% 'bigm'::text)
+(4 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 =% NULL;
+ col1 
+------
+(0 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '';
+ col1 
+------
+(0 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '%';
+                          col1                          
+--------------------------------------------------------
+ Sets the similarity threshold used by the =% operator.
+(1 row)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '\\';
+                   col1                    
+-------------------------------------------
+ \dx displays list of installed extensions
+(1 row)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '_';
+ col1 
+------
+(0 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '\\dx';
+                             col1                             
+--------------------------------------------------------------
+ Shows the maximum number of index keys.
+ Recheck that heap tuples fetched from index match the query.
+ \dx displays list of installed extensions
+(3 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '200%';
+                             col1                              
+---------------------------------------------------------------
+ Sets the similarity threshold used by the =% operator.
+ pg_bigm has improved the full text search performance by 200%
+(2 rows)
+
+SELECT col1 FROM test_bigm WHERE col1 =% '  ';
+ col1 
+------
+(0 rows)
+
+SELECT count(*), min(bigm_similarity(col1, 'Y')) FROM test_bigm WHERE col1 =% 'Y';
+ count |    min    
+-------+-----------
+     1 | 0.0212766
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'Y')) FROM test_bigm WHERE NOT col1 =% 'Y';
+ count |    max    
+-------+-----------
+   248 | 0.0192308
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, 'pi')) FROM test_bigm WHERE col1 =% 'pi';
+ count | min  
+-------+------
+    52 | 0.02
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'pi')) FROM test_bigm WHERE NOT col1 =% 'pi';
+ count |    max    
+-------+-----------
+   197 | 0.0196078
+(1 row)
+
+SET pg_bigm.similarity_limit = 0.06;
+SELECT count(*), min(bigm_similarity(col1, 'GIN')) FROM test_bigm WHERE col1 =% 'GIN';
+ count |    min    
+-------+-----------
+     1 | 0.0769231
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'GIN')) FROM test_bigm WHERE NOT col1 =% 'GIN';
+ count |    max    
+-------+-----------
+   248 | 0.0571429
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, 'gin')) FROM test_bigm WHERE col1 =% 'gin';
+ count |    min    
+-------+-----------
+     5 | 0.0606061
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'gin')) FROM test_bigm WHERE NOT col1 =% 'gin';
+ count |    max    
+-------+-----------
+   244 | 0.0588235
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, 'Tool')) FROM test_bigm WHERE col1 =% 'Tool';
+ count |    min    
+-------+-----------
+     3 | 0.0645161
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'Tool')) FROM test_bigm WHERE NOT col1 =% 'Tool';
+ count |    max    
+-------+-----------
+   246 | 0.0555556
+(1 row)
+
+SELECT count(*), min(bigm_similarity(col1, 'performance')) FROM test_bigm WHERE col1 =% 'performance';
+ count | min  
+-------+------
+   153 | 0.06
+(1 row)
+
+SELECT count(*), max(bigm_similarity(col1, 'performance')) FROM test_bigm WHERE NOT col1 =% 'performance';
+ count |    max    
+-------+-----------
+    96 | 0.0588235
 (1 row)
 
 -- tests for drop of pg_bigm

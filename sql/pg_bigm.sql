@@ -7,6 +7,7 @@ SET escape_string_warning = off;
 SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
+SET pg_bigm.similarity_limit = 0.02;
 
 -- tests for pg_bigm.last_update
 SHOW pg_bigm.last_update;
@@ -130,6 +131,36 @@ SELECT bigm_similarity('wow', ' WOW ');
 SELECT bigm_similarity('wow', ' wow ');
 
 SELECT bigm_similarity('---', '####---');
+
+-- tests for text similarity serach
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'a';
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'am';
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'XML';
+EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 =% 'bigm';
+
+SELECT col1 FROM test_bigm WHERE col1 =% NULL;
+SELECT col1 FROM test_bigm WHERE col1 =% '';
+
+SELECT col1 FROM test_bigm WHERE col1 =% '%';
+SELECT col1 FROM test_bigm WHERE col1 =% '\\';
+SELECT col1 FROM test_bigm WHERE col1 =% '_';
+SELECT col1 FROM test_bigm WHERE col1 =% '\\dx';
+SELECT col1 FROM test_bigm WHERE col1 =% '200%';
+SELECT col1 FROM test_bigm WHERE col1 =% '  ';
+
+SELECT count(*), min(bigm_similarity(col1, 'Y')) FROM test_bigm WHERE col1 =% 'Y';
+SELECT count(*), max(bigm_similarity(col1, 'Y')) FROM test_bigm WHERE NOT col1 =% 'Y';
+SELECT count(*), min(bigm_similarity(col1, 'pi')) FROM test_bigm WHERE col1 =% 'pi';
+SELECT count(*), max(bigm_similarity(col1, 'pi')) FROM test_bigm WHERE NOT col1 =% 'pi';
+SET pg_bigm.similarity_limit = 0.06;
+SELECT count(*), min(bigm_similarity(col1, 'GIN')) FROM test_bigm WHERE col1 =% 'GIN';
+SELECT count(*), max(bigm_similarity(col1, 'GIN')) FROM test_bigm WHERE NOT col1 =% 'GIN';
+SELECT count(*), min(bigm_similarity(col1, 'gin')) FROM test_bigm WHERE col1 =% 'gin';
+SELECT count(*), max(bigm_similarity(col1, 'gin')) FROM test_bigm WHERE NOT col1 =% 'gin';
+SELECT count(*), min(bigm_similarity(col1, 'Tool')) FROM test_bigm WHERE col1 =% 'Tool';
+SELECT count(*), max(bigm_similarity(col1, 'Tool')) FROM test_bigm WHERE NOT col1 =% 'Tool';
+SELECT count(*), min(bigm_similarity(col1, 'performance')) FROM test_bigm WHERE col1 =% 'performance';
+SELECT count(*), max(bigm_similarity(col1, 'performance')) FROM test_bigm WHERE NOT col1 =% 'performance';
 
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;
