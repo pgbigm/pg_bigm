@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>pg_bigm: リリース 1.1 (2013-10-xx)</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">ホーム</a></li>
+      <li><a href="http://sourceforge.jp/projects/pgbigm/releases/">ダウンロード</a></li>
+      <li><a href="pg_bigm.html">ドキュメント</a></li>
+      <li><a href="index.html#community">コミュニティ</a></li>
+      <li><a href="index.html#development">開発</a></li>
+      <li><a href="release-1-1-201310xx_en.html">English</a></li>
+    </ul>
+  </div>
+
+<h1 id="release_note">リリース 1.1 (2013-10-xx)</h1>
+<p class="padding"><b>リリース日:</b> 2013-10-xx</p>
+
+<h2 id="migration">バージョン1.1への移行</h2>
+<p>pg_bigmをバージョン1.0から1.1にアップグレードするには、以下のコマンドを実行してください。</p>
+<pre>
+ALTER EXTENSION pg_bigm UPDATE TO '1.1';
+</pre>
+<p>gin_trgm_opsの演算子クラスを使って作成したインデックスがある場合、pg_bigmwをバージョン1.0から1.1にアップグレードできません。これは、演算子クラスgin_trgm_opsがバージョン1.1でpg_bigmから削除されたためです。</p>
+
+<h2 id="changes">変更点</h2>
+<ul>
+<li><p>pg_bigmをPostgreSQL9.2と9.3に対応させました。 (Fujii Masao)</p></li>
+<li>
+ <p>pg_bigmをpg_trgmと共存できるようにしました。 (Beena Emerson, Fujii Masao)</p>
+ <p>以前のバージョンでは、pg_trgmとpg_bigmを同じデータベース内に登録できませんでした。これは、両方のモジュールが同じ演算子クラスgin_trgm_opsを定義していたからです。この演算子クラスは、バージョン1.1でpg_bigmから削除されました。</p>
+</li>
+<li><p><a href="pg_bigm.html#similarity_search">類似度検索</a>をサポートしました。 (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
+<li><p><a href="pg_bigm.html#bigm_similarity">bigm_similarity()</a>関数を追加しました。 (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
+<li><p>USE_WIDE_UPPER_LOWERフラグへの依存を削除しました。 (Beena Emerson)</p></li>
+<li><p>英語ドキュメントを追加しました。 (Beena Emerson, Fujii Masao)</p></li>
+<li><p>すべての関数とパラメータについて、英語と日本語のリグレッションテストを追加しました。 (Fujii Masao, Beena Emerson)</p></li>
+<li>
+ <p>pg_trgmとpg_bigmが共存できることを確認するリグレッションテストを追加しました。 (Beena Emerson, Fujii Masao)</p>
+ <p>新しいコマンド"make installcheck-trgm"はpg_trgmとpg_bigmが共存できるかどうか確認します。</p></li>
+<li><p>gin_key_limit = 1のときのenable_recheckの挙動に関するバグを修正しました。 (Fujii Masao, Beena Emerson)</p></li>
+</ul>
+
+<hr>
+<div align="right">Copyright (c) 2012-2013, NTT DATA Corporation</div>
+
+</body>
+</html>
