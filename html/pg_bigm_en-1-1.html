@@ -306,6 +306,28 @@ $ su
 (1 row)
 </pre>
 
+<h3 id="bigm_similarity">bigm_similarity</h3>
+<p>bigm_similarity returns a number that indicates how similar the two strings (argument #1 and #2) are.</p>
+
+<ul>
+<li>Argument #1 (text) - character string</li>
+<li>Argument #2 (text) - character string</li>
+<li>Return value (real) - the similarity of two arguments</li>
+</ul>
+
+<p>
+This function measures the similarity of two strings by counting the number of 2-grams they share. The range of the similarity is zero (indicating that the two strings are completely dissimilar) to one (indicating that the two strings are identical).
+</p>
+
+<p>Example</p>
+<pre>
+=# SELECT bigm_similarity('full text search', 'text similarity search');
+ bigm_similarity 
+-----------------
+        0.571429
+(1 row)
+</pre>
+
 <h3 id="pg_gin_pending_stats">pg_gin_pending_stats</h3>
 <p>pg_gin_pending_stats is a function that returns the number of pages and tuples in the pending list of GIN index.</p>
 

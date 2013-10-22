@@ -35,8 +35,8 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.1';
  <p>pg_bigmをpg_trgmと共存できるようにしました。 (Beena Emerson, Fujii Masao)</p>
  <p>以前のバージョンでは、pg_trgmとpg_bigmを同じデータベース内に登録できませんでした。これは、両方のモジュールが同じ演算子クラスgin_trgm_opsを定義していたからです。この演算子クラスは、バージョン1.1でpg_bigmから削除されました。</p>
 </li>
-<li><p><a href="pg_bigm.html#similarity_search">類似度検索</a>をサポートしました。 (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
-<li><p><a href="pg_bigm.html#bigm_similarity">bigm_similarity()</a>関数を追加しました。 (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
+<li><p><a href="pg_bigm-1-1.html#similarity_search">類似度検索</a>をサポートしました。 (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
+<li><p><a href="pg_bigm-1-1.html#bigm_similarity">bigm_similarity()</a>関数を追加しました。 (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
 <li><p>USE_WIDE_UPPER_LOWERフラグへの依存を削除しました。 (Beena Emerson)</p></li>
 <li><p>英語ドキュメントを追加しました。 (Beena Emerson, Fujii Masao)</p></li>
 <li><p>すべての関数とパラメータについて、英語と日本語のリグレッションテストを追加しました。 (Fujii Masao, Beena Emerson)</p></li>

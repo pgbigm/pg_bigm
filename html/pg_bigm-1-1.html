@@ -308,6 +308,30 @@ $ su
 (1 row)
 </pre>
 
+<h3 id="bigm_similarity">bigm_similarity</h3>
+<p>bigm_similarityは、文字列(引数1)と文字列(引数2)の類似度(文字列がどの程度似ているかを示す数値)を返却する関数です。</p>
+
+<ul>
+<li>引数1(text) - 文字列</li>
+<li>引数2(text) - 文字列</li>
+<li>戻り値(real) - 引数1と引数2の文字列の類似度</li>
+</ul>
+
+<p>
+この関数は、各文字列の2-gram文字列から一致するものの個数を数えることで類似度を計算します。
+類似度は0(2つの文字列にまったく類似性がないことを示す)から1(2つの文字列が同一であることを示す)までの範囲です。
+</p>
+
+<pre>
+実行例
+
+=# SELECT bigm_similarity('PostgreSQLの全文検索', 'postgresの検索');
+ bigm_similarity 
+-----------------
+          0.4375
+(1 row)
+</pre>
+
 <h3 id="pg_gin_pending_stats">pg_gin_pending_stats</h3>
 <p>pg_gin_pending_statsは、GINインデックス(引数1)の待機リストに含まれているデータのページ数とタプル数を返却する関数です。</p>
 
