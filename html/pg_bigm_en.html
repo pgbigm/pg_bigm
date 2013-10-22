@@ -30,6 +30,7 @@
 <li><a href="#fulltext_search">Full text search</a></li>
 <li><a href="#functions">Functions</a></li>
 <li><a href="#parametares">Parameters</a></li>
+<li><a href="#release_notes">Release Notes</a></li>
 </ol>
 </div>
 
@@ -401,6 +402,11 @@ Example
 <p>PostgreSQL and pg_bigm basically use all the 2-grams of search keyword to scan GIN index. However, in current implementation of GIN index, the more 2-grams are used, the more performance overhead of GIN index scan is increased. In the system that large search keyword is often used, full text search is likely to be slow. This performance issue can be solved by using this parameter and limiting the maximum number of 2-grams to be used.</p>
 
 <p>On the other hand, the less 2-grams are used, the more wrong results are included in the result candidates retrieved from full text search index. Please note that this can increase the workload of Recheck and decrease the performance.</p>
+
+<h2 id="release_notes">Release Notes</h2>
+<ul>
+<li><a href="release-1-0-201310xx_en.html">Version 1.0, released on 2013-10-xx</a></li>
+</ul>
 
 <hr>
 <div align="right">Copyright (c) 2012-2013, NTT DATA Corporation</div>
