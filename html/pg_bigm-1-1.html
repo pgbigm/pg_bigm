@@ -78,7 +78,7 @@
   <td>高速<br>(検索時に全文検索インデックスを使える)</td></tr>
 <tr><td>類似文字列の検索</td>
   <td nowrap>対応済</td>
-  <td>未対応</td></tr>
+  <td>対応済(バージョン1.1以降)</td></tr>
 <tr><td>データベースのエンコーディングとロケール</td>
   <td nowrap>制限なし</td>
   <td>使用できるデータベースエンコーディングはUTF-8のみ。ロケールはCのみ</td></tr>
@@ -250,6 +250,20 @@ $ su
 <ul>
 <li>検索文字列は<a href="#likequery">likequery</a>に記載されているとおり、全文検索用に変換されなければなりません。</li>
 </ul>
+
+<h3 id="similarity_search">類似度検索の実行</h3>
+<p>pg_bigmでは、=% 演算子を使って類似度検索を行います。</p>
+<p>以下の実行例では、文字列「bigm」に似た文字列のtool列を検索しています。この類似度検索も、全文検索と同様にインデックスにより高速に実行されます。文字列どうしが似ているかどうかは、それら文字列の類似度が<a href="#similarity_limit">pg_bigm.similarity_limit</a>の設定値以上かどうかで判断されます。この実行例では、文字列「bigm」との類似度が0.2以上だった「pg_bigm」と「pg_trgm」のtool列だけが検索結果となります。</p>
+<pre>
+=# SET pg_bigm.similarity_limit TO 0.2;
+
+=# SELECT tool FROM pg_tools WHERE tool =% 'bigm';
+  tool   
+---------
+ pg_bigm
+ pg_trgm
+(2 rows)
+</pre>
 
 <h2 id="functions">提供関数</h2>
 <h3 id="likequery">likequery</h3>
@@ -426,6 +440,9 @@ $ su
 <p>pg_bigmの全文検索では、基本的に、検索文字列のすべての2-gram文字列を使ってGINインデックスを検索します。ただし、現在のGINインデックスの実装では、検索に使う2-gram文字列の個数が多いほどインデックス検索の負荷は高くなります。このため、検索文字列の文字数が多く、2-gram文字列の個数が多くなりやすいシステムでは、検索性能は劣化しやすいです。 pg_bigm.gin_key_limitによりGINインデックスの検索に使う2-gram文字列の最大数を制限することで、この性能問題を解決できます。</p>
 
 <p>ただし、インデックス検索に使う2-gram文字列の個数が減ると、インデックスから取得した検索結果候補にはより多くの誤った結果が含まれることになります。このため、Recheckの負荷が高まり、逆に、より性能劣化する可能性もあるため注意が必要です。</p>
+
+<h3 id="similarity_limit">pg_bigm.similarity_limit</h3>
+<p>pg_bigm.similarity_limitは、類似度検索の閾値を指定するパラメータです。類似度検索では、検索条件の文字列との類似度がこの閾値以上の行が検索結果となります。設定値は0以上1以下の小数点数で、デフォルト値は0.3です。このパラメータは、postgresql.confとSET文(スーパーユーザに限らずどのユーザからでも)で設定値を変更できます。</p>
 
 <h2 id="release_notes">リリースノート</h2>
 <ul>

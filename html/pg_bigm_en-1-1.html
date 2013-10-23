@@ -78,7 +78,7 @@
   <td>Fast</td></tr>
 <tr><td>Similarity search</td>
   <td nowrap>Supported</td>
-  <td>Not supported</td></tr>
+  <td>Supported (version 1.1 or later)</td></tr>
 <tr><td>Available database encoding and locale</td>
   <td nowrap>Same as PostgreSQL</td>
   <td>Only encoding UTF-8 and locale C</td></tr>
@@ -249,6 +249,20 @@ $ su
 <ul>
 <li>The search keyword must be specified as the pattern string that LIKE operator can handle properly, as discussed in <a href="#likequery">likequery</a>.</li>
 </ul>
+
+<h3 id="similarity_search">Execute similarity search</h3>
+<p>You can execute similarity search by using =% operator.</p>
+<p>The following query returns all values in the tool column that are sufficiently similar to the word 'bigm'. This similarity search is basically fast because it can use the full text search index. It measures whether two strings are sufficiently similar to by seeing whether their similarity is higher than or equal to the value of <a href="#similarity_limit">pg_bigm.similarity_limit</a>. This means, in this query, that the values whose similarity with the word 'bigm' is higher than or equal to 0.2 are only 'pg_bigm' and 'pg_trgm' in the tool column.</p>
+<pre>
+=# SET pg_bigm.similarity_limit TO 0.2;
+
+=# SELECT tool FROM pg_tools WHERE tool =% 'bigm';
+  tool   
+---------
+ pg_bigm
+ pg_trgm
+(2 rows)
+</pre>
 
 <h2 id="functions">Functions</h2>
 <h3 id="likequery">likequery</h3>
@@ -423,6 +437,9 @@ Example
 <p>PostgreSQL and pg_bigm basically use all the 2-grams of search keyword to scan GIN index. However, in current implementation of GIN index, the more 2-grams are used, the more performance overhead of GIN index scan is increased. In the system that large search keyword is often used, full text search is likely to be slow. This performance issue can be solved by using this parameter and limiting the maximum number of 2-grams to be used.</p>
 
 <p>On the other hand, the less 2-grams are used, the more wrong results are included in the result candidates retrieved from full text search index. Please note that this can increase the workload of Recheck and decrease the performance.</p>
+
+<h3 id="similarity_limit">pg_bigm.similarity_limit</h3>
+<p>pg_bigm.similarity_limit is a parameter that specifies the threshold used by the similarity search. The similarity search returns all the rows whose similarity with the search keyword is higher than or equal to this threshold. Value must be between 0 and 1 (default is 0.3). Not only superuser but also any user can change this parameter value in postgresql.conf or by using SET command.</p>
 
 <h2 id="release_notes">Release Notes</h2>
 <ul>
