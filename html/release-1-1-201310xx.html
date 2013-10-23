@@ -44,6 +44,7 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.1';
  <p>pg_trgmとpg_bigmが共存できることを確認するリグレッションテストを追加しました。 (Beena Emerson, Fujii Masao)</p>
  <p>新しいコマンド"make installcheck-trgm"はpg_trgmとpg_bigmが共存できるかどうか確認します。</p></li>
 <li><p>gin_key_limit = 1のときのenable_recheckの挙動に関するバグを修正しました。 (Fujii Masao, Beena Emerson)</p></li>
+<li><p>使用できるエンコーディングの制約を取り除きました。 (Beena Emerson)</p></li>
 </ul>
 
 <hr>
