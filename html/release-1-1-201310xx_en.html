@@ -39,7 +39,10 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.1';
 </li>
 <li><p>Support <a href="pg_bigm_en-1-1.html#similarity_search">text similarity search</a> (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
 <li><p>Add <a href="pg_bigm_en-1-1.html#bigm_similarity">bigm_similarity()</a> function (Amit Langote, Fujii Masao, Beena Emerson)</p></li>
-<li><p>Remove USE_WIDE_UPPER_LOWER dependency (Beena Emerson)</p></li>
+<li>
+<p>Improve handling of multibyte characters (Beena Emerson)</p>
+<p>On a platform that does not have the wcstombs() or towlower() library functions, this could result in an incompatible change in the contents of pg_bigm indexes for non-ASCII data. In such cases, REINDEX those indexes to ensure correct search results.</p>
+</li>
 <li><p>Add English version of documents (Beena Emerson, Fujii Masao)</p></li>
 <li><p>Add regression tests for all functions and parameters of pg_bigm for English and Japanese language (Fujii Masao, Beena Emerson)</p></li>
 <li>
