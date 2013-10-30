@@ -79,9 +79,6 @@
 <tr><td>類似文字列の検索</td>
   <td nowrap>対応済</td>
   <td>対応済(バージョン1.1以降)</td></tr>
-<tr><td>使用できるデータベースのロケール</td>
-  <td nowrap>制限なし</td>
-  <td>ロケールCのみ</td></tr>
 </tbody>
 </table>
 
@@ -168,7 +165,7 @@ $ psql -d &lt;データベース名&gt;
 
 <ul>
 <li>$PGDATAは、データベースクラスタのパスを決めて、そのパスで置き換えてください。</li>
-<li>pg_bigmの登録先のデータベースでは、エンコーディングはUTF-8、ロケールはCでなければなりません。</li>
+<li>pg_bigmは、PostgreSQLで利用できるすべてのエンコーディングとロケールをサポートしています。</li>
 <li>postgresql.confで、<a href="http://www.postgresql.jp/document/current/html/runtime-config-resource.html#GUC-SHARED-PRELOAD-LIBRARIES">shared_preload_libraries</a>と<a href="http://www.postgresql.jp/document/9.1/html/runtime-config-custom.html#GUC-CUSTOM-VARIABLE-CLASSES">custom_variable_classes</a>にpg_bigmを設定するのは必須です。 
   <ul>
     <li>PostgreSQL9.2以降ではcustom_variable_classesは存在しません。設定が必要なのはshared_preload_librariesだけです。</li>

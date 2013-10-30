@@ -79,9 +79,6 @@
 <tr><td>Similarity search</td>
   <td nowrap>Supported</td>
   <td>Supported (version 1.1 or later)</td></tr>
-<tr><td>Available database locale</td>
-  <td nowrap>Same as PostgreSQL</td>
-  <td>Only locale C</td></tr>
 </tbody>
 </table>
 
@@ -168,7 +165,7 @@ $ psql -d &lt;database name&gt;
 
 <ul>
 <li>Replace $PGDATA with the path to database cluster.</li>
-<li>In the database that pg_bigm is loaded into, encoding must be UTF-8 and locale must be C.</li>
+<li>pg_bigm supports all PostgreSQL encoding and locale.</li>
 <li>In postgresql.conf, pg_bigm must be added into <a href="http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-PRELOAD-LIBRARIES">shared_preload_libraries</a> and <a href="http://www.postgresql.org/docs/current/static/runtime-config-custom.html#GUC-CUSTOM-VARIABLE-CLASSES">custom_variable_classes</a>.
   <ul>
     <li>In PostgreSQL 9.2 or later, you need to set only shared_preload_libraries because custom_variable_classes doesn't exist.</li>
