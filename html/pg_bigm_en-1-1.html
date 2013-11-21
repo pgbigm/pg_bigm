@@ -260,6 +260,9 @@ $ su
  pg_trgm
 (2 rows)
 </pre>
+<p>
+Please see <a href="#bigm_similarity">bigm_similarity</a> function for details of how to calculate the similarity.
+</p>
 
 <h2 id="functions">Functions</h2>
 <h3 id="likequery">likequery</h3>
@@ -279,7 +282,6 @@ $ su
 
 <p>In pg_bigm, full text search is performed by using LIKE pattern matching. Therefore, the search keyword needs to be converted into the pattern string that LIKE operator can handle properly. Usually a client application should be responsible for this conversion. But, you can save the effort of implementing such a conversion logic in the application by using likequery function.</p>
 
-<p>Example</p>
 <pre>
 =# SELECT likequery('pg_bigm has improved the full text search performance by 200%');
                              likequery                             
@@ -308,7 +310,6 @@ $ su
 
 <p>A 2-gram that show_bigm returns is a group of two consecutive characters taken from a string that blank character has been appended into the beginning and the end. For example, the 2-grams of the string "ABC" are "(blank)A" "AB" "BC" "C(blank)".</p>
 
-<p>Example</p>
 <pre>
 =# SELECT show_bigm('full text search');
                             show_bigm                             
@@ -330,12 +331,57 @@ $ su
 This function measures the similarity of two strings by counting the number of 2-grams they share. The range of the similarity is zero (indicating that the two strings are completely dissimilar) to one (indicating that the two strings are identical).
 </p>
 
-<p>Example</p>
 <pre>
 =# SELECT bigm_similarity('full text search', 'text similarity search');
  bigm_similarity 
 -----------------
         0.571429
+(1 row)
+</pre>
+
+<p>
+Note that each argument is considered to have one space prefixed and suffixed when determining the set of 2-grams contained in the string for calculation of similarity.
+For example, though the string "ABC" contains the string "B", their similarity is 0 because there are no 2-grams they share as follows.
+On the other hand, the string "ABC" and "A" share one 2-gram "(blank)A" as follows, so their similarity is higher than 0.
+This is basically the same behavior as pg_trgm's similarity function.
+
+<ul>
+<li>The 2-grams of the string "ABC" are "(blank)A" "AB" "BC" "C(blank)".</li>
+<li>The 2-grams of the string "A" are "(blank)A" "A(blank)".</li>
+<li>The 2-grams of the string "B" are "(blank)B" "B(blank)".</li>
+</ul>
+</p>
+
+<pre>
+=# SELECT bigm_similarity('ABC', 'A');
+ bigm_similarity 
+-----------------
+            0.25
+(1 row)
+
+=# SELECT bigm_similarity('ABC', 'B');
+ bigm_similarity 
+-----------------
+               0
+(1 row)
+</pre>
+
+<p>
+Note that bigm_similarity is NOT case-sensitive, but pg_trgm's similarity function is case-sensitive.
+For example, the similarity of the strings "ABC" and "abc" is 1 in pg_trgm's similarity function but 0 in bigm_similarity.
+</p>
+
+<pre>
+=# SELECT similarity('ABC', 'abc');
+ similarity 
+------------
+          1
+(1 row)
+
+=# SELECT bigm_similarity('ABC', 'abc');
+ bigm_similarity 
+-----------------
+               0
 (1 row)
 </pre>
 
@@ -350,7 +396,6 @@ This function measures the similarity of two strings by counting the number of 2
 
 <p>Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementation.html#GIN-FAST-UPDATE">GIN Fast Update Technique</a> for details of the pending list.</p>
 
-<p>Example</p>
 <pre>
 =# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');
  pages | tuples
@@ -363,7 +408,6 @@ This function measures the similarity of two strings by counting the number of 2
 <h3 id="last_update">pg_bigm.last_update</h3>
 <p>pg_bigm.last_update is a parameter that reports the last updated date of the pg_bigm module. This parameter is read-only. You cannot change the value of this parameter at all.</p>
 
-Example
 <pre>
 =# SHOW pg_bigm.last_update;
  pg_bigm.last_update

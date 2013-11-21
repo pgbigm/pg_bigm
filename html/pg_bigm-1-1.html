@@ -261,6 +261,9 @@ $ su
  pg_trgm
 (2 rows)
 </pre>
+<p>
+類似度の計算方法や注意点については、類似度を計算する関数<a href="#bigm_similarity">bigm_similarity</a>を参照してください。
+</p>
 
 <h2 id="functions">提供関数</h2>
 <h3 id="likequery">likequery</h3>
@@ -280,7 +283,6 @@ $ su
 
 <p>pg_bigmでは、LIKE演算子の中間一致検索により全文検索を行います。このため、上記のとおり検索文字列を変換して、LIKE演算子に渡す必要があります。この変換は、通常、クライアントアプリケーション側で実装しなければなりません。しかし、likequeryを利用することで、その実装の手間を省くことができます。</p>
 
-<p>実行例</p>
 <pre>
 =# SELECT likequery('pg_bigmは検索性能を200%向上させました。');
                   likequery
@@ -310,8 +312,6 @@ $ su
 <p>2-gram文字列とは、文字列の先頭と末尾に空白文字を追加した上で、文字列を1文字ずつずらしながら、2文字単位で抽出した文字列のことです。例えば、文字列「ABC」の2-gram文字列は、「(空白)A」「AB」「BC」「C(空白)」の4つになります。</p>
 
 <pre>
-実行例
-
 =#  SELECT show_bigm('PostgreSQLの全文検索');
                             show_bigm
 -----------------------------------------------------------------
@@ -334,12 +334,57 @@ $ su
 </p>
 
 <pre>
-実行例
-
 =# SELECT bigm_similarity('PostgreSQLの全文検索', 'postgresの検索');
  bigm_similarity 
 -----------------
           0.4375
+(1 row)
+</pre>
+
+<p>
+類似度計算に使われる2-gram文字列は、文字列の先頭と末尾に空白文字が追加された上で作成されることに注意してください。
+このため、例えば、文字列「B」は文字列「ABC」に含まれますが、下記のとおり一致する2-gram文字列がないため類似度は0になります。
+一方、文字列「A」は、下記のとおり一致する2-gram文字列があるため類似度は0より大きくなります。
+これは、pg_trgmのsimilarity関数と基本的に同じ挙動です。
+
+<ul>
+<li>文字列「ABC」の2-gram文字列は「(空白)A」「AB」「BC」「C(空白)」</li>
+<li>文字列「A」の2-gram文字列は「(空白)A」「A(空白)」</li>
+<li>文字列「B」の2-gram文字列は「(空白)B」「B(空白)」</li>
+</ul>
+</p>
+
+<pre>
+=# SELECT bigm_similarity('ABC', 'A');
+ bigm_similarity 
+-----------------
+            0.25
+(1 row)
+
+=# SELECT bigm_similarity('ABC', 'B');
+ bigm_similarity 
+-----------------
+               0
+(1 row)
+</pre>
+
+<p>
+bigm_similarityは、英字の大文字と小文字を区別することに注意してください。
+一方、pg_trgmのsimilarity関数は、英字の大文字と小文字を区別しません。
+例えば、「ABC」と「abc」の類似度は、pg_trgmのsimilarity関数では1ですが、bigm_similarityでは0です。
+</p>
+
+<pre>
+=# SELECT similarity('ABC', 'abc');
+ similarity 
+------------
+          1
+(1 row)
+
+=# SELECT bigm_similarity('ABC', 'abc');
+ bigm_similarity 
+-----------------
+               0
 (1 row)
 </pre>
 
@@ -354,7 +399,6 @@ $ su
 
 <p>GINインデックスの待機リストの詳細は、<a href="http://www.postgresql.jp/document/current/html/gin-implementation.html#GIN-FAST-UPDATE">GIN高速更新手法</a>を参照してください。</p>
 
-<p>実行例</p>
 <pre>
 =# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');
  pages | tuples
@@ -367,8 +411,6 @@ $ su
 <h3 id="last_update">pg_bigm.last_update</h3>
 <p>pg_bigm.last_updateは、pg_bigmモジュールの最終更新日付を報告するパラメータです。このパラメータは読み取り専用です。 postgresql.confやSET文で設定値を変更することはできません。</p>
 <pre>
-実行例
-
 =# SHOW pg_bigm.last_update;
  pg_bigm.last_update
 ---------------------
