@@ -47,11 +47,14 @@
 <tbody>
 <tr><td>pg_bigm</td>
   <td nowrap>PostgreSQL上で全文検索機能を提供するモジュール</td>
-  <td>pg_bigm-YYYYMMDD.tar.gz</td></tr>
+  <td>pg_bigm-x.y-YYYYMMDD.tar.gz</td></tr>
 </tbody>
 </table>
 
-<p>ソースアーカイブファイル名のYYYYMMDDの部分は、実際にはそのファイルがリリースされた年月日になります。例えば、2013年4月5日リリースのファイルでは、YYYYMMDDは20130405です。</p>
+<p>
+ソースアーカイブファイル名のx.yとYYYYMMDDの部分は、それぞれ、そのファイルのバージョン番号とリリース年月日です。
+例えば、2013年11月22日リリースのバージョン1.1のファイルでは、x.yは1.1、YYYYMMDDは20130405です。
+</p>
 <p>pg_bigmのライセンスは<a href="http://opensource.org/licenses/postgresql">The PostgreSQL License</a>(BSDに似たライセンス)です。</p>
 
 <h2 id="pg_trgm">pg_trgmとの違い</h2>
@@ -131,8 +134,8 @@ $ su
 <h3 id="bigm_install">pg_bigmのインストール</h3>
 <p><a href="http://sourceforge.jp/projects/pgbigm/releases/">ここ</a>からpg_bigmのソースアーカイブファイルをダウンロードし、ビルドとインストールを行います。</p>
 <pre>
-$ tar zxf pg_bigm-YYYYMMDD.tar.gz
-$ cd pg_bigm-YYYYMMDD
+$ tar zxf pg_bigm-x.y-YYYYMMDD.tar.gz
+$ cd pg_bigm-x.y-YYYYMMDD
 $ make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config
 $ su
 # make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config install
