@@ -47,11 +47,14 @@
 <tbody>
 <tr><td>pg_bigm</td>
   <td nowrap>Module that provides full text search capability in PostgreSQL</td>
-  <td>pg_bigm-YYYYMMDD.tar.gz</td></tr>
+  <td>pg_bigm-x.y-YYYYMMDD.tar.gz</td></tr>
 </tbody>
 </table>
 
-<p>YYYYMMDD part of the source archive file name is replaced with its release date. For example, YYYYMMDD is 20130405 if the file was released on April 5, 2013.</p>
+<p>
+The x.y and YYYYMMDD parts of the source archive file name are replaced with its release version number and date, respectively.
+For example, x.y is 1.1 and YYYYMMDD is 20130405 if the file of the version 1.1 was released on November 22, 2013.
+</p>
 <p>The license of pg_bigm is <a href="http://opensource.org/licenses/postgresql">The PostgreSQL License</a> (same as BSD license).</p>
 
 <h2 id="pg_trgm">Comparison with pg_trgm</h2>
@@ -131,8 +134,8 @@ $ su
 <h3 id="bigm_install">Install pg_bigm</h3>
 <p>Download the source archive file of pg_bigm from <a href="http://en.sourceforge.jp/projects/pgbigm/releases/">here</a>, and then build and install it.</p>
 <pre>
-$ tar zxf pg_bigm-YYYYMMDD.tar.gz
-$ cd pg_bigm-YYYYMMDD
+$ tar zxf pg_bigm-x.y-YYYYMMDD.tar.gz
+$ cd pg_bigm-x.y-YYYYMMDD
 $ make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config
 $ su
 # make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config install
