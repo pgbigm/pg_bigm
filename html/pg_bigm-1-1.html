@@ -397,7 +397,10 @@ bigm_similarityは、英字の大文字と小文字を区別することに注�
 <li>戻り値2(bigint) - GINインデックス(引数1)の待機リストに含まれているデータのタプル数</li>
 </ul>
 
-<p>GINインデックスの待機リストの詳細は、<a href="http://www.postgresql.jp/document/current/html/gin-implementation.html#GIN-FAST-UPDATE">GIN高速更新手法</a>を参照してください。</p>
+<p>
+FASTUPDATEオプション無効で作成されたGINインデックスが引数1の場合、そのGINインデックスは待機リストを持たないため、戻り値1と2は0となることに注意してください。
+GINインデックスの待機リストとFASTUPDATEオプションの詳細は、<a href="http://www.postgresql.jp/document/current/html/gin-implementation.html#GIN-FAST-UPDATE">GIN高速更新手法</a>を参照してください。
+</p>
 
 <pre>
 =# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');

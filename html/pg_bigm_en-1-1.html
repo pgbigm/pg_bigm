@@ -394,7 +394,10 @@ For example, the similarity of the strings "ABC" and "abc" is 1 in pg_trgm's sim
 <li>Return value #2 (bigint) - Number of tuples in the pending list</li>
 </ul>
 
-<p>Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementation.html#GIN-FAST-UPDATE">GIN Fast Update Technique</a> for details of the pending list.</p>
+<p>
+Note that the return value #1 and #2 are 0 if the argument #1 is the GIN index built with FASTUPDATE option disabled because it doesn't have a pending list.
+Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementation.html#GIN-FAST-UPDATE">GIN Fast Update Technique</a> for details of the pending list and FASTUPDATE option.
+</p>
 
 <pre>
 =# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');
