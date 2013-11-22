@@ -270,7 +270,6 @@ $ su
 
 <p>pg_bigmでは、LIKE演算子の中間一致検索により全文検索を行います。このため、上記のとおり検索文字列を変換して、LIKE演算子に渡す必要があります。この変換は、通常、クライアントアプリケーション側で実装しなければなりません。しかし、likequeryを利用することで、その実装の手間を省くことができます。</p>
 
-<p>実行例</p>
 <pre>
 =# SELECT likequery('pg_bigmは検索性能を200%向上させました。');
                   likequery
@@ -300,8 +299,6 @@ $ su
 <p>2-gram文字列とは、文字列の先頭と末尾に空白文字を追加した上で、文字列を1文字ずつずらしながら、2文字単位で抽出した文字列のことです。例えば、文字列「ABC」の2-gram文字列は、「(空白)A」「AB」「BC」「C(空白)」の4つになります。</p>
 
 <pre>
-実行例
-
 =#  SELECT show_bigm('PostgreSQLの全文検索');
                             show_bigm
 -----------------------------------------------------------------
@@ -323,7 +320,6 @@ FASTUPDATEオプション無効で作成されたGINインデックスが引数1
 GINインデックスの待機リストとFASTUPDATEオプションの詳細は、<a href="http://www.postgresql.jp/document/current/html/gin-implementation.html#GIN-FAST-UPDATE">GIN高速更新手法</a>を参照してください。
 </p>
 
-<p>実行例</p>
 <pre>
 =# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');
  pages | tuples
@@ -336,8 +332,6 @@ GINインデックスの待機リストとFASTUPDATEオプションの詳細は�
 <h3 id="last_update">pg_bigm.last_update</h3>
 <p>pg_bigm.last_updateは、pg_bigmモジュールの最終更新日付を報告するパラメータです。このパラメータは読み取り専用です。 postgresql.confやSET文で設定値を変更することはできません。</p>
 <pre>
-実行例
-
 =# SHOW pg_bigm.last_update;
  pg_bigm.last_update
 ---------------------

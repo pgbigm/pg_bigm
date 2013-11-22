@@ -269,7 +269,6 @@ $ su
 
 <p>In pg_bigm, full text search is performed by using LIKE pattern matching. Therefore, the search keyword needs to be converted into the pattern string that LIKE operator can handle properly. Usually a client application should be responsible for this conversion. But, you can save the effort of implementing such a conversion logic in the application by using likequery function.</p>
 
-<p>Example</p>
 <pre>
 =# SELECT likequery('pg_bigm has improved the full text search performance by 200%');
                              likequery                             
@@ -298,7 +297,6 @@ $ su
 
 <p>A 2-gram that show_bigm returns is a group of two consecutive characters taken from a string that blank character has been appended into the beginning and the end. For example, the 2-grams of the string "ABC" are "(blank)A" "AB" "BC" "C(blank)".</p>
 
-<p>Example</p>
 <pre>
 =# SELECT show_bigm('full text search');
                             show_bigm                             
@@ -321,7 +319,6 @@ Note that the return value #1 and #2 are 0 if the argument #1 is the GIN index b
 Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementation.html#GIN-FAST-UPDATE">GIN Fast Update Technique</a> for details of the pending list and FASTUPDATE option.
 </p>
 
-<p>Example</p>
 <pre>
 =# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');
  pages | tuples
@@ -334,7 +331,6 @@ Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementa
 <h3 id="last_update">pg_bigm.last_update</h3>
 <p>pg_bigm.last_update is a parameter that reports the last updated date of the pg_bigm module. This parameter is read-only. You cannot change the value of this parameter at all.</p>
 
-Example
 <pre>
 =# SHOW pg_bigm.last_update;
  pg_bigm.last_update
