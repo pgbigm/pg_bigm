@@ -8,7 +8,11 @@ body {
 		'ＭＳ Ｐゴシック',
 		Lucida Grande, Verdana, Arial, Helvetica,
 		sans-serif;
-	color: #202020;
+  line-height: 1.428571429;
+  color: #333333;
+  background-color: #ffffff;
+  width: 70%;
+  margin: 0 auto;
 }
 
 /* give the rule a bit of extra space (above and below), since its being used to divide
@@ -16,19 +20,19 @@ body {
 HR { margin: 5px 0px 5px 0px }
 
 
-h2, h3, h4, h5, h6 {
+h2 {
     color: Black;
     background: none;
     padding-top: 0.5em;
     padding-bottom: 0.17em;
     border-bottom: 1px solid #aaaaaa;
 }
-H1 { font-size: x-large; }
-H2 { font-size: large; }
-H3 { padding-left: 1em; font-size: medium; }
-H4 { padding-left: 2em; font-size: small; }
-H5 { padding-left: 3em; font-size: x-small; }
-H6 { padding-left: 4em; font-size: xx-small; }
+H1 { font-size: xx-large; }
+H2 { font-size: x-large; }
+H3 { font-size: large; }
+H4 { padding-left: 1em; font-size: medium; }
+H5 { padding-left: 2em; font-size: small; }
+H6 { padding-left: 3em; font-size: x-small; }
 
 pre {
 	font-family: courier,sans-serif;
