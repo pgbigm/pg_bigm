@@ -27,12 +27,12 @@ h2 {
     padding-bottom: 0.17em;
     border-bottom: 1px solid #aaaaaa;
 }
-H1 { font-size: xx-large; }
-H2 { font-size: x-large; }
-H3 { font-size: large; }
-H4 { padding-left: 1em; font-size: medium; }
-H5 { padding-left: 2em; font-size: small; }
-H6 { padding-left: 3em; font-size: x-small; }
+H1 { font-size: x-large; }
+H2 { font-size: large; }
+H3 { font-size: medium; }
+H4 { padding-left: 1em; font-size: small; }
+H5 { padding-left: 2em; font-size: x-small; }
+H6 { padding-left: 3em; font-size: xx-small; }
 
 pre {
 	font-family: courier,sans-serif;
