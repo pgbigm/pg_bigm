@@ -284,7 +284,10 @@ generate_bigm(char *str, int slen)
 	if ((len = bptr - GETARR(bgm)) == 0)
 		return bgm;
 
-	if (len > 0)
+	/*
+	 * Make bigrams unique.
+	 */
+	if (len > 1)
 	{
 		bool	haveDups = false;
 
@@ -504,7 +507,7 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 	/*
 	 * Make bigrams unique.
 	 */
-	if (len > 0)
+	if (len > 1)
 	{
 		bool	haveDups = false;
 
