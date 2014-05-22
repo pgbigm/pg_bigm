@@ -227,7 +227,7 @@ generate_bigm(char *str, int slen)
 	char	   *bword,
 			   *eword;
 
-	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (slen / 2 + 1) *3);
+	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (Size) (slen / 2 + 1) * 3);
 	SET_VARSIZE(bgm, VARHDRSZ);
 
 	if (slen + LPADDING + RPADDING < 2 || slen == 0)
@@ -457,7 +457,7 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 
 	*removeDups = false;
 
-	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (slen / 2 + 1) *3);
+	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (Size) (slen / 2 + 1) * 3);
 	SET_VARSIZE(bgm, VARHDRSZ);
 
 	if (slen + LPADDING + RPADDING < 2 || slen == 0)
@@ -560,7 +560,7 @@ likequery(PG_FUNCTION_ARGS)
 	if (len == 0)
 		PG_RETURN_NULL();
 
-	result = (text *) palloc(len * 2 + 2 + VARHDRSZ);
+	result = (text *) palloc((Size) len * 2 + 2 + VARHDRSZ);
 	rp = VARDATA(result);
 	*rp++ = '%';
 
