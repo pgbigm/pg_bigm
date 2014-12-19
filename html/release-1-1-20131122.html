@@ -30,7 +30,7 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.1';
 
 <h2 id="changes">変更点</h2>
 <ul>
-<li><p>pg_bigmをPostgreSQL9.2と9.3に対応させました。 (Fujii Masao)</p></li>
+<li><p>pg_bigmをPostgreSQL9.2以降に対応させました。 (Fujii Masao)</p></li>
 <li>
  <p>pg_bigmをpg_trgmと共存できるようにしました。 (Beena Emerson, Fujii Masao)</p>
  <p>以前のバージョンでは、pg_trgmとpg_bigmを同じデータベース内に登録できませんでした。これは、両方のモジュールが同じ演算子クラスgin_trgm_opsを定義していたからです。この演算子クラスは、バージョン1.1でpg_bigmから削除されました。</p>
