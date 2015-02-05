@@ -1,0 +1,7 @@
+ # Global excludes across all subdirectories
+*.o
+*.so
+regression.*
+
+# Generated subdirectories
+/results/
