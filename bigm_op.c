@@ -4,9 +4,9 @@
  * Portions Copyright (c) 2013-2015, NTT DATA Corporation
  *
  * Changelog:
- *   2013/01/09
- *   Support full text search using bigrams.
- *   Author: NTT DATA Corporation
+ *	 2013/01/09
+ *	 Support full text search using bigrams.
+ *	 Author: NTT DATA Corporation
  *
  *-------------------------------------------------------------------------
  */
@@ -24,13 +24,13 @@
 PG_MODULE_MAGIC;
 
 /* Last update date of pg_bigm */
-#define	BIGM_LAST_UPDATE	"2013.11.22"
+#define BIGM_LAST_UPDATE	"2013.11.22"
 
 /* GUC variable */
-bool	bigm_enable_recheck = false;
-int		bigm_gin_key_limit = 0;
-double	bigm_similarity_limit = 0.3;
-char	*bigm_last_update = NULL;
+bool		bigm_enable_recheck = false;
+int			bigm_gin_key_limit = 0;
+double		bigm_similarity_limit = 0.3;
+char	   *bigm_last_update = NULL;
 
 PG_FUNCTION_INFO_V1(show_bigm);
 PG_FUNCTION_INFO_V1(bigmtextcmp);
@@ -119,8 +119,8 @@ _PG_fini(void)
 static int
 comp_bigm(const void *a, const void *b, void *arg)
 {
-	int		res;
-	bool	*haveDups = (bool *) arg;
+	int			res;
+	bool	   *haveDups = (bool *) arg;
 
 	res = CMPBIGM(a, b);
 
@@ -179,7 +179,7 @@ find_word(char *str, int lenstr, char **endword, int *charlen)
 	return beginword;
 }
 
-/* 
+/*
  * The function is named compact_bigram to maintain consistency with pg_trgm,
  * though it does not reduce multibyte characters to hash values like in
  * compact_trigram.
@@ -281,7 +281,7 @@ generate_bigm(char *str, int slen)
 		 * count bigrams
 		 */
 		bptr = make_bigrams(bptr, buf, bytelen + LPADDING + RPADDING,
-							 charlen + LPADDING + RPADDING);
+							charlen + LPADDING + RPADDING);
 	}
 
 	pfree(buf);
@@ -294,7 +294,7 @@ generate_bigm(char *str, int slen)
 	 */
 	if (len > 1)
 	{
-		bool	haveDups = false;
+		bool		haveDups = false;
 
 		qsort_arg((void *) GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *) &haveDups);
 		if (haveDups)
@@ -328,8 +328,8 @@ get_wildcard_part(const char *str, int lenstr,
 	const char *beginword = str;
 	const char *endword;
 	char	   *s = buf;
-	bool        in_leading_wildcard_meta = false;
-	bool        in_trailing_wildcard_meta = false;
+	bool		in_leading_wildcard_meta = false;
+	bool		in_trailing_wildcard_meta = false;
 	bool		in_escape = false;
 	int			clen;
 
@@ -406,8 +406,8 @@ get_wildcard_part(const char *str, int lenstr,
 			else
 			{
 				/*
-				 * Back up endword to the escape character when stopping at
-				 * an escaped char, so that subsequent get_wildcard_part will
+				 * Back up endword to the escape character when stopping at an
+				 * escaped char, so that subsequent get_wildcard_part will
 				 * restart from the escape character.  We assume here that
 				 * escape chars are single-byte.
 				 */
@@ -514,7 +514,7 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 	 */
 	if (len > 1)
 	{
-		bool	haveDups = false;
+		bool		haveDups = false;
 
 		qsort_arg((void *) GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *) &haveDups);
 		if (haveDups)
@@ -545,6 +545,7 @@ show_bigm(PG_FUNCTION_ARGS)
 	for (i = 0, ptr = GETARR(bgm); i < ARRNELEM(bgm); i++, ptr++)
 	{
 		text	   *item = cstring_to_text_with_len(ptr->str, ptr->bytelen);
+
 		d[i] = PointerGetDatum(item);
 	}
 
@@ -588,7 +589,7 @@ cnt_sml_bigm(BIGM *bgm1, BIGM *bgm2)
 
 	while (ptr1 - GETARR(bgm1) < len1 && ptr2 - GETARR(bgm2) < len2)
 	{
-		int		res = CMPBIGM(ptr1, ptr2);
+		int			res = CMPBIGM(ptr1, ptr2);
 
 		if (res < 0)
 			ptr1++;
@@ -708,12 +709,12 @@ bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
 Datum
 bigmtextcmp(PG_FUNCTION_ARGS)
 {
-	text	*arg1 = PG_GETARG_TEXT_PP(0);
-	text	*arg2 = PG_GETARG_TEXT_PP(1);
-	char	*a1p = VARDATA_ANY(arg1);
-	char	*a2p = VARDATA_ANY(arg2);
-	int		len1 = VARSIZE_ANY_EXHDR(arg1);
-	int		len2 = VARSIZE_ANY_EXHDR(arg2);
+	text	   *arg1 = PG_GETARG_TEXT_PP(0);
+	text	   *arg2 = PG_GETARG_TEXT_PP(1);
+	char	   *a1p = VARDATA_ANY(arg1);
+	char	   *a2p = VARDATA_ANY(arg2);
+	int			len1 = VARSIZE_ANY_EXHDR(arg1);
+	int			len2 = VARSIZE_ANY_EXHDR(arg2);
 
 	PG_RETURN_INT32(bigmstrcmp(a1p, len1, a2p, len2));
 }
