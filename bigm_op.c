@@ -4,9 +4,9 @@
  * Portions Copyright (c) 2013-2015, NTT DATA Corporation
  *
  * Changelog:
- *   2013/01/09
- *   Support full text search using bigrams.
- *   Author: NTT DATA Corporation
+ *	 2013/01/09
+ *	 Support full text search using bigrams.
+ *	 Author: NTT DATA Corporation
  *
  *-------------------------------------------------------------------------
  */
@@ -95,8 +95,8 @@ _PG_fini(void)
 static int
 comp_bigm(const void *a, const void *b, void *arg)
 {
-	int		res;
-	bool	*haveDups = (bool *) arg;
+	int			res;
+	bool	   *haveDups = (bool *) arg;
 
 	res = CMPBIGM(a, b);
 
@@ -258,7 +258,7 @@ generate_bigm(char *str, int slen)
 		 * count bigrams
 		 */
 		bptr = make_bigrams(bptr, buf, bytelen + LPADDING + RPADDING,
-							 charlen + LPADDING + RPADDING);
+							charlen + LPADDING + RPADDING);
 	}
 
 	pfree(buf);
@@ -271,7 +271,7 @@ generate_bigm(char *str, int slen)
 	 */
 	if (len > 1)
 	{
-		bool	haveDups = false;
+		bool		haveDups = false;
 
 		qsort_arg((void *) GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *) &haveDups);
 		if (haveDups)
@@ -305,8 +305,8 @@ get_wildcard_part(const char *str, int lenstr,
 	const char *beginword = str;
 	const char *endword;
 	char	   *s = buf;
-	bool        in_leading_wildcard_meta = false;
-	bool        in_trailing_wildcard_meta = false;
+	bool		in_leading_wildcard_meta = false;
+	bool		in_trailing_wildcard_meta = false;
 	bool		in_escape = false;
 	int			clen;
 
@@ -383,8 +383,8 @@ get_wildcard_part(const char *str, int lenstr,
 			else
 			{
 				/*
-				 * Back up endword to the escape character when stopping at
-				 * an escaped char, so that subsequent get_wildcard_part will
+				 * Back up endword to the escape character when stopping at an
+				 * escaped char, so that subsequent get_wildcard_part will
 				 * restart from the escape character.  We assume here that
 				 * escape chars are single-byte.
 				 */
@@ -491,7 +491,7 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 	 */
 	if (len > 1)
 	{
-		bool	haveDups = false;
+		bool		haveDups = false;
 
 		qsort_arg((void *) GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *) &haveDups);
 		if (haveDups)
@@ -522,6 +522,7 @@ show_bigm(PG_FUNCTION_ARGS)
 	for (i = 0, ptr = GETARR(bgm); i < ARRNELEM(bgm); i++, ptr++)
 	{
 		text	   *item = cstring_to_text_with_len(ptr->str, ptr->bytelen);
+
 		d[i] = PointerGetDatum(item);
 	}
 
@@ -611,12 +612,12 @@ bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
 Datum
 bigmtextcmp(PG_FUNCTION_ARGS)
 {
-	text	*arg1 = PG_GETARG_TEXT_PP(0);
-	text	*arg2 = PG_GETARG_TEXT_PP(1);
-	char	*a1p = VARDATA_ANY(arg1);
-	char	*a2p = VARDATA_ANY(arg2);
-	int		len1 = VARSIZE_ANY_EXHDR(arg1);
-	int		len2 = VARSIZE_ANY_EXHDR(arg2);
+	text	   *arg1 = PG_GETARG_TEXT_PP(0);
+	text	   *arg2 = PG_GETARG_TEXT_PP(1);
+	char	   *a1p = VARDATA_ANY(arg1);
+	char	   *a2p = VARDATA_ANY(arg2);
+	int			len1 = VARSIZE_ANY_EXHDR(arg1);
+	int			len2 = VARSIZE_ANY_EXHDR(arg2);
 
 	PG_RETURN_INT32(bigmstrcmp(a1p, len1, a2p, len2));
 }
