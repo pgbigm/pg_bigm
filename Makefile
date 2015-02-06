@@ -3,6 +3,7 @@ OBJS = bigm_op.o bigm_gin.o
 
 EXTENSION = pg_bigm
 DATA = pg_bigm--1.1.sql pg_bigm--1.0--1.1.sql
+PGFILEDESC = "pg_bigm - bigram matching"
 
 REGRESS = pg_bigm pg_bigm_ja
 
