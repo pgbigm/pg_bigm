@@ -20,7 +20,6 @@
 #include "tsearch/ts_locale.h"
 #include "utils/array.h"
 
-
 PG_MODULE_MAGIC;
 
 /* Last update date of pg_bigm */
