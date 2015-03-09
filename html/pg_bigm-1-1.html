@@ -30,6 +30,7 @@
 <li><a href="#fulltext_search">全文検索機能</a></li>
 <li><a href="#functions">提供関数</a></li>
 <li><a href="#parametares">パラメータ</a></li>
+<li><a href="#limitations">制約</a></li>
 <li><a href="#release_notes">リリースノート</a></li>
 </ol>
 </div>
@@ -82,6 +83,9 @@
 <tr><td>類似文字列の検索</td>
   <td nowrap>対応済</td>
   <td>対応済(バージョン1.1以降)</td></tr>
+<tr><td>インデックス作成が可能な列の最大サイズ</td>
+  <td nowrap>238,609,291Byte (約228MB)</td>
+  <td nowrap>44,739,241Byte (約43MB)</td></tr>
 </tbody>
 </table>
 
@@ -488,6 +492,20 @@ GINインデックスの待機リストとFASTUPDATEオプションの詳細は�
 
 <h3 id="similarity_limit">pg_bigm.similarity_limit</h3>
 <p>pg_bigm.similarity_limitは、類似度検索の閾値を指定するパラメータです。類似度検索では、検索条件の文字列との類似度がこの閾値以上の行が検索結果となります。設定値は0以上1以下の小数点数で、デフォルト値は0.3です。このパラメータは、postgresql.confとSET文(スーパーユーザに限らずどのユーザからでも)で設定値を変更できます。</p>
+
+<h2 id="limitations">制約</h2>
+<h3 id="indexed_column_size">インデックス作成が可能な列の最大サイズ</h3>
+
+<p>pg_bigmでは、列サイズが44,739,241Byte (約43MB)を越える列へインデックスを作成できません。制限を越える大きさのデータを挿入するとエラーを起こします。</p>
+
+<pre>
+=# CREATE TABLE t1 (description text);
+=# CREATE INDEX t1_idx ON t1 USING gin (description gin_bigm_ops);
+=# INSERT INTO t1 SELECT repeat('A', 44739242);
+ERROR:  invalid memory alloc request size 1073741860
+</pre>
+
+この制約はpg_trgmにも存在しますが、pg_trgmでは最大238,609,291Byte (約228MB)までインデックスの作成が可能です。
 
 <h2 id="release_notes">リリースノート</h2>
 <ul>

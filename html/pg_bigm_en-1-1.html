@@ -30,6 +30,7 @@
 <li><a href="#fulltext_search">Full text search</a></li>
 <li><a href="#functions">Functions</a></li>
 <li><a href="#parametares">Parameters</a></li>
+<li><a href="#limitations">Limitations</a></li>
 <li><a href="#release_notes">Release Notes</a></li>
 </ol>
 </div>
@@ -82,6 +83,9 @@ For example, x.y is 1.1 and YYYYMMDD is 20131122 if the file of the version 1.1 
 <tr><td>Similarity search</td>
   <td nowrap>Supported</td>
   <td>Supported (version 1.1 or later)</td></tr>
+<tr><td>Maximum indexed column size</td>
+  <td nowrap>238,609,291 Bytes (~228MB)</td>
+  <td nowrap>44,739,241 Bytes (~43MB)</td></tr>
 </tbody>
 </table>
 
@@ -487,6 +491,20 @@ Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementa
 
 <h3 id="similarity_limit">pg_bigm.similarity_limit</h3>
 <p>pg_bigm.similarity_limit is a parameter that specifies the threshold used by the similarity search. The similarity search returns all the rows whose similarity with the search keyword is higher than or equal to this threshold. Value must be between 0 and 1 (default is 0.3). Not only superuser but also any user can change this parameter value in postgresql.conf or by using SET command.</p>
+
+<h2 id="limitations">Limitations</h2>
+<h3 id="indexed_column_size">Indexed Column Size</h3>
+
+<p>The size of the column indexed by bigm GIN index cannot exceed 44,739,241 Bytes (~43MB). Any attempt to enter larger values will result in an error. </p>
+
+<pre>
+=# CREATE TABLE t1 (description text);
+=# CREATE INDEX t1_idx ON t1 USING gin (description gin_bigm_ops);
+=# INSERT INTO t1 SELECT repeat('A', 44739242);
+ERROR:  invalid memory alloc request size 1073741860
+</pre>
+
+<p>pg_trgm also has this limitation. However, the maximum size in the case of trgm indexed column is 238,609,291 Bytes (~228MB).</p>
 
 <h2 id="release_notes">Release Notes</h2>
 <ul>
