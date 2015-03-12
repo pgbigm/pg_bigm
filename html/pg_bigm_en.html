@@ -30,6 +30,7 @@
 <li><a href="#fulltext_search">Full text search</a></li>
 <li><a href="#functions">Functions</a></li>
 <li><a href="#parametares">Parameters</a></li>
+<li><a href="#limitations">Limitations</a></li>
 <li><a href="#release_notes">Release Notes</a></li>
 </ol>
 </div>
@@ -82,6 +83,9 @@ For example, x.y is 1.1 and YYYYMMDD is 20131122 if the file of the version 1.1 
 <tr><td>Similarity search</td>
   <td nowrap>Supported</td>
   <td>Not supported</td></tr>
+<tr><td>Maximum indexed column size</td>
+  <td nowrap>238,609,291 Bytes (~228MB)</td>
+  <td nowrap>44,739,241 Bytes (~43MB)</td></tr>
 </tbody>
 </table>
 
@@ -401,6 +405,20 @@ Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementa
 <p>PostgreSQL and pg_bigm basically use all the 2-grams of search keyword to scan GIN index. However, in current implementation of GIN index, the more 2-grams are used, the more performance overhead of GIN index scan is increased. In the system that large search keyword is often used, full text search is likely to be slow. This performance issue can be solved by using this parameter and limiting the maximum number of 2-grams to be used.</p>
 
 <p>On the other hand, the less 2-grams are used, the more wrong results are included in the result candidates retrieved from full text search index. Please note that this can increase the workload of Recheck and decrease the performance.</p>
+
+<h2 id="limitations">Limitations</h2>
+<h3 id="indexed_column_size">Indexed Column Size</h3>
+
+<p>The size of the column indexed by bigm GIN index cannot exceed 44,739,241 Bytes (~43MB). Any attempt to enter larger values will result in an error. </p>
+
+<pre>
+=# CREATE TABLE t1 (description text);
+=# CREATE INDEX t1_idx ON t1 USING gin (description gin_bigm_ops);
+=# INSERT INTO t1 SELECT repeat('A', 44739242);
+ERROR:  invalid memory alloc request size 1073741860
+</pre>
+
+<p>pg_trgm also has this limitation. However, the maximum size in the case of trgm indexed column is 238,609,291 Bytes (~228MB).</p>
 
 <h2 id="release_notes">Release Notes</h2>
 <ul>
