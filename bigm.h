@@ -44,7 +44,7 @@ typedef struct
 
 #define BIGMSIZE	sizeof(bigm)
 
-inline int	bigmstrcmp(char *arg1, int len1, char *arg2, int len2);
+extern inline int	bigmstrcmp(char *arg1, int len1, char *arg2, int len2);
 #define CMPBIGM(a,b) ( bigmstrcmp(((bigm *)a)->str, ((bigm *)a)->bytelen, ((bigm *)b)->str, ((bigm *)b)->bytelen) )
 
 #define CPBIGM(bptr, s, len) do {		\
