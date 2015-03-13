@@ -21,6 +21,7 @@
 extern bool bigm_enable_recheck;
 extern int	bigm_gin_key_limit;
 extern double bigm_similarity_limit;
+extern char	*bigm_last_update;
 
 /* options */
 #define LPADDING		1
