@@ -85,7 +85,7 @@
   <td>対応済(バージョン1.1以降)</td></tr>
 <tr><td>インデックス作成が可能な列の最大サイズ</td>
   <td nowrap>238,609,291Byte (約228MB)</td>
-  <td nowrap>44,739,241Byte (約43MB)</td></tr>
+  <td nowrap>71,582,785Byte (約68MB)</td></tr>
 </tbody>
 </table>
 
@@ -496,13 +496,13 @@ GINインデックスの待機リストとFASTUPDATEオプションの詳細は�
 <h2 id="limitations">制約</h2>
 <h3 id="indexed_column_size">インデックス作成が可能な列の最大サイズ</h3>
 
-<p>pg_bigmでは、列サイズが44,739,241Byte (約43MB)を越える列へインデックスを作成できません。制限を越える大きさのデータを挿入するとエラーを起こします。</p>
+<p>pg_bigmでは、列サイズが71,582,785Byte (約68MB)を越える列へインデックスを作成できません。制限を越える大きさのデータを挿入するとエラーを起こします。</p>
 
 <pre>
 =# CREATE TABLE t1 (description text);
 =# CREATE INDEX t1_idx ON t1 USING gin (description gin_bigm_ops);
-=# INSERT INTO t1 SELECT repeat('A', 44739242);
-ERROR:  invalid memory alloc request size 1073741860
+=# INSERT INTO t1 SELECT repeat('A', 71582786);
+ERROR:  invalid memory alloc request size 1073741824
 </pre>
 
 この制約はpg_trgmにも存在しますが、pg_trgmでは最大238,609,291Byte (約228MB)までインデックスの作成が可能です。
