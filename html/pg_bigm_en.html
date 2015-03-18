@@ -85,7 +85,7 @@ For example, x.y is 1.1 and YYYYMMDD is 20131122 if the file of the version 1.1 
   <td>Not supported</td></tr>
 <tr><td>Maximum indexed column size</td>
   <td nowrap>238,609,291 Bytes (~228MB)</td>
-  <td nowrap>44,739,241 Bytes (~43MB)</td></tr>
+  <td nowrap>71,582,785 Bytes (~68MB)</td></tr>
 </tbody>
 </table>
 
@@ -409,13 +409,13 @@ Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementa
 <h2 id="limitations">Limitations</h2>
 <h3 id="indexed_column_size">Indexed Column Size</h3>
 
-<p>The size of the column indexed by bigm GIN index cannot exceed 44,739,241 Bytes (~43MB). Any attempt to enter larger values will result in an error. </p>
+<p>The size of the column indexed by bigm GIN index cannot exceed 71,582,785 Bytes (~68MB). Any attempt to enter larger values will result in an error. </p>
 
 <pre>
 =# CREATE TABLE t1 (description text);
 =# CREATE INDEX t1_idx ON t1 USING gin (description gin_bigm_ops);
-=# INSERT INTO t1 SELECT repeat('A', 44739242);
-ERROR:  invalid memory alloc request size 1073741860
+=# INSERT INTO t1 SELECT repeat('A', 71582786);
+ERROR:  invalid memory alloc request size 1073741824
 </pre>
 
 <p>pg_trgm also has this limitation. However, the maximum size in the case of trgm indexed column is 238,609,291 Bytes (~228MB).</p>
