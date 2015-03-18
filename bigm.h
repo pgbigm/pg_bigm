@@ -32,7 +32,7 @@ extern char	*bigm_last_update;
 typedef struct
 {
 	bool		pmatch;			/* partial match is required? */
-	int			bytelen;		/* byte length of bi-gram string */
+	int8		bytelen;		/* byte length of bi-gram string */
 
 	/*
 	 * Bi-gram string; we assume here that the maximum bytes for a character
