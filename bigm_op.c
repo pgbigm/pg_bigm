@@ -19,6 +19,7 @@
 #include "catalog/pg_type.h"
 #include "tsearch/ts_locale.h"
 #include "utils/array.h"
+#include "utils/memutils.h"
 
 PG_MODULE_MAGIC;
 
@@ -250,7 +251,17 @@ generate_bigm(char *str, int slen)
 	char	   *bword,
 			   *eword;
 
-	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (Size) (slen / 2 + 1) * 3);
+	/*
+	 * Guard against possible overflow in the palloc requests below.
+	 * We need to prevent integer overflow in the multiplications here.
+	 */
+	if ((Size) slen > (MaxAllocSize - VARHDRSZ) / sizeof(bigm) - 1 ||
+		(Size) slen > MaxAllocSize - 4)
+		ereport(ERROR,
+				(errcode(ERRCODE_PROGRAM_LIMIT_EXCEEDED),
+				 errmsg("out of memory")));
+
+	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (slen + 1));
 	SET_VARSIZE(bgm, VARHDRSZ);
 
 	if (slen + LPADDING + RPADDING < 2 || slen == 0)
@@ -480,7 +491,17 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 
 	*removeDups = false;
 
-	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (Size) (slen / 2 + 1) * 3);
+	/*
+	 * Guard against possible overflow in the palloc requests below.
+	 * We need to prevent integer overflow in the multiplications here.
+	 */
+	if ((Size) slen > (MaxAllocSize - VARHDRSZ) / sizeof(bigm) - 1 ||
+		(Size) slen > MaxAllocSize - 4)
+		ereport(ERROR,
+				(errcode(ERRCODE_PROGRAM_LIMIT_EXCEEDED),
+				 errmsg("out of memory")));
+
+	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (slen + 1));
 	SET_VARSIZE(bgm, VARHDRSZ);
 
 	if (slen + LPADDING + RPADDING < 2 || slen == 0)
