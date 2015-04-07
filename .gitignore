@@ -1,4 +1,4 @@
- # Global excludes across all subdirectories
+# Global excludes across all subdirectories
 *.o
 *.so
 regression.*
