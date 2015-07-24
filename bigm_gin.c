@@ -32,21 +32,9 @@
 PG_FUNCTION_INFO_V1(gin_extract_value_bigm);
 PG_FUNCTION_INFO_V1(gin_extract_query_bigm);
 PG_FUNCTION_INFO_V1(gin_bigm_consistent);
+PG_FUNCTION_INFO_V1(gin_bigm_triconsistent);
 PG_FUNCTION_INFO_V1(gin_bigm_compare_partial);
 PG_FUNCTION_INFO_V1(pg_gin_pending_stats);
-
-/*
- * The function prototypes are created as a part of PG_FUNCTION_INFO_V1
- * macro since 9.4, and hence the declaration of the function prototypes
- * here is necessary only for 9.3 or before.
- */
-#if PG_VERSION_NUM < 90400
-Datum		gin_extract_value_bigm(PG_FUNCTION_ARGS);
-Datum		gin_extract_query_bigm(PG_FUNCTION_ARGS);
-Datum		gin_bigm_consistent(PG_FUNCTION_ARGS);
-Datum		gin_bigm_compare_partial(PG_FUNCTION_ARGS);
-Datum		pg_gin_pending_stats(PG_FUNCTION_ARGS);
-#endif
 
 Datum
 gin_extract_value_bigm(PG_FUNCTION_ARGS)
@@ -257,6 +245,70 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	}
 
 	PG_RETURN_BOOL(res);
+}
+
+Datum
+gin_bigm_triconsistent(PG_FUNCTION_ARGS)
+{
+	GinTernaryValue  *check = (GinTernaryValue *) PG_GETARG_POINTER(0);
+	StrategyNumber strategy = PG_GETARG_UINT16(1);
+
+	/* text    *query = PG_GETARG_TEXT_P(2); */
+	int32		nkeys = PG_GETARG_INT32(3);
+	Pointer    *extra_data = (Pointer *) PG_GETARG_POINTER(4);
+	GinTernaryValue	res = GIN_MAYBE;
+	int32		i,
+				ntrue;
+
+	switch (strategy)
+	{
+		case LikeStrategyNumber:
+			/*
+			 * Don't recheck the heap tuple against the query if either
+			 * pg_bigm.enable_recheck is disabled or the search word is the
+			 * special one so that the index can return the exact result.
+			 */
+			res = (bigm_enable_recheck &&
+				   (*((bool *) extra_data) || (nkeys != 1))) ?
+				GIN_MAYBE : GIN_TRUE;
+
+			/* Check if all extracted bigrams are presented. */
+			for (i = 0; i < nkeys; i++)
+			{
+				if (check[i] == GIN_FALSE)
+				{
+					res = GIN_FALSE;
+					break;
+				}
+			}
+			break;
+		case SimilarityStrategyNumber:
+			/* Count the matches */
+			ntrue = 0;
+			for (i = 0; i < nkeys; i++)
+			{
+				if (check[i] != GIN_FALSE)
+					ntrue++;
+			}
+#ifdef DIVUNION
+			res = (nkeys == ntrue) ? GIN_MAYBE :
+				(((((float4) ntrue) / ((float4) (nkeys - ntrue))) >=
+				  (float4) bigm_similarity_limit) ? GIN_MAYBE : GIN_FALSE);
+#else
+			res = (nkeys == 0) ? GIN_FALSE :
+				(((((float4) ntrue) / ((float4) nkeys)) >=
+				  (float4) bigm_similarity_limit) ? GIN_MAYBE : GIN_FALSE);
+#endif
+			if (res != GIN_FALSE && !bigm_enable_recheck)
+				res = GIN_TRUE;
+			break;
+		default:
+			elog(ERROR, "unrecognized strategy number: %d", strategy);
+			res = GIN_FALSE;		/* keep compiler quiet */
+			break;
+	}
+
+	PG_RETURN_GIN_TERNARY_VALUE(res);
 }
 
 Datum

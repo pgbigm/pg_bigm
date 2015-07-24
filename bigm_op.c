@@ -38,19 +38,6 @@ PG_FUNCTION_INFO_V1(likequery);
 PG_FUNCTION_INFO_V1(bigm_similarity);
 PG_FUNCTION_INFO_V1(bigm_similarity_op);
 
-/*
- * The function prototypes are created as a part of PG_FUNCTION_INFO_V1
- * macro since 9.4, and hence the declaration of the function prototypes
- * here is necessary only for 9.3 or before.
- */
-#if PG_VERSION_NUM < 90400
-Datum		show_bigm(PG_FUNCTION_ARGS);
-Datum		bigmtextcmp(PG_FUNCTION_ARGS);
-Datum		likequery(PG_FUNCTION_ARGS);
-Datum		bigm_similarity(PG_FUNCTION_ARGS);
-Datum		bigm_similarity_op(PG_FUNCTION_ARGS);
-#endif
-
 void		_PG_init(void);
 void		_PG_fini(void);
 
