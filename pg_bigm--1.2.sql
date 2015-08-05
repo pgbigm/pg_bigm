@@ -41,11 +41,6 @@ RETURNS bool
 AS 'MODULE_PATHNAME'
 LANGUAGE C IMMUTABLE STRICT;
 
-CREATE FUNCTION gin_bigm_triconsistent(internal, int2, text, int4, internal, internal, internal)
-RETURNS "char"
-AS 'MODULE_PATHNAME'
-LANGUAGE C IMMUTABLE STRICT;
-
 CREATE FUNCTION gin_bigm_compare_partial(text, text, int2, internal)
 RETURNS bool
 AS 'MODULE_PATHNAME'
@@ -67,7 +62,6 @@ AS
         FUNCTION        3       gin_extract_query_bigm (text, internal, int2, internal, internal, internal, internal),
         FUNCTION        4       gin_bigm_consistent (internal, int2, text, int4, internal, internal, internal, internal),
         FUNCTION        5       gin_bigm_compare_partial (text, text, int2, internal),
-        FUNCTION        6       gin_bigm_triconsistent (internal, int2, text, int4, internal, internal, internal),
         STORAGE         text;
 
 CREATE FUNCTION likequery(text)
@@ -79,3 +73,20 @@ CREATE FUNCTION pg_gin_pending_stats(index regclass, OUT pages int4, OUT tuples 
 RETURNS record
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
+
+/* triConsistent function is available only in 9.4 or later */
+DO $$
+DECLARE
+    pgversion TEXT;
+BEGIN
+    SELECT current_setting('server_version_num') INTO pgversion;
+    IF pgversion >= '90400' THEN
+        CREATE FUNCTION gin_bigm_triconsistent(internal, int2, text, int4, internal, internal, internal)
+        RETURNS "char"
+        AS 'MODULE_PATHNAME'
+        LANGUAGE C IMMUTABLE STRICT;
+        ALTER OPERATOR FAMILY gin_bigm_ops USING gin ADD
+            FUNCTION        6    (text, text) gin_bigm_triconsistent (internal, int2, text, int4, internal, internal, internal);
+    END IF;
+END;
+$$;

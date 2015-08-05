@@ -32,9 +32,26 @@
 PG_FUNCTION_INFO_V1(gin_extract_value_bigm);
 PG_FUNCTION_INFO_V1(gin_extract_query_bigm);
 PG_FUNCTION_INFO_V1(gin_bigm_consistent);
-PG_FUNCTION_INFO_V1(gin_bigm_triconsistent);
 PG_FUNCTION_INFO_V1(gin_bigm_compare_partial);
 PG_FUNCTION_INFO_V1(pg_gin_pending_stats);
+
+/* triConsistent function is available only in 9.4 or later */
+#if PG_VERSION_NUM >= 90400
+PG_FUNCTION_INFO_V1(gin_bigm_triconsistent);
+#endif
+
+/*
+ * The function prototypes are created as a part of PG_FUNCTION_INFO_V1
+ * macro since 9.4, and hence the declaration of the function prototypes
+ * here is necessary only for 9.3 or before.
+ */
+#if PG_VERSION_NUM < 90400
+Datum		gin_extract_value_bigm(PG_FUNCTION_ARGS);
+Datum		gin_extract_query_bigm(PG_FUNCTION_ARGS);
+Datum		gin_bigm_consistent(PG_FUNCTION_ARGS);
+Datum		gin_bigm_compare_partial(PG_FUNCTION_ARGS);
+Datum		pg_gin_pending_stats(PG_FUNCTION_ARGS);
+#endif
 
 Datum
 gin_extract_value_bigm(PG_FUNCTION_ARGS)
@@ -247,6 +264,8 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	PG_RETURN_BOOL(res);
 }
 
+/* triConsistent function is available only in 9.4 or later */
+#if PG_VERSION_NUM >= 90400
 Datum
 gin_bigm_triconsistent(PG_FUNCTION_ARGS)
 {
@@ -310,6 +329,7 @@ gin_bigm_triconsistent(PG_FUNCTION_ARGS)
 
 	PG_RETURN_GIN_TERNARY_VALUE(res);
 }
+#endif	/* PG_VERSION_NUM >= 90400 */
 
 Datum
 gin_bigm_compare_partial(PG_FUNCTION_ARGS)
