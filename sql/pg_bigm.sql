@@ -41,6 +41,10 @@ CREATE INDEX test_bigm_idx ON test_bigm
 SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
 VACUUM;
 SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
+SELECT * FROM pg_gin_pending_stats('test_bigm');
+CREATE INDEX test_bigm_btree ON test_bigm USING btree (col2);
+SELECT * FROM pg_gin_pending_stats('test_bigm_btree');
+DROP INDEX test_bigm_btree;
 
 -- tests for full-text search
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 LIKE likequery('a');

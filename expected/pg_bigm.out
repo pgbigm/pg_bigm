@@ -114,6 +114,12 @@ SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
      0 |      0
 (1 row)
 
+SELECT * FROM pg_gin_pending_stats('test_bigm');
+ERROR:  relation "test_bigm" is not a GIN index
+CREATE INDEX test_bigm_btree ON test_bigm USING btree (col2);
+SELECT * FROM pg_gin_pending_stats('test_bigm_btree');
+ERROR:  relation "test_bigm_btree" is not a GIN index
+DROP INDEX test_bigm_btree;
 -- tests for full-text search
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 LIKE likequery('a');
                 QUERY PLAN                 
