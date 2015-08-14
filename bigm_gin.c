@@ -27,6 +27,7 @@
 #include "tsearch/ts_locale.h"
 #include "utils/array.h"
 #include "utils/builtins.h"
+#include "utils/rel.h"
 
 
 PG_FUNCTION_INFO_V1(gin_extract_value_bigm);
@@ -300,15 +301,32 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 	HeapTuple	tuple;
 	TupleDesc	tupdesc;
 
+	indexRel = relation_open(indexOid, AccessShareLock);
+
+	if (indexRel->rd_rel->relkind != RELKIND_INDEX ||
+		indexRel->rd_rel->relam != GIN_AM_OID)
+		ereport(ERROR,
+				(errcode(ERRCODE_WRONG_OBJECT_TYPE),
+				 errmsg("relation \"%s\" is not a GIN index",
+						RelationGetRelationName(indexRel))));
+
+	/*
+	 * Reject attempts to read non-local temporary relations; we would be
+	 * likely to get wrong data since we have no visibility into the owning
+	 * session's local buffers.
+	 */
+	if (RELATION_IS_OTHER_TEMP(indexRel))
+		ereport(ERROR,
+				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
+				 errmsg("cannot access temporary indexes of other sessions")));
+
 	/*
 	 * Obtain statistic information from the meta page
 	 */
-	indexRel = index_open(indexOid, AccessShareLock);
 	metabuffer = ReadBuffer(indexRel, GIN_METAPAGE_BLKNO);
 	LockBuffer(metabuffer, GIN_SHARE);
 	metapage = BufferGetPage(metabuffer);
 	metadata = GinPageGetMeta(metapage);
-	index_close(indexRel, AccessShareLock);
 
 	/*
 	 * Construct a tuple descriptor for the result row. This must match this
@@ -330,6 +348,7 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 	isnull[1] = false;
 
 	UnlockReleaseBuffer(metabuffer);
+	relation_close(indexRel, AccessShareLock);
 
 	tuple = heap_form_tuple(tupdesc, values, isnull);
 	PG_RETURN_DATUM(HeapTupleGetDatum(tuple));
