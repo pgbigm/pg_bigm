@@ -405,6 +405,36 @@ Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementa
 (1 row)
 </pre>
 
+<h3 id="pg_gin_pending_cleanup">pg_gin_pending_cleanup</h3>
+<p>pg_gin_pending_cleanup is a function that cleans up the pending list of GIN index (argument #1) by moving tuples in it to the main GIN data structure in bulk.</p>
+
+<ul>
+<li>Argument #1 (regclass) - Name or OID of GIN index</li>
+<li>Argument #2 (boolean) - Use <a href="http://www.postgresql.org/docs/current/static/runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-VACUUM-COST">cost-based VACUUM delay</a>? (the default value is FALSE)</li>
+<li>Return value #1 (integer) - Number of pages cleaned up in the pending list</li>
+</ul>
+
+<p>
+Note that the cleanup does not happen and the return value #1 is 0 if the argument #1 is the GIN index built with FASTUPDATE option disabled because it doesn't have a pending list.
+Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementation.html#GIN-FAST-UPDATE">GIN Fast Update Technique</a> for details of the pending list and FASTUPDATE option.
+</p>
+<p>
+If the argument #2 is TRUE, this function uses the cost-based VACUUM delay to reduce the performance impact of the pending list cleanup.
+If the argument #2 is FALSE or not supplied, this function cleans up the pending list as quickly as possible.
+</p>
+<p>
+Only superusers and the owner of the GIN index can execute this function.
+This function cannot be executed during recovery.
+</p>
+
+<pre>
+=# SELECT pg_gin_pending_cleanup('pg_tools_idx');
+ pg_gin_pending_cleanup 
+------------------------
+                      1
+(1 row)
+</pre>
+
 <h2 id="parametares">Parameters</h2>
 <h3 id="last_update">pg_bigm.last_update</h3>
 <p>pg_bigm.last_update is a parameter that reports the last updated date of the pg_bigm module. This parameter is read-only. You cannot change the value of this parameter at all.</p>

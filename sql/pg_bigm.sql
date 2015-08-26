@@ -37,14 +37,35 @@ CREATE INDEX test_bigm_idx ON test_bigm
 
 \copy test_bigm from 'data/bigm.csv' with csv
 
--- tests pg_gin_pending_stats
+-- tests pg_gin_pending_stats and pg_gin_pending_cleanup
 SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
-VACUUM;
+SELECT pg_gin_pending_cleanup('test_bigm_idx');
 SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
-SELECT * FROM pg_gin_pending_stats('test_bigm');
+
 CREATE INDEX test_bigm_btree ON test_bigm USING btree (col2);
 SELECT * FROM pg_gin_pending_stats('test_bigm_btree');
+SELECT * FROM pg_gin_pending_cleanup('test_bigm_btree');
 DROP INDEX test_bigm_btree;
+
+-- tests for permission checks of pg_gin_pending_cleanup
+CREATE ROLE test_bigm2_owner WITH NOSUPERUSER LOGIN;
+CREATE ROLE test_bigm2_user WITH NOSUPERUSER LOGIN;
+SET SESSION AUTHORIZATION test_bigm2_owner;
+
+CREATE TABLE test_bigm2 (col1 text, col2 text);
+CREATE INDEX test_bigm2_idx ON test_bigm2
+			 USING gin (col1 gin_bigm_ops, col2 gin_bigm_ops);
+
+\copy test_bigm2 from 'data/bigm.csv' with csv
+
+SELECT * FROM pg_gin_pending_cleanup('test_bigm2_idx');
+SET SESSION AUTHORIZATION test_bigm2_user;
+SELECT * FROM pg_gin_pending_cleanup('test_bigm2_idx');
+RESET SESSION AUTHORIZATION;
+
+DROP TABLE test_bigm2;
+DROP ROLE test_bigm2_owner;
+DROP ROLE test_bigm2_user;
 
 -- tests for full-text search
 EXPLAIN (COSTS off) SELECT * FROM test_bigm WHERE col1 LIKE likequery('a');
