@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>pg_bigm: Release 1.2</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="navigation">
+    <ul>
+      <li><a href="index_en.html">Home</a></li>
+      <li><a href="http://en.osdn.jp/projects/pgbigm/releases/?package_id=13634">Download</a></li>
+      <li><a href="index_en.html#document">Document</a></li>
+      <li><a href="index_en.html#community">Community</a></li>
+      <li><a href="index_en.html#development">Development</a></li>
+      <li><a href="release-1-2.html">日本語</a></li>
+    </ul>
+  </div>
+
+<h1 id="release_note">Release Notes</h1>
+
+<h2 id="release_note_2015-XX-YY">Version 1.2 (released on 2015-XX-YY)</h2>
+<ul>
+<li><p>Add <a href="pg_bigm_en-1-2.html#pg_gin_pending_cleanup">pg_gin_pending_cleanup</a> function (Fujii Masao)</p></li>
+<li>
+<p>Support <a href="http://www.postgresql.org/docs/current/static/gin-extensibility.html">triConsistent</a> method for better performance (Fujii Masao)</p>
+<p>The triConsistent method makes the full-text search using pg_bigm much faster especially when a long search phrase is used</p>
+</li>
+<li><p>Add the information about the available text search operators into the <a href="pg_bigm_en-1-2.html#pg_trgm">comparison table</a> of pg_trgm and pg_bigm in the document (Fujii Masao)</p></li>
+<li><p>Make <a href="pg_bigm_en-1-2.html#pg_gin_pending_stats">pg_gin_pending_stats</a> function check whether the given relation is a GIN index (Fujii Masao)</p></li>
+<li><p>Add the <a href="pg_bigm_en-1-2.html#limitations">limitations</a> section into the document (Beena Emerson, Masahiko Sawada)</p></li>
+<li><p>Increase the maximum size of the column indexed by pg_bigm GIN index from 43MB to 102MB (Beena Emerson)</p></li>
+<li><p>Fix possible overflow in calculations of memory allocation request sizes (Fujii Masao)</p></li>
+<li>
+<p>Remove shared_preload_libraries description from the document (Fujii Masao)</p>
+<p>shared_preload_libraries doesn't need to be set to pg_bigm when using pg_bigm</p>
+</li>
+</ul>
+<h3 id="migration">Migration to Version 1.2</h3>
+<p>The following command would upgrade the older version of pg_bigm to 1.2.</p>
+<pre>
+ALTER EXTENSION pg_bigm UPDATE TO '1.2';
+</pre>
+
+<hr>
+<div align="right">Copyright (c) 2012-2015, NTT DATA Corporation</div>
+
+</body>
+</html>

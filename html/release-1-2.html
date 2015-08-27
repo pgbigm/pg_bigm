@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>pg_bigm: リリース 1.2</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">ホーム</a></li>
+      <li><a href="http://osdn.jp/projects/pgbigm/releases/?package_id=13634">ダウンロード</a></li>
+      <li><a href="index.html#document">ドキュメント</a></li>
+      <li><a href="index.html#community">コミュニティ</a></li>
+      <li><a href="index.html#development">開発</a></li>
+      <li><a href="release-1-2_en.html">English</a></li>
+    </ul>
+  </div>
+
+<h1 id="release_note">リリースノート</h1>
+
+<h2 id="release_note_2015-XX-YY">バージョン1.2 (2015-MM-DD リリース)</h2>
+<ul>
+<li><p><a href="pg_bigm-1-2.html#pg_gin_pending_cleanup">pg_gin_pending_cleanup</a>関数を追加しました。 (Fujii Masao)</p></li>
+<li>
+<p>性能向上のために<a href="http://www.postgresql.jp/document/current/html/gin-extensibility.html">triConsistent</a>メソッドをサポートしました。 (Fujii Masao)</p>
+<p>triConsistentメソッドにより、特に検索文字列の文字数が多いときの全文検索が高速になります。</p>
+</li>
+<li><p>利用可能なテキスト検索演算子に関する情報を、ドキュメント内にあるpg_trgmとpg_bigmの<a href="pg_bigm-1-2.html#pg_trgm">比較表</a>に追加しました。 (Fujii Masao)</p></li>
+<li><p>引数で指定されたリレーションがGINインデックスかどうか、<a href="pg_bigm-1-2.html#pg_gin_pending_stats">pg_gin_pending_stats</a>関数に確認させるようにしました。 (Fujii Masao)</p></li>
+<li><p><a href="pg_bigm-1-2.html#limitations">制約</a>に関する章をドキュメントに追加しました。 (Beena Emerson, Masahiko Sawada)</p></li>
+<li><p>pg_bigmの全文検索インデックスを作成可能なカラムの最大サイズを43MBから102MBに増やしました。 (Beena Emerson)</p></li>
+<li><p>確保するメモリのサイズを計算する際のバッファオーバフローの可能性を修正しました。(Fujii Masao)</p></li>
+<li>
+<p>shared_preload_librariesに関する記述をドキュメントから削除しました。 (Fujii Masao)</p>
+<p>pg_bigmを使うとき、shared_preload_librariesをpg_bigmに設定する必要はありません。</p>
+</li>
+</ul>
+<h3 id="migration">バージョン1.2への移行</h3>
+<p>pg_bigmを古いバージョンから1.2にアップグレードするには、以下のコマンドを実行してください。</p>
+<pre>
+ALTER EXTENSION pg_bigm UPDATE TO '1.2';
+</pre>
+
+<hr>
+<div align="right">Copyright (c) 2012-2015, NTT DATA Corporation</div>
+
+</body>
+</html>
