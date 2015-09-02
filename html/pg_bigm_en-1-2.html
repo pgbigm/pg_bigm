@@ -160,7 +160,6 @@ $ initdb -D $PGDATA --locale=C --encoding=UTF8
 
 $ vi $PGDATA/postgresql.conf
 shared_preload_libraries = 'pg_bigm'
-custom_variable_classes = 'pg_bigm'
 
 $ pg_ctl -D $PGDATA start
 $ psql -d &lt;database name&gt;
@@ -176,9 +175,9 @@ $ psql -d &lt;database name&gt;
 <ul>
 <li>Replace $PGDATA with the path to database cluster.</li>
 <li>pg_bigm supports all PostgreSQL encoding and locale.</li>
-<li>In postgresql.conf, pg_bigm must be added into <a href="http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-PRELOAD-LIBRARIES">shared_preload_libraries</a> and <a href="http://www.postgresql.org/docs/current/static/runtime-config-custom.html#GUC-CUSTOM-VARIABLE-CLASSES">custom_variable_classes</a>.
+<li>In postgresql.conf, <a href="http://www.postgresql.org/docs/devel/static/runtime-config-client.html#GUC-SHARED-PRELOAD-LIBRARIES">shared_preload_libraries</a> or <a href="http://www.postgresql.org/docs/devel/static/runtime-config-client.html#GUC-SESSION-PRELOAD-LIBRARIES">session_preload_libraries</a> (available in PostgreSQL 9.4 or later) must be set to 'pg_bigm' to preload the pg_bigm shared library into the server.
   <ul>
-    <li>In PostgreSQL 9.2 or later, you need to set only shared_preload_libraries because custom_variable_classes doesn't exist.</li>
+    <li>In PostgreSQL 9.1, <a href="http://www.postgresql.org/docs/9.1/static/runtime-config-custom.html#GUC-CUSTOM-VARIABLE-CLASSES">custom_variable_classes</a> also must be set to 'pg_bigm'.</li>
   </ul>
 </li>
 <li><a href="http://www.postgresql.org/docs/current/static/sql-createextension.html">CREATE EXTENSION</a> pg_bigm needs to be executed in all the databases that you want to use pg_bigm in.</li>
@@ -210,8 +209,8 @@ $ su
 <h3 id="delete_conf">Reset postgresql.conf</h3>
 <p>Delete the following pg_bigm related settings from postgresql.conf.</p>
 <ul>
-<li>shared_preload_libraries</li>
-<li>custom_variable_classes</li>
+<li>shared_preload_libraries or session_preload_libraries</li>
+<li>custom_variable_classes (only PostgreSQL 9.1)</li>
 <li>pg_bigm.* (parameters which begin with pg_bigm)</li>
 </ul>
 
