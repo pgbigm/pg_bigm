@@ -20,6 +20,13 @@
 
 <h1 id="release_note">リリースノート</h1>
 
+<h2 id="migration">バージョン1.1への移行</h2>
+<p>pg_bigmをバージョン1.0から1.1にアップグレードするには、以下のコマンドを実行してください。</p>
+<pre>
+ALTER EXTENSION pg_bigm UPDATE TO '1.1';
+</pre>
+<p>gin_trgm_opsの演算子クラスを使って作成したインデックスがある場合、pg_bigmをバージョン1.0から1.1にアップグレードできません。これは、演算子クラスgin_trgm_opsがバージョン1.1でpg_bigmから削除されたためです。</p>
+
 <h2 id="release_note_2015-09-10">バージョン1.1 (2015-09-10 リリース)</h2>
 <ul>
 <li><p>利用可能なテキスト検索演算子に関する情報を、ドキュメント内にあるpg_trgmとpg_bigmの<a href="pg_bigm-1-1.html#pg_trgm">比較表</a>に追加しました。(Fujii Masao)</p></li>
@@ -51,12 +58,6 @@
 <li><p>gin_key_limit = 1のときのenable_recheckの挙動に関するバグを修正しました。 (Fujii Masao, Beena Emerson)</p></li>
 <li><p>使用できるエンコーディングとロケールの制約を取り除きました。 (Beena Emerson, Amit Langote, Fujii Masao)</p></li>
 </ul>
-<h3 id="migration">バージョン1.1への移行</h3>
-<p>pg_bigmをバージョン1.0から1.1にアップグレードするには、以下のコマンドを実行してください。</p>
-<pre>
-ALTER EXTENSION pg_bigm UPDATE TO '1.1';
-</pre>
-<p>gin_trgm_opsの演算子クラスを使って作成したインデックスがある場合、pg_bigmをバージョン1.0から1.1にアップグレードできません。これは、演算子クラスgin_trgm_opsがバージョン1.1でpg_bigmから削除されたためです。</p>
 
 <hr>
 <div align="right">Copyright (c) 2012-2015, NTT DATA Corporation</div>

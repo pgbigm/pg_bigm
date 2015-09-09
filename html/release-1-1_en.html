@@ -20,6 +20,13 @@
 
 <h1 id="release_note">Release Notes</h1>
 
+<h2 id="migration">Migration to Version 1.1</h2>
+<p>The following command would upgrade the current pg_bigm 1.0 to 1.1.</p>
+<pre>
+ALTER EXTENSION pg_bigm UPDATE TO '1.1';
+</pre>
+<p>Kindly note that if an existing index uses "gin_trgm_ops" in the database then it will not possible to upgrade from 1.0 to 1.1 since the operator class "gin_trgm_ops" is dropped in version 1.1.</p>
+
 <h2 id="release_note_2015-09-10">Version 1.1 (released on 2015-09-10)</h2>
 <ul>
 <li><p>Add the information about the available text search operators into the <a href="pg_bigm_en-1-1.html#pg_trgm">comparison table</a> of pg_trgm and pg_bigm in the document (Fujii Masao)</p></li>
@@ -53,12 +60,6 @@
 <li><p>Fix bug in enable_recheck with gin_key_limit = 1 (Fujii Masao, Beena Emerson)</p></li>
 <li><p>Get rid of the restriction of available database encoding and locale (Beena Emerson, Amit Langote, Fujii Masao)</p></li>
 </ul>
-<h3 id="migration">Migration to Version 1.1</h3>
-<p>The following command would upgrade the current pg_bigm 1.0 to 1.1.</p>
-<pre>
-ALTER EXTENSION pg_bigm UPDATE TO '1.1';
-</pre>
-<p>Kindly note that if an existing index uses "gin_trgm_ops" in the database then it will not possible to upgrade from 1.0 to 1.1 since the operator class "gin_trgm_ops" is dropped in version 1.1.</p>
 
 <hr>
 <div align="right">Copyright (c) 2012-2015, NTT DATA Corporation</div>
