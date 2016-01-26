@@ -254,15 +254,25 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 				if (check[i])
 					ntrue++;
 			}
-#ifdef DIVUNION
-			res = (nkeys == ntrue) ? true :
-				((((((float4) ntrue) / ((float4) (nkeys - ntrue)))) >=
-				  (float4) bigm_similarity_limit) ? true : false);
-#else
+
+			/*--------------------
+			 * If DIVUNION is defined then similarity formula is:
+			 * c / (len1 + len2 - c)
+			 * where c is number of common bigrams and it stands as ntrue in
+			 * this code.  Here we don't know value of len2 but we can assume
+			 * that c (ntrue) is a lower bound of len2, so upper bound of
+			 * similarity is:
+			 * c / (len1 + c - c)  => c / len1
+			 * If DIVUNION is not defined then similarity formula is:
+			 * c / max(len1, len2)
+			 * And again, c (ntrue) is a lower bound of len2, but c <= len1
+			 * just by definition and, consequently, upper bound of
+			 * similarity is just c / len1.
+			 * So, independly on DIVUNION the upper bound formula is the same.
+			 */
 			res = (nkeys == 0) ? false :
 				((((((float4) ntrue) / ((float4) nkeys))) >=
 				  (float4) bigm_similarity_limit) ? true : false);
-#endif
 			break;
 		default:
 			elog(ERROR, "unrecognized strategy number: %d", strategy);
@@ -318,15 +328,14 @@ gin_bigm_triconsistent(PG_FUNCTION_ARGS)
 				if (check[i] != GIN_FALSE)
 					ntrue++;
 			}
-#ifdef DIVUNION
-			res = (nkeys == ntrue) ? GIN_MAYBE :
-				(((((float4) ntrue) / ((float4) (nkeys - ntrue))) >=
-				  (float4) bigm_similarity_limit) ? GIN_MAYBE : GIN_FALSE);
-#else
+
+			/*
+			 * See comment in gin_bigm_consistent() about upper bound formula
+			 */
 			res = (nkeys == 0) ? GIN_FALSE :
 				(((((float4) ntrue) / ((float4) nkeys)) >=
 				  (float4) bigm_similarity_limit) ? GIN_MAYBE : GIN_FALSE);
-#endif
+
 			if (res != GIN_FALSE && !bigm_enable_recheck)
 				res = GIN_TRUE;
 			break;
