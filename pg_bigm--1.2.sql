@@ -74,11 +74,6 @@ RETURNS record
 AS 'MODULE_PATHNAME'
 LANGUAGE C STRICT IMMUTABLE;
 
-CREATE FUNCTION pg_gin_pending_cleanup(index regclass, delay boolean DEFAULT false)
-RETURNS int4
-AS 'MODULE_PATHNAME'
-LANGUAGE C STRICT IMMUTABLE;
-
 /* triConsistent function is available only in 9.4 or later */
 DO $$
 DECLARE

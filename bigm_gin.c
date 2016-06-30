@@ -26,11 +26,9 @@
 #include "catalog/pg_type.h"
 #include "funcapi.h"
 #include "mb/pg_wchar.h"
-#include "miscadmin.h"
 #include "storage/bufmgr.h"
 #include "storage/bufpage.h"
 #include "tsearch/ts_locale.h"
-#include "utils/acl.h"
 #include "utils/array.h"
 #include "utils/builtins.h"
 #include "utils/rel.h"
@@ -41,7 +39,6 @@ PG_FUNCTION_INFO_V1(gin_extract_query_bigm);
 PG_FUNCTION_INFO_V1(gin_bigm_consistent);
 PG_FUNCTION_INFO_V1(gin_bigm_compare_partial);
 PG_FUNCTION_INFO_V1(pg_gin_pending_stats);
-PG_FUNCTION_INFO_V1(pg_gin_pending_cleanup);
 
 /* triConsistent function is available only in 9.4 or later */
 #if PG_VERSION_NUM >= 90400
@@ -59,7 +56,6 @@ Datum		gin_extract_query_bigm(PG_FUNCTION_ARGS);
 Datum		gin_bigm_consistent(PG_FUNCTION_ARGS);
 Datum		gin_bigm_compare_partial(PG_FUNCTION_ARGS);
 Datum		pg_gin_pending_stats(PG_FUNCTION_ARGS);
-Datum		pg_gin_pending_cleanup(PG_FUNCTION_ARGS);
 #endif
 
 Datum
@@ -441,57 +437,4 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 
 	tuple = heap_form_tuple(tupdesc, values, isnull);
 	PG_RETURN_DATUM(HeapTupleGetDatum(tuple));
-}
-
-/*
- * Move tuples from pending pages into regular GIN structure.
- */
-Datum
-pg_gin_pending_cleanup(PG_FUNCTION_ARGS)
-{
-	Oid			relid = PG_GETARG_OID(0);
-	bool			delay = PG_GETARG_BOOL(1);
-	Relation	rel;
-	IndexBulkDeleteResult *stats;
-	GinState	ginstate;
-
-	rel = relation_open(relid, RowExclusiveLock);
-
-	if (!pg_class_ownercheck(relid, GetUserId()))
-		aclcheck_error(ACLCHECK_NOT_OWNER, ACL_KIND_CLASS,
-					   RelationGetRelationName(rel));
-
-	if (RecoveryInProgress())
-		ereport(ERROR,
-				(errcode(ERRCODE_OBJECT_NOT_IN_PREREQUISITE_STATE),
-				 errmsg("recovery is in progress"),
-				 errhint("GIN pending list cannot be cleaned up during recovery.")));
-
-	if (rel->rd_rel->relkind != RELKIND_INDEX ||
-		rel->rd_rel->relam != GIN_AM_OID)
-		ereport(ERROR,
-				(errcode(ERRCODE_WRONG_OBJECT_TYPE),
-				 errmsg("relation \"%s\" is not a GIN index",
-						RelationGetRelationName(rel))));
-
-	/*
-	 * Reject attempts to read non-local temporary relations; we would be
-	 * likely to get wrong data since we have no visibility into the owning
-	 * session's local buffers.
-	 */
-	if (RELATION_IS_OTHER_TEMP(rel))
-		ereport(ERROR,
-				(errcode(ERRCODE_FEATURE_NOT_SUPPORTED),
-				 errmsg("cannot access temporary indexes of other sessions")));
-
-	/*
-	 * Set up all-zero stats and cleanup pending inserts.
-	 */
-	stats = (IndexBulkDeleteResult *) palloc0(sizeof(IndexBulkDeleteResult));
-	initGinState(&ginstate, rel);
-	ginInsertCleanup(&ginstate, delay, stats);
-
-	relation_close(rel, RowExclusiveLock);
-
-	PG_RETURN_INT32(stats->pages_deleted);
 }

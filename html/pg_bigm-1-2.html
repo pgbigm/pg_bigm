@@ -419,36 +419,6 @@ GINインデックスの待機リストとFASTUPDATEオプションの詳細は�
 (1 row)
 </pre>
 
-<h3 id="pg_gin_pending_cleanup">pg_gin_pending_cleanup</h3>
-<p>pg_gin_pending_cleanupは、待機リストからGINインデックス(引数1)にデータを一括移動することで、待機リストを整理する関数です。</p>
-
-<ul>
-<li>引数1(regclass) - GINインデックスの名前もしくはOID</li>
-<li>引数2(boolean) - <a href="http://www.postgresql.jp/document/current/html/runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-VACUUM-COST">VACUUM遅延</a>を使うか?(デフォルト値はFALSE)</li>
-<li>戻り値1(integer) - 待機リストからGINインデックスに一括移動されたデータのページ数</li>
-</ul>
-
-<p>
-FASTUPDATEオプション無効で作成されたGINインデックスが引数1の場合、そのGINインデックスは待機リストを持たないため、待機リストの整理は発生せず、戻り値1は0となることに注意してください。
-GINインデックスの待機リストとFASTUPDATEオプションの詳細は、<a href="http://www.postgresql.jp/document/current/html/gin-implementation.html#GIN-FAST-UPDATE">GIN高速更新手法</a>を参照してください。
-</p>
-<p>
-引数2がTRUEの場合、この関数は、VACUUM遅延を使って待機リストの整理による負荷を平滑化します。
-引数2がFALSEもしくは未指定の場合は、この関数は全速力で待機リストを整理します。
-</p>
-<p>
-この関数を実行するには、GINインデックスの所有者もしくはスーパーユーザでなければなりません。
-この関数はリカバリ中には実行できません。
-</p>
-
-<pre>
-=# SELECT pg_gin_pending_cleanup('pg_tools_idx');
- pg_gin_pending_cleanup 
-------------------------
-                      1
-(1 row)
-</pre>
-
 <h2 id="parametares">パラメータ</h2>
 <h3 id="last_update">pg_bigm.last_update</h3>
 <p>pg_bigm.last_updateは、pg_bigmモジュールの最終更新日付を報告するパラメータです。このパラメータは読み取り専用です。 postgresql.confやSET文で設定値を変更することはできません。</p>
