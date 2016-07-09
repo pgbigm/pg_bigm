@@ -28,6 +28,7 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.2';
 
 <h2 id="release_note_2015-XX-YY">Version 1.2 (released on 2015-XX-YY)</h2>
 <ul>
+<li><p>Make pg_bigm available for parallel queries that was introduced in PostgreSQL 9.6 (Fujii Masao)</p></li>
 <li>
 <p>Support <a href="http://www.postgresql.org/docs/current/static/gin-extensibility.html">triConsistent</a> method for better performance (Fujii Masao)</p>
 <p>The triConsistent method makes the full-text search using pg_bigm much faster especially when a long search phrase is used</p>

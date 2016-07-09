@@ -17,3 +17,25 @@ BEGIN
     END IF;
 END;
 $$;
+
+/* Label whether the function is deemed safe for parallelism */
+DO $$
+DECLARE
+    pgversion TEXT;
+BEGIN
+    SELECT current_setting('server_version_num') INTO pgversion;
+    IF pgversion >= '90600' THEN
+        ALTER FUNCTION show_bigm(text) PARALLEL SAFE;
+        ALTER FUNCTION bigm_similarity(text, text) PARALLEL SAFE;
+        ALTER FUNCTION bigm_similarity_op(text, text) PARALLEL SAFE;
+        ALTER FUNCTION gin_extract_value_bigm(text, internal) PARALLEL SAFE;
+        ALTER FUNCTION gin_extract_query_bigm(text, internal, int2, internal, internal, internal, internal) PARALLEL SAFE;
+        ALTER FUNCTION gin_bigm_consistent(internal, int2, text, int4, internal, internal, internal, internal) PARALLEL SAFE;
+        ALTER FUNCTION gin_bigm_compare_partial(text, text, int2, internal) PARALLEL SAFE;
+        ALTER FUNCTION bigmtextcmp(text, text) PARALLEL SAFE;
+        ALTER FUNCTION likequery(text) PARALLEL SAFE;
+        ALTER FUNCTION pg_gin_pending_stats(index regclass) PARALLEL SAFE;
+        ALTER FUNCTION gin_bigm_triconsistent(internal, int2, text, int4, internal, internal, internal) PARALLEL SAFE;
+    END IF;
+END;
+$$;
