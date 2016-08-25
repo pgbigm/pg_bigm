@@ -4,10 +4,10 @@
 /* triConsistent function is available only in 9.4 or later */
 DO $$
 DECLARE
-    pgversion TEXT;
+    pgversion INTEGER;
 BEGIN
-    SELECT current_setting('server_version_num') INTO pgversion;
-    IF pgversion >= '90400' THEN
+    SELECT current_setting('server_version_num')::INTEGER INTO pgversion;
+    IF pgversion >= 90400 THEN
         CREATE FUNCTION gin_bigm_triconsistent(internal, int2, text, int4, internal, internal, internal)
         RETURNS "char"
         AS 'MODULE_PATHNAME'
@@ -21,10 +21,10 @@ $$;
 /* Label whether the function is deemed safe for parallelism */
 DO $$
 DECLARE
-    pgversion TEXT;
+    pgversion INTEGER;
 BEGIN
-    SELECT current_setting('server_version_num') INTO pgversion;
-    IF pgversion >= '90600' THEN
+    SELECT current_setting('server_version_num')::INTEGER INTO pgversion;
+    IF pgversion >= 90600 THEN
         ALTER FUNCTION show_bigm(text) PARALLEL SAFE;
         ALTER FUNCTION bigm_similarity(text, text) PARALLEL SAFE;
         ALTER FUNCTION bigm_similarity_op(text, text) PARALLEL SAFE;
