@@ -1,0 +1,45 @@
+language: c
+
+compiler: gcc
+
+env:
+   matrix:
+      - PGBRANCH=master
+      - PGBRANCH=REL9_6_STABLE
+      - PGBRANCH=REL9_5_STABLE
+      - PGBRANCH=REL9_4_STABLE
+      - PGBRANCH=REL9_3_STABLE
+      - PGBRANCH=REL9_2_STABLE
+      - PGBRANCH=REL9_1_STABLE
+
+before_install:
+   - sudo service postgresql stop
+   - CURDIR=$(pwd)
+   - PGHOME=${CURDIR}/${PGBRANCH}
+   - PGDATA=${PGHOME}/data
+   - git clone https://github.com/postgres/postgres.git
+   - cd postgres
+   - git checkout ${PGBRANCH}
+   - ./configure --prefix=${PGHOME} --enable-debug --enable-cassert
+   - make -j 2
+   - make install
+   - export PATH=${PATH}:${PGHOME}/bin
+   - initdb -D ${PGDATA} --locale=C --encoding=UTF8
+   - pg_ctl -D ${PGDATA} -w start
+
+before_script:
+   - cd ${CURDIR}
+   - make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config
+   - make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config install
+
+script:
+   - make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config installcheck
+
+after_script:
+   - if [ -f regression.diffs ]; then cat regression.diffs; fi
+   - pg_ctl -D ${PGDATA} stop
+
+notifications:
+   email:
+      on_success: change
+      on_failure: always
