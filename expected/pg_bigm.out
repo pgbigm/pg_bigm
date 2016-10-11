@@ -1,0 +1,2 @@
+CREATE EXTENSION pg_bigm;
+DROP EXTENSION pg_bigm;
