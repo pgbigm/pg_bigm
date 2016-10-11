@@ -27,19 +27,28 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.1';
 </pre>
 <p>gin_trgm_opsの演算子クラスを使って作成したインデックスがある場合、pg_bigmをバージョン1.0から1.1にアップグレードできません。これは、演算子クラスgin_trgm_opsがバージョン1.1でpg_bigmから削除されたためです。</p>
 
+<h2 id="release_note_2016-10-11">バージョン1.1 (2016-10-11 リリース)</h2>
+<ul>
+<li>
+ <p>pg_bigm 1.1をPostgreSQL 9.6以降に対応させました。 (Fujii Masao)</p>
+ <p>このバージョンは、PostgreSQL 9.6新機能のパラレルクエリには未対応であることに注意してください。pg_bigmをパラレルクエリで使いたい場合は、pg_bigm 1.2以降を試してください。</p>
+</li>
+<li><p>pg_bigm 1.1がPostgreSQL 9.5と9.6に対応していることをドキュメントに記載しました。(Fujii Masao)</p></li>
+</ul>
+
 <h2 id="release_note_2015-09-10">バージョン1.1 (2015-09-10 リリース)</h2>
 <ul>
 <li><p>利用可能なテキスト検索演算子に関する情報を、ドキュメント内にあるpg_trgmとpg_bigmの<a href="pg_bigm-1-1.html#pg_trgm">比較表</a>に追加しました。(Fujii Masao)</p></li>
 <li><p>引数で指定されたリレーションがGINインデックスかどうか、<a href="pg_bigm-1-1.html#pg_gin_pending_stats">pg_gin_pending_stats</a>関数に確認させるようにしました。(Fujii Masao)</p></li>
 <li><p><a href="pg_bigm-1-1.html#limitations">制約</a>に関する章をドキュメントに追加しました。(Beena Emerson, Masahiko Sawada)</p></li>
 <li><p>pg_bigmの全文検索インデックスを作成可能なカラムの最大サイズを43MBから102MBに増やしました。(Beena Emerson)</p></li>
-<li><p>pg_bigm1.1がPostgreSQL 9.4に対応していることをドキュメントに記載しました。(Fujii Masao)</p></li>
+<li><p>pg_bigm 1.1がPostgreSQL 9.4に対応していることをドキュメントに記載しました。(Fujii Masao)</p></li>
 <li><p>確保するメモリのサイズを計算する際のバッファオーバフローの可能性を修正しました。(Fujii Masao)</p></li>
 </ul>
 
 <h2 id="release_note_2013-11-22">バージョン1.1 (2013-11-22 リリース)</h2>
 <ul>
-<li><p>pg_bigmをPostgreSQL9.2以降に対応させました。 (Fujii Masao)</p></li>
+<li><p>pg_bigmをPostgreSQL 9.2以降に対応させました。 (Fujii Masao)</p></li>
 <li>
  <p>pg_bigmをpg_trgmと共存できるようにしました。 (Beena Emerson, Fujii Masao)</p>
  <p>以前のバージョンでは、pg_trgmとpg_bigmを同じデータベース内に登録できませんでした。これは、両方のモジュールが同じ演算子クラスgin_trgm_opsを定義していたからです。この演算子クラスは、バージョン1.1でpg_bigmから削除されました。</p>
