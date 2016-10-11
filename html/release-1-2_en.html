@@ -33,6 +33,7 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.2';
 <p>Support <a href="http://www.postgresql.org/docs/current/static/gin-extensibility.html">triConsistent</a> method for better performance (Fujii Masao)</p>
 <p>The triConsistent method makes the full-text search using pg_bigm much faster especially when a long search phrase is used</p>
 </li>
+<li><p>Improve performance of <a href="pg_bigm_en-1-2.html#similarity_search">similarity search</a> (Fujii Masao)</p></li>
 <li><p>Add the information about the available text search operators into the <a href="pg_bigm_en-1-2.html#pg_trgm">comparison table</a> of pg_trgm and pg_bigm in the document (Fujii Masao)</p></li>
 <li><p>Make <a href="pg_bigm_en-1-2.html#pg_gin_pending_stats">pg_gin_pending_stats</a> function check whether the given relation is a GIN index (Fujii Masao)</p></li>
 <li><p>Add the <a href="pg_bigm_en-1-2.html#limitations">limitations</a> section into the document (Beena Emerson, Masahiko Sawada)</p></li>
