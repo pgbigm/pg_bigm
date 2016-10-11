@@ -114,7 +114,7 @@ For example, x.y is 1.1 and YYYYMMDD is 20131122 if the file of the version 1.1 
 </tr>
 <tr>
   <td>DBMS</td>
-  <td nowrap>PostgreSQL 9.1, 9.2, 9.3, 9.4, 9.5</td>
+  <td nowrap>PostgreSQL 9.1, 9.2, 9.3, 9.4, 9.5, 9.6</td>
 </tr>
 </tbody>
 </table>
@@ -507,6 +507,10 @@ ERROR:  out of memory
 </pre>
 
 <p>pg_trgm also has this limitation. However, the maximum size in the case of trgm indexed column is 238,609,291 Bytes (~228MB).</p>
+
+<h3 id="parallel_query">Parallel Query</h3>
+
+<p>pg_bigm 1.1 is not available for parallel query feature which was supported in PostgreSQL 9.6. Please try pg_bigm 1.2 or later if you want to use pg_bigm with parallel query.</p>
 
 <h2 id="release_notes">Release Notes</h2>
 <ul>

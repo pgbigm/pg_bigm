@@ -114,7 +114,7 @@
 </tr>
 <tr>
   <td>DBMS</td>
-  <td nowrap>PostgreSQL 9.1, 9.2, 9.3, 9.4, 9.5</td>
+  <td nowrap>PostgreSQL 9.1, 9.2, 9.3, 9.4, 9.5, 9.6</td>
 </tr>
 </tbody>
 </table>
@@ -508,6 +508,10 @@ ERROR:  out of memory
 </pre>
 
 <p>この制約はpg_trgmにも存在しますが、pg_trgmでは最大238,609,291Byte (約228MB)までインデックスの作成が可能です。</p>
+
+<h3 id="parallel_query">パラレルクエリ</h3>
+
+<p>pg_bigm 1.1は、PostgreSQL9.6でサポートされたパラレルクエリに未対応です。pg_bigmをパラレルクエリで使いたい場合は、pg_bigm 1.2以降を試してください。</p>
 
 <h2 id="release_notes">リリースノート</h2>
 <ul>
