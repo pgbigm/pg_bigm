@@ -7,4 +7,4 @@ pg_bigm is released under the [PostgreSQL License](https://opensource.org/licens
 For more information look at [the official pg_bigm web site](http://pgbigm.osdn.jp/index_en.html).
 
 ## Test Status
-[![Build Status](https://travis-ci.org/MasaoFujii/pg_bigm.svg?branch=master)](https://travis-ci.org/MasaoFujii/pg_bigm)
+[![Build Status](https://travis-ci.org/MasaoFujii/pg_bigm.svg?branch=REL1_0_STABLE)](https://travis-ci.org/MasaoFujii/pg_bigm)
