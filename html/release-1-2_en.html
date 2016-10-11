@@ -26,19 +26,14 @@
 ALTER EXTENSION pg_bigm UPDATE TO '1.2';
 </pre>
 
-<h2 id="release_note_2015-XX-YY">Version 1.2 (released on 2015-XX-YY)</h2>
+<h2 id="release_note_2016-10-11">Version 1.2 (released on 2016-10-11)</h2>
 <ul>
 <li><p>Make pg_bigm available for parallel queries that was introduced in PostgreSQL 9.6 (Fujii Masao)</p></li>
 <li>
-<p>Support <a href="http://www.postgresql.org/docs/current/static/gin-extensibility.html">triConsistent</a> method for better performance (Fujii Masao)</p>
-<p>The triConsistent method makes the full-text search using pg_bigm much faster especially when a long search phrase is used</p>
+<p>Support <a href="http://www.postgresql.org/docs/current/static/gin-extensibility.html">triConsistent</a> method that was introduced in PostgreSQL 9.4, for better performance (Fujii Masao)</p>
+<p>In 9.4 or later, the triConsistent method makes the full-text search using pg_bigm much faster especially when a long search phrase is used.</p>
 </li>
 <li><p>Improve performance of <a href="pg_bigm_en-1-2.html#similarity_search">similarity search</a> (Fujii Masao)</p></li>
-<li><p>Add the information about the available text search operators into the <a href="pg_bigm_en-1-2.html#pg_trgm">comparison table</a> of pg_trgm and pg_bigm in the document (Fujii Masao)</p></li>
-<li><p>Make <a href="pg_bigm_en-1-2.html#pg_gin_pending_stats">pg_gin_pending_stats</a> function check whether the given relation is a GIN index (Fujii Masao)</p></li>
-<li><p>Add the <a href="pg_bigm_en-1-2.html#limitations">limitations</a> section into the document (Beena Emerson, Masahiko Sawada)</p></li>
-<li><p>Increase the maximum size of the column indexed by pg_bigm GIN index from 43MB to 102MB (Beena Emerson)</p></li>
-<li><p>Fix possible overflow in calculations of memory allocation request sizes (Fujii Masao)</p></li>
 </ul>
 
 <hr>
