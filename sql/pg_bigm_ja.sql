@@ -9,6 +9,9 @@ SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
 SET pg_bigm.similarity_limit = 0.02;
 
+-- reduce noise
+SET extra_float_digits TO 0;
+
 -- tests for likequery
 SELECT likequery('ポスグレの全文検索');
 SELECT likequery('pg_bigmは検索性能を200%向上させました');

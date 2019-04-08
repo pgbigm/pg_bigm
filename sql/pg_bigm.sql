@@ -9,6 +9,9 @@ SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
 SET pg_bigm.similarity_limit = 0.02;
 
+-- reduce noise
+SET extra_float_digits TO 0;
+
 -- tests for pg_bigm.last_update
 SHOW pg_bigm.last_update;
 SET pg_bigm.last_update = '2013.09.18';
