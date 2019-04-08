@@ -17,6 +17,9 @@
 #include "access/gin.h"
 #include "access/gin_private.h"
 #include "access/itup.h"
+#if PG_VERSION_NUM >= 120000
+#include "access/relation.h"
+#endif
 #include "access/skey.h"
 #include "access/tuptoaster.h"
 #include "access/xlog.h"
@@ -417,7 +420,11 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 	 * Construct a tuple descriptor for the result row. This must match this
 	 * function's pg_bigm--x.x.sql entry.
 	 */
+ #if PG_VERSION_NUM >= 120000
+	tupdesc = CreateTemplateTupleDesc(2);
+#else
 	tupdesc = CreateTemplateTupleDesc(2, false);
+#endif
 	TupleDescInitEntry(tupdesc, (AttrNumber) 1,
 					   "pages", INT4OID, -1, 0);
 	TupleDescInitEntry(tupdesc, (AttrNumber) 2,
