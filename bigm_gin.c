@@ -21,7 +21,9 @@
 #include "access/relation.h"
 #endif
 #include "access/skey.h"
+#if PG_VERSION_NUM < 130000
 #include "access/tuptoaster.h"
+#endif
 #include "access/xlog.h"
 #if PG_VERSION_NUM > 90500
 #include "catalog/pg_am.h"
