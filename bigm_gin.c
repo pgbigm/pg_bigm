@@ -1,7 +1,8 @@
 /*-------------------------------------------------------------------------
  *
- * Portions Copyright (c) 2007-2012, PostgreSQL Global Development Group
+ * Portions Copyright (c) 2017-2019, pg_bigm Development Group
  * Portions Copyright (c) 2013-2016, NTT DATA Corporation
+ * Portions Copyright (c) 2007-2012, PostgreSQL Global Development Group
  *
  * Changelog:
  *	 2013/01/09
