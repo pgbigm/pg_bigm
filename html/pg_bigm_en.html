@@ -1,0 +1,436 @@
+<html>
+<head>
+<title>pg_bigm 1.0 Document</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="navigation">
+    <ul>
+      <li><a href="index_en.html">Home</a></li>
+      <li><a href="http://en.osdn.jp/projects/pgbigm/releases/?package_id=13634">Download</a></li>
+      <li><a href="pg_bigm_en.html">Document</a></li>
+      <li><a href="index_en.html#community">Community</a></li>
+      <li><a href="index_en.html#development">Development</a></li>
+      <li><a href="pg_bigm.html">日本語</a></li>
+    </ul>
+  </div>
+
+<h1 id="pg_bigm">Document (Release 1.0)</h1>
+
+<div class="index">
+<ol>
+<li><a href="#description">Overview</a></li>
+<li><a href="#pg_trgm">Comparison with pg_trgm</a></li>
+<li><a href="#requirement">Tested platforms</a></li>
+<li><a href="#install">Install</a></li>
+<li><a href="#uninstall">Uninstall</a></li>
+<li><a href="#fulltext_search">Full text search</a></li>
+<li><a href="#functions">Functions</a></li>
+<li><a href="#parametares">Parameters</a></li>
+<li><a href="#limitations">Limitations</a></li>
+<li><a href="#release_notes">Release Notes</a></li>
+</ol>
+</div>
+
+<h2 id="description">Overview</h2>
+<p>The pg_bigm module provides full text search capability in <a href="http://www.postgresql.org/">PostgreSQL</a>. This module allows a user to create <b>2-gram</b> (bigram) index for faster full text search.</p>
+<p>The <a href="http://en.osdn.jp/projects/pgbigm/">pg_bigm project</a> provides the following one module.</p>
+
+<table>
+<thead>
+<tr>
+<th>Module</th><th>Description</th><th>Source Archive File Name</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>pg_bigm</td>
+  <td nowrap>Module that provides full text search capability in PostgreSQL</td>
+  <td>pg_bigm-x.y-YYYYMMDD.tar.gz</td></tr>
+</tbody>
+</table>
+
+<p>
+The x.y and YYYYMMDD parts of the source archive file name are replaced with its release version number and date, respectively.
+For example, x.y is 1.1 and YYYYMMDD is 20131122 if the file of the version 1.1 was released on November 22, 2013.
+</p>
+<p>The license of pg_bigm is <a href="http://opensource.org/licenses/postgresql">The PostgreSQL License</a> (same as BSD license).</p>
+
+<h2 id="pg_trgm">Comparison with pg_trgm</h2>
+<p>The <a href="http://www.postgresql.jp/document/current/html/pgtrgm.html">pg_trgm</a> contrib module which provides full text search capability using 3-gram (trigram) model is included in PostgreSQL. The pg_bigm was developed based on the pg_trgm. They have the following differences:</p>
+
+<table>
+<thead>
+<tr>
+<th>Functionalities and Features</th><th>pg_trgm</th><th>pg_bigm</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Phrase matching method for full text search</td>
+  <td nowrap>3-gram</td>
+  <td>2-gram</td></tr>
+<tr><td>Available index</td>
+  <td nowrap>GIN and GiST</td>
+  <td>GIN only</td></tr>
+<tr><td>Available text search operators</td>
+  <td nowrap>LIKE (~~), ILIKE (~~*), ~, ~*</td>
+  <td>LIKE only</td></tr>
+<tr><td>Full text search for non-alphabetic language<br>(e.g., Japanese)</td>
+  <td nowrap>Not supported (*1)</td>
+  <td>Supported</td></tr>
+<tr><td>Full text search with 1-2 characters keyword</td>
+  <td nowrap>Slow (*2)</td>
+  <td>Fast</td></tr>
+<tr><td>Similarity search</td>
+  <td nowrap>Supported</td>
+  <td>Not supported</td></tr>
+<tr><td>Maximum indexed column size</td>
+  <td nowrap>238,609,291 Bytes (~228MB)</td>
+  <td nowrap>107,374,180 Bytes (~102MB)</td></tr>
+</tbody>
+</table>
+
+<ul>
+<li>(*1) You can use full text search for non-alphabetic language by commenting out KEEPONLYALNUM macro variable in contrib/pg_trgm/pg_trgm.h and rebuilding pg_trgm module. But pg_bigm provides faster non-alphabetic search than such a modified pg_trgm.</li>
+<li>(*2) Because, in this search, only sequential scan or index full scan (not normal index scan) can run.</li>
+</ul>
+
+<p>pg_bigm cannot coexist with pg_trgm in the same database. Please don't load pg_trgm into the database that you want to use pg_bigm in.</p>
+
+<h2 id="requirement">Tested platforms</h2>
+<p>pg_bigm has been built and tested on the following platforms:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th><th>Module Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>OS</td>
+  <td nowrap>Red Hat Enterprise Linux 6.1 x86_64</td>
+</tr>
+<tr>
+  <td>DBMS</td>
+  <td nowrap>PostgreSQL 9.1, 9.2</td>
+</tr>
+</tbody>
+</table>
+
+<p>pg_bigm requires PostgreSQL 9.1 or later.</p>
+
+<h2 id="install">Install</h2>
+
+<h3 id="pg_install">Install PostgreSQL</h3>
+<p>From the <a href="http://www.postgresql.org/">official site of PostgreSQL</a> download the source archive file "postgresql-X.Y.Z.tar.gz (please replace X.Y.Z with actual version number)" of PostgreSQL, and then build and install it.</p>
+<pre>
+$ tar zxf postgresql-X.Y.Z.tar.gz
+$ cd postgresql-X.Y.Z
+$ ./configure --prefix=/opt/pgsql-X.Y.Z
+$ make
+$ su
+# make install
+# exit</pre>
+<ul>
+<li>--prefix : Specify the PostgreSQL installation directory. This is optional. By default, PostgreSQL is installed in /usr/local/pgsql.</li>
+</ul>
+<p>If PostgreSQL is installed from RPM, the postgresql-devel package must be installed to build pg_bigm.</p>
+
+<h3 id="bigm_install">Install pg_bigm</h3>
+<p>Download the source archive file of pg_bigm from <a href="http://en.osdn.jp/projects/pgbigm/releases/?package_id=13634">here</a>, and then build and install it.</p>
+<pre>
+$ tar zxf pg_bigm-x.y-YYYYMMDD.tar.gz
+$ cd pg_bigm-x.y-YYYYMMDD
+$ make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config
+$ su
+# make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config install
+# exit
+</pre>
+<ul>
+<li>USE_PGXS : USE_PGXS=1 must be always specified when building pg_bigm.</li>
+<li>PG_CONFIG : Specify the path to <a href="http://www.postgresql.org/docs/current/static/app-pgconfig.html">pg_config</a> (which exists in the bin directory of PostgreSQL installation). If the PATH environment variable contains the path to pg_config, PG_CONFIG doesn't need to be specified.</li>
+</ul>
+
+<h3 id="bigm_register">Load pg_bigm</h3>
+<p>Create the database cluster, modify postgresql.conf, start PostgreSQL server and then load pg_bigm into the database.</p>
+<pre>
+$ initdb -D $PGDATA --locale=C --encoding=UTF8
+
+$ vi $PGDATA/postgresql.conf
+shared_preload_libraries = 'pg_bigm'
+custom_variable_classes = 'pg_bigm'
+
+$ pg_ctl -D $PGDATA start
+$ psql -d &lt;database name&gt;
+=# CREATE EXTENSION pg_bigm;
+=# \dx pg_bigm
+                    List of installed extensions
+  Name   | Version | Schema |              Description
+---------+---------+--------+---------------------------------------
+ pg_bigm | 1.0     | public | text index searching based on bigrams
+(1 row)
+</pre>
+
+<ul>
+<li>Replace $PGDATA with the path to database cluster.</li>
+<li>pg_bigm supports all PostgreSQL encoding and locale.</li>
+<li>In postgresql.conf, pg_bigm must be added into <a href="http://www.postgresql.org/docs/current/static/runtime-config-resource.html#GUC-SHARED-PRELOAD-LIBRARIES">shared_preload_libraries</a> and <a href="http://www.postgresql.org/docs/current/static/runtime-config-custom.html#GUC-CUSTOM-VARIABLE-CLASSES">custom_variable_classes</a>.
+  <ul>
+    <li>In PostgreSQL 9.2 or later, you need to set only shared_preload_libraries because custom_variable_classes doesn't exist.</li>
+  </ul>
+</li>
+<li><a href="http://www.postgresql.org/docs/current/static/sql-createextension.html">CREATE EXTENSION</a> pg_bigm needs to be executed in all the databases that you want to use pg_bigm in.</li>
+<li>pg_bigm cannot coexist with pg_trgm in the same database. Please don't load pg_trgm into the database that you want to use pg_bigm in.</li>
+</ul>
+
+
+<h2 id="uninstall">Uninstall</h2>
+
+<h3 id="bigm_uninstall">Delete pg_bigm</h3>
+<p>Unload pg_bigm from the database and then uninstall it.</p>
+<pre>
+$ psql -d &lt;database name&gt;
+=# DROP EXTENSION pg_bigm CASCADE;
+=# \q
+
+$ pg_ctl -D $PGDATA stop
+$ su
+
+# cd &lt;pg_bigm source directory&gt;
+# make USE_PGXS=1 PG_CONFIG=/opt/pgsql-X.Y.Z/bin/pg_config uninstall
+# exit
+</pre>
+
+<ul>
+<li>pg_bigm needs to be unloaded from all the databases that it was loaded into.</li>
+<li><a href="http://www.postgresql.org/docs/current/static/sql-dropextension.html">DROP EXTENSION</a> pg_bigm needs to be executed with CASCADE option to delete all the database objects which depend on pg_bigm, e.g., pg_bigm full text search index.</li>
+</ul>
+
+<h3 id="delete_conf">Reset postgresql.conf</h3>
+<p>Delete the following pg_bigm related settings from postgresql.conf.</p>
+<ul>
+<li>shared_preload_libraries</li>
+<li>custom_variable_classes</li>
+<li>pg_bigm.* (parameters which begin with pg_bigm)</li>
+</ul>
+
+<h2 id="fulltext_search">Full text search</h2>
+
+<h3 id="create_index">Create Index</h3>
+<p>You can create an index for full text search by using GIN index.</p>
+<p>The following example creates the table <i>pg_tools</i> which stores the name and description of PostgreSQL related tool, inserts four records into the table, and then creates the full text search index on the <i>description</i> column.</p>
+
+<pre>
+=# CREATE TABLE pg_tools (tool text, description text);
+
+=# INSERT INTO pg_tools VALUES ('pg_hint_plan', 'Tool that allows a user to specify an optimizer HINT to PostgreSQL');
+=# INSERT INTO pg_tools VALUES ('pg_dbms_stats', 'Tool that allows a user to stabilize planner statistics in PostgreSQL');
+=# INSERT INTO pg_tools VALUES ('pg_bigm', 'Tool that provides 2-gram full text search capability in PostgreSQL');
+=# INSERT INTO pg_tools VALUES ('pg_trgm', 'Tool that provides 3-gram full text search capability in PostgreSQL');
+
+=# CREATE INDEX pg_tools_idx ON pg_tools USING gin (description gin_bigm_ops);
+</pre>
+
+<ul>
+<li><b>gin</b> must be used as an index method. GiST is not available for pg_bigm.</li>
+<li><b>gin_bigm_ops</b> must be used as an operator class.</li>
+</ul>
+
+<p>You can also create multicolumn pg_bigm index and specify GIN related parameters then, as follows.</p>
+
+<pre>
+=# CREATE INDEX pg_tools_multi_idx ON pg_tools USING gin (tool gin_bigm_ops, description gin_bigm_ops) WITH (FASTUPDATE = off);
+</pre>
+
+<h3 id="do_fulltext_search">Execute full text search</h3>
+<p>You can execute full text search by using LIKE pattern matching.</p>
+<pre>
+=# SELECT * FROM pg_tools WHERE description LIKE '%search%';
+  tool   |                             description                             
+---------+---------------------------------------------------------------------
+ pg_bigm | Tool that provides 2-gram full text search capability in PostgreSQL
+ pg_trgm | Tool that provides 3-gram full text search capability in PostgreSQL
+(2 rows)
+</pre>
+<ul>
+<li>The search keyword must be specified as the pattern string that LIKE operator can handle properly, as discussed in <a href="#likequery">likequery</a>.</li>
+</ul>
+
+<h2 id="functions">Functions</h2>
+<h3 id="likequery">likequery</h3>
+<p>likequery is a function that converts the search keyword (argument #1) into the pattern string that LIKE operator can handle properly.</p>
+<ul>
+<li>Argument #1 (text) - search keyword</li>
+<li>Return value (text) - pattern string that was converted from argument #1 so that LIKE operator can handle properly</li>
+</ul>
+
+<p>If the argument #1 is NULL, the return value is also NULL.</p>
+
+<p>This function does the conversion as follows:</p>
+<ul>
+<li>appends % (single-byte percent) into both the beginning and the end of the search keyword.</li>
+<li>escapes the characters % (single-byte percent), _ (single-byte underscore) and \ (single-byte backslash) in the search keyword by using \ (single-byte backslash).</li>
+</ul>
+
+<p>In pg_bigm, full text search is performed by using LIKE pattern matching. Therefore, the search keyword needs to be converted into the pattern string that LIKE operator can handle properly. Usually a client application should be responsible for this conversion. But, you can save the effort of implementing such a conversion logic in the application by using likequery function.</p>
+
+<pre>
+=# SELECT likequery('pg_bigm has improved the full text search performance by 200%');
+                             likequery                             
+-------------------------------------------------------------------
+ %pg\_bigm has improved the full text search performance by 200\%%
+(1 row)
+</pre>
+
+<p>Using likequery, you can rewrite the full text search query which was used in the example in "Execute full text search" into:</p>
+<pre>
+=# SELECT * FROM pg_tools WHERE description LIKE likequery('search');
+  tool   |                             description                             
+---------+---------------------------------------------------------------------
+ pg_bigm | Tool that provides 2-gram full text search capability in PostgreSQL
+ pg_trgm | Tool that provides 3-gram full text search capability in PostgreSQL
+(2 rows)
+</pre>
+
+<h3 id="show_bigm">show_bigm</h3>
+<p>show_bigm returns an array of all the 2-grams in the given string (argument #1).</p>
+
+<ul>
+<li>Argument #1 (text) - character string</li>
+<li>Return value (text[]) - an array of all the 2-grams in argument #1</li>
+</ul>
+
+<p>A 2-gram that show_bigm returns is a group of two consecutive characters taken from a string that blank character has been appended into the beginning and the end. For example, the 2-grams of the string "ABC" are "(blank)A" "AB" "BC" "C(blank)".</p>
+
+<pre>
+=# SELECT show_bigm('full text search');
+                            show_bigm                             
+------------------------------------------------------------------
+ {" f"," s"," t",ar,ch,ea,ex,fu,"h ","l ",ll,rc,se,"t ",te,ul,xt}
+(1 row)
+</pre>
+
+<h3 id="pg_gin_pending_stats">pg_gin_pending_stats</h3>
+<p>pg_gin_pending_stats is a function that returns the number of pages and tuples in the pending list of GIN index (argument #1).</p>
+
+<ul>
+<li>Argument #1 (regclass) - Name or OID of GIN index</li>
+<li>Return value #1 (integer) - Number of pages in the pending list</li>
+<li>Return value #2 (bigint) - Number of tuples in the pending list</li>
+</ul>
+
+<p>
+Note that the return value #1 and #2 are 0 if the argument #1 is the GIN index built with FASTUPDATE option disabled because it doesn't have a pending list.
+Please see <a href="http://www.postgresql.org/docs/current/static/gin-implementation.html#GIN-FAST-UPDATE">GIN Fast Update Technique</a> for details of the pending list and FASTUPDATE option.
+</p>
+
+<pre>
+=# SELECT * FROM pg_gin_pending_stats('pg_tools_idx');
+ pages | tuples
+-------+--------
+     1 |      4
+(1 row)
+</pre>
+
+<h2 id="parametares">Parameters</h2>
+<h3 id="last_update">pg_bigm.last_update</h3>
+<p>pg_bigm.last_update is a parameter that reports the last updated date of the pg_bigm module. This parameter is read-only. You cannot change the value of this parameter at all.</p>
+
+<pre>
+=# SHOW pg_bigm.last_update;
+ pg_bigm.last_update
+---------------------
+ 2013.11.22
+(1 row)
+</pre>
+
+<h3 id="enable_recheck">pg_bigm.enable_recheck</h3>
+<p>pg_bigm.enable_recheck is a parameter that specifies whether to perform Recheck which is an internal process of full text search. The default value is on, i.e., Recheck is performed. Not only superuser but also any user can change this parameter value in postgresql.conf or by using SET command. This parameter must be enabled if you want to obtain the correct search result.</p>
+
+<p>PostgreSQL and pg_bigm internally perform the following processes to get the search results:</p>
+
+<ul>
+<li>retrieve the result candidates from full text search index.</li>
+<li>choose the correct search results from the candidates.</li>
+</ul>
+
+<p>The latter process is called Recheck. The result candidates retrieved from full text search index may contain wrong results. Recheck process gets rid of such wrong results.</p>
+
+<p>For example, imagine the case where two character strings "He is awaiting trial" and "It was a trivial mistake" are stored in a table. The correct search result with the keyword "trial" is "He is awaiting trial". However, "It was a trivial mistake" is also retrieved as the result candidate from the full text search index because it contains all the 2-grams ("al", "ia", "ri", "tr") of the search keyword "trial". Recheck process tests whether each candidate contains the search keyword itself, and then chooses only the correct results.</p>
+
+<p>How Recheck narrows down the search result can be observed in the result of EXPLAIN ANALYZE.</p>
+
+<pre>
+=# CREATE TABLE tbl (doc text);
+=# INSERT INTO tbl VALUES('He is awaiting trial');
+=# INSERT INTO tbl VALUES('It was a trivial mistake');
+=# CREATE INDEX tbl_idx ON tbl USING gin (doc gin_bigm_ops);
+=# SET enable_seqscan TO off;
+=# EXPLAIN ANALYZE SELECT * FROM tbl WHERE doc LIKE likequery('trial');
+                                                   QUERY PLAN                                                    
+-----------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on tbl  (cost=12.00..16.01 rows=1 width=32) (actual time=0.041..0.044 rows=1 loops=1)
+   Recheck Cond: (doc ~~ '%trial%'::text)
+   Rows Removed by Index Recheck: 1
+   -&gt;  Bitmap Index Scan on tbl_idx  (cost=0.00..12.00 rows=1 width=0) (actual time=0.028..0.028 rows=2 loops=1)
+         Index Cond: (doc ~~ '%trial%'::text)
+ Total runtime: 0.113 ms
+(6 rows)
+</pre>
+
+<p>In this example, you can see that Bitmap Index Scan retrieved two rows from the full text search index but Bitmap Heap Scan returned only one row after Recheck process.</p>
+
+<p>It is possible to skip Recheck process and get the result candidates retrieved from the full text search index as the final results, by disabling this parameter. In the following example, wrong result "It was a trivial mistake" is also returned because the parameter is disabled.</p>
+
+<pre>
+=# SELECT * FROM tbl WHERE doc LIKE likequery('trial');
+         doc          
+----------------------
+ He is awaiting trial
+(1 row)
+
+=# SET pg_bigm.enable_recheck = off;
+=# SELECT * FROM tbl WHERE doc LIKE likequery('trial');
+           doc            
+--------------------------
+ He is awaiting trial
+ It was a trivial mistake
+(2 rows)
+</pre>
+
+<p>This parameter must be enabled if you want to obtain the correct search result. On the other hand, you may need to set it to off, for example, for evaluation of Recheck performance overhead or debugging, etc.</p>
+
+<h3 id="gin_key_limit">pg_bigm.gin_key_limit</h3>
+<p>pg_bigm.gin_key_limit is a parameter that specifies the maximum number of 2-grams of the search keyword to be used for full text search. If it's set to zero (default), all the 2-grams of the search keyword are used for full text search. Not only superuser but also any user can change this parameter value in postgresql.conf or by using SET command.</p>
+
+<p>PostgreSQL and pg_bigm basically use all the 2-grams of search keyword to scan GIN index. However, in current implementation of GIN index, the more 2-grams are used, the more performance overhead of GIN index scan is increased. In the system that large search keyword is often used, full text search is likely to be slow. This performance issue can be solved by using this parameter and limiting the maximum number of 2-grams to be used.</p>
+
+<p>On the other hand, the less 2-grams are used, the more wrong results are included in the result candidates retrieved from full text search index. Please note that this can increase the workload of Recheck and decrease the performance.</p>
+
+<h2 id="limitations">Limitations</h2>
+<h3 id="indexed_column_size">Indexed Column Size</h3>
+
+<p>The size of the column indexed by bigm GIN index cannot exceed 107,374,180 Bytes (~102MB). Any attempt to enter larger values will result in an error. </p>
+
+<pre>
+=# CREATE TABLE t1 (description text);
+=# CREATE INDEX t1_idx ON t1 USING gin (description gin_bigm_ops);
+=# INSERT INTO t1 SELECT repeat('A', 107374181);
+ERROR:  out of memory
+</pre>
+
+<p>pg_trgm also has this limitation. However, the maximum size in the case of trgm indexed column is 238,609,291 Bytes (~228MB).</p>
+
+<h2 id="release_notes">Release Notes</h2>
+<ul>
+<li><a href="release-1-0_en.html">Version 1.0</a></li>
+</ul>
+
+<hr>
+<div align="right">Copyright (c) 2017-2019, pg_bigm Development Group</div>
+<div align="right">Copyright (c) 2012-2016, NTT DATA Corporation</div>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>pg_bigm: リリース 1.0</title>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="navigation">
+    <ul>
+      <li><a href="index.html">ホーム</a></li>
+      <li><a href="http://osdn.jp/projects/pgbigm/releases/?package_id=13634">ダウンロード</a></li>
+      <li><a href="pg_bigm.html">ドキュメント</a></li>
+      <li><a href="index.html#community">コミュニティ</a></li>
+      <li><a href="index.html#development">開発</a></li>
+      <li><a href="release-1-0_en.html">English</a></li>
+    </ul>
+  </div>
+
+<h1 id="release_note">リリースノート</h1>
+
+<h2 id="release_note_2015-09-10">バージョン1.0 (2015-09-10 リリース)</h2>
+<ul>
+<li><p>利用可能なテキスト検索演算子に関する情報を、ドキュメント内にあるpg_trgmとpg_bigmの<a href="pg_bigm.html#pg_trgm">比較表</a>に追加しました。(Fujii Masao)</p></li>
+<li><p>引数で指定されたリレーションがGINインデックスかどうか、<a href="pg_bigm.html#pg_gin_pending_stats">pg_gin_pending_stats</a>関数に確認させるようにしました。(Fujii Masao)</p></li>
+<li><p><a href="pg_bigm.html#limitations">制約</a>に関する章をドキュメントに追加しました。(Beena Emerson, Masahiko Sawada)</p></li>
+<li><p>pg_bigmの全文検索インデックスを作成可能なカラムの最大サイズを43MBから102MBに増やしました。(Beena Emerson)</p></li>
+<li><p>確保するメモリのサイズを計算する際のバッファオーバフローの可能性を修正しました。(Fujii Masao)</p></li>
+</ul>
+
+<h2 id="release_note_2013-11-22">バージョン1.0 (2013-11-22 リリース)</h2>
+<ul>
+<li><p>英語ドキュメントを追加しました。 (Beena Emerson, Fujii Masao)</p></li>
+<li><p>gin_key_limit = 1のときのenable_recheckの挙動に関するバグを修正しました。 (Fujii Masao, Beena Emerson)</p></li>
+<li><p>使用できるエンコーディングとロケールの制約を取り除きました。 (Beena Emerson, Amit Langote, Fujii Masao)</p></li>
+</ul>
+
+<hr>
+<div align="right">Copyright (c) 2017-2019, pg_bigm Development Group</div>
+<div align="right">Copyright (c) 2012-2016, NTT DATA Corporation</div>
+
+</body>
+</html>
