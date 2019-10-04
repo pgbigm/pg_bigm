@@ -1,4 +1,5 @@
 # Global excludes across all subdirectories
+*.bc
 *.o
 *.so
 regression.*
