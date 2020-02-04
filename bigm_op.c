@@ -611,25 +611,6 @@ likequery(PG_FUNCTION_ARGS)
 	PG_RETURN_TEXT_P(result);
 }
 
-inline int
-bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
-{
-	int			i;
-	int			len = Min(len1, len2);
-
-	for (i = 0; i < len; i++, arg1++, arg2++)
-	{
-		if (*arg1 == *arg2)
-			continue;
-		if (*arg1 < *arg2)
-			return -1;
-		else
-			return 1;
-	}
-
-	return (len1 == len2) ? 0 : ((len1 < len2) ? -1 : 1);
-}
-
 Datum
 bigmtextcmp(PG_FUNCTION_ARGS)
 {
