@@ -41,7 +41,11 @@ CREATE INDEX test_bigm_idx ON test_bigm
 \copy test_bigm from 'data/bigm.csv' with csv
 
 -- tests pg_gin_pending_stats
-SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
+
+-- exclude pages column from the return values of only this call of
+-- pg_gin_pending_stats(), in order to stabilize the result of
+-- this regression test whatever block size is used in PostgreSQL server.
+SELECT tuples FROM pg_gin_pending_stats('test_bigm_idx');
 VACUUM;
 SELECT * FROM pg_gin_pending_stats('test_bigm_idx');
 SELECT * FROM pg_gin_pending_stats('test_bigm');
