@@ -27,6 +27,14 @@ ALTER EXTENSION pg_bigm UPDATE TO '1.1';
 </pre>
 <p>Kindly note that if an existing index uses "gin_trgm_ops" in the database then it will not possible to upgrade from 1.0 to 1.1 since the operator class "gin_trgm_ops" is dropped in version 1.1.</p>
 
+<h2 id="release_note_2020-02-XX">Version 1.1 (released on 2020-02-XX)</h2>
+<ul>
+<li>
+ <p>Document that pg_bigm 1.1 was confirmed to work with PostgreSQL 10 and 11 (Fujii Masao)</p>
+ <p>Note that this version does not support PostgreSQL 12 or later. Please try pg_bigm 1.2 if you want to use PostgreSQL 12 or later.</p>
+</li>
+</ul>
+
 <h2 id="release_note_2016-10-11">Version 1.1 (released on 2016-10-11)</h2>
 <ul>
 <li>
