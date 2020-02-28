@@ -10,7 +10,7 @@ SET pg_bigm.similarity_limit = 0.02;
 SHOW pg_bigm.last_update;
  pg_bigm.last_update 
 ---------------------
- 2016.10.11
+ 2020.02.28
 (1 row)
 
 SET pg_bigm.last_update = '2013.09.18';
