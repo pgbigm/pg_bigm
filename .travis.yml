@@ -21,11 +21,15 @@ before_install:
    - CURDIR=$(pwd)
    - PGHOME=${CURDIR}/${PGBRANCH}
    - PGDATA=${PGHOME}/data
+   - PGSRC=${CURDIR}/postgres
+   - TRGMSRC=${PGSRC}/contrib/pg_trgm
    - git clone https://github.com/postgres/postgres.git
-   - cd postgres
+   - cd ${PGSRC}
    - git checkout ${PGBRANCH}
    - ./configure --prefix=${PGHOME} --enable-debug --enable-cassert
    - make -j 2
+   - make install
+   - cd ${TRGMSRC}
    - make install
    - export PATH=${PATH}:${PGHOME}/bin
    - initdb -D ${PGDATA} --locale=C --encoding=UTF8
@@ -38,6 +42,7 @@ before_script:
 
 script:
    - make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config installcheck
+   - make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config installcheck-trgm
 
 after_script:
    - if [ -f regression.diffs ]; then cat regression.diffs; fi
