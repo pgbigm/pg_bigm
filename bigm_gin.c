@@ -273,8 +273,8 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 			 * So, independently on DIVUNION the upper bound formula is the same.
 			 */
 			res = (nkeys == 0) ? false :
-				((((((float4) ntrue) / ((float4) nkeys))) >=
-				  (float4) bigm_similarity_limit) ? true : false);
+				((((float4) ntrue) / ((float4) nkeys)) >=
+				  (float4) bigm_similarity_limit);
 			break;
 		default:
 			elog(ERROR, "unrecognized strategy number: %d", strategy);
