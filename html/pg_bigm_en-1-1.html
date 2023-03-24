@@ -376,7 +376,7 @@ This is basically the same behavior as pg_trgm's similarity function.
 </pre>
 
 <p>
-Note that bigm_similarity is NOT case-sensitive, but pg_trgm's similarity function is case-sensitive.
+Note that bigm_similarity IS case-sensitive, but pg_trgm's similarity function is not.
 For example, the similarity of the strings "ABC" and "abc" is 1 in pg_trgm's similarity function but 0 in bigm_similarity.
 </p>
 
