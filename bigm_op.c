@@ -20,6 +20,9 @@
 #include "catalog/pg_type.h"
 #include "tsearch/ts_locale.h"
 #include "utils/array.h"
+#if PG_VERSION_NUM >= 160000
+#include "utils/guc.h"
+#endif /* PG_VERSION_NUM */
 #include "utils/memutils.h"
 
 PG_MODULE_MAGIC;
