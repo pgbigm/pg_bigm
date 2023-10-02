@@ -1,0 +1,70 @@
+name: test
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  test:
+    name: regression test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        pgbranch:
+          - master
+          - REL_16_STABLE
+          - REL_15_STABLE
+          - REL_14_STABLE
+          - REL_13_STABLE
+          - REL_12_STABLE
+          - REL_11_STABLE
+          - REL_10_STABLE
+          - REL9_6_STABLE
+          - REL9_5_STABLE
+          - REL9_4_STABLE
+          - REL9_3_STABLE
+          - REL9_2_STABLE
+    env:
+      PGBRANCH: ${{ matrix.pgbranch }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: set_env
+      run: |
+        echo "PGHOME=${HOME}/${PGBRANCH}" >> $GITHUB_ENV
+        echo "PGDATA=${HOME}/pgdata" >> $GITHUB_ENV
+    - name: add_path
+      run: |
+        echo "${PGHOME}/bin" >> $GITHUB_PATH
+    - name: before_install
+      run: |
+        git clone -b ${PGBRANCH} --depth 1 https://github.com/postgres/postgres.git
+        cd postgres
+        ./configure --prefix=${PGHOME} --enable-debug --enable-cassert
+        make -j 2 -s
+        make -s install
+        cd contrib/pg_trgm
+        make -j 2 -s
+        make -s install
+        cd ../..
+        initdb -D ${PGDATA} --locale=C --encoding=UTF8
+        pg_ctl -D ${PGDATA} -w start
+    - name: before_script
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config
+        make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config install
+    - name: script
+      run: |
+        make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config installcheck
+        make USE_PGXS=1 PG_CONFIG=${PGHOME}/bin/pg_config installcheck-trgm
+    - name: after_script_failure
+      if: failure()
+      run: |
+        if [ -f regression.diffs ]; then cat regression.diffs; fi
+        exit 1
+    - name: after_script_success
+      if: success()
+      run: |
+        echo "SUCCESS"

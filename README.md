@@ -6,6 +6,7 @@ pg_bigm is released under the [PostgreSQL License](https://opensource.org/licens
 
 ## Test Status
 [![Build Status](https://travis-ci.com/pgbigm/pg_bigm.svg?branch=master)](https://travis-ci.com/github/pgbigm/pg_bigm)
+[![Build Status](https://github.com/pgbigm/pg_bigm/actions/workflows/test.yml/badge.svg)](https://github.com/pgbigm/pg_bigm/actions/workflows/test.yml)
 
 ## Documentation
 ### English
