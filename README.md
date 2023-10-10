@@ -5,7 +5,7 @@ This module allows a user to create **2-gram** (bigram) index for faster full te
 pg_bigm is released under the [PostgreSQL License](https://opensource.org/licenses/postgresql), a liberal Open Source license, similar to the BSD or MIT licenses.
 
 ## Test Status
-[![Build Status](https://travis-ci.com/pgbigm/pg_bigm.svg?branch=master)](https://travis-ci.com/github/pgbigm/pg_bigm)
+[![Build Status](https://github.com/pgbigm/pg_bigm/actions/workflows/test.yml/badge.svg)](https://github.com/pgbigm/pg_bigm/actions/workflows/test.yml)
 
 ## Documentation
 ### English
