@@ -28,13 +28,19 @@
 PG_MODULE_MAGIC;
 
 /* Last update date of pg_bigm */
-#define BIGM_LAST_UPDATE	"2020.02.28"
+#define BIGM_LAST_UPDATE "2020.02.28"
 
 /* GUC variable */
-bool		bigm_enable_recheck = false;
-int			bigm_gin_key_limit = 0;
-double		bigm_similarity_limit = 0.3;
-char	   *bigm_last_update = NULL;
+bool bigm_enable_recheck = false;
+int bigm_gin_key_limit = 0;
+double bigm_similarity_limit = 0.3;
+char *bigm_last_update = NULL;
+
+PGDLLEXPORT Datum show_bigm(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bigmtextcmp(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum likequery(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bigm_similarity(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum bigm_similarity_op(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(show_bigm);
 PG_FUNCTION_INFO_V1(bigmtextcmp);
@@ -42,24 +48,10 @@ PG_FUNCTION_INFO_V1(likequery);
 PG_FUNCTION_INFO_V1(bigm_similarity);
 PG_FUNCTION_INFO_V1(bigm_similarity_op);
 
-/*
- * The function prototypes are created as a part of PG_FUNCTION_INFO_V1
- * macro since 9.4, and hence the declaration of the function prototypes
- * here is necessary only for 9.3 or before.
- */
-#if PG_VERSION_NUM < 90400
-Datum		show_bigm(PG_FUNCTION_ARGS);
-Datum		bigmtextcmp(PG_FUNCTION_ARGS);
-Datum		likequery(PG_FUNCTION_ARGS);
-Datum		bigm_similarity(PG_FUNCTION_ARGS);
-Datum		bigm_similarity_op(PG_FUNCTION_ARGS);
-#endif
+void _PG_init(void);
+void _PG_fini(void);
 
-void		_PG_init(void);
-void		_PG_fini(void);
-
-void
-_PG_init(void)
+void _PG_init(void)
 {
 	/* Define custom GUC variables */
 	DefineCustomBoolVariable("pg_bigm.enable_recheck",
@@ -115,16 +107,15 @@ _PG_init(void)
 	EmitWarningsOnPlaceholders("pg_bigm");
 }
 
-void
-_PG_fini(void)
+void _PG_fini(void)
 {
 }
 
 static int
 comp_bigm(const void *a, const void *b, void *arg)
 {
-	int			res;
-	bool	   *haveDups = (bool *) arg;
+	int res;
+	bool *haveDups = (bool *)arg;
 
 	res = CMPBIGM(a, b);
 
@@ -137,8 +128,8 @@ comp_bigm(const void *a, const void *b, void *arg)
 static int
 unique_array(bigm *a, int len)
 {
-	bigm	   *curend,
-			   *tmp;
+	bigm *curend,
+		*tmp;
 
 	curend = tmp = a;
 	while (tmp - a < len)
@@ -155,7 +146,7 @@ unique_array(bigm *a, int len)
 	return curend + 1 - a;
 }
 
-#define iswordchr(c)	(!t_isspace(c))
+#define iswordchr(c) (!t_isspace(c))
 
 /*
  * Finds first word in string, returns pointer to the word,
@@ -164,7 +155,7 @@ unique_array(bigm *a, int len)
 static char *
 find_word(char *str, int lenstr, char **endword, int *charlen)
 {
-	char	   *beginword = str;
+	char *beginword = str;
 
 	while (beginword - str < lenstr && !iswordchr(beginword))
 		beginword += pg_mblen(beginword);
@@ -200,7 +191,7 @@ compact_bigram(bigm *bptr, char *str, int bytelen)
 static bigm *
 make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 {
-	char	   *ptr = str;
+	char *ptr = str;
 
 	if (charlen < 2)
 	{
@@ -213,8 +204,8 @@ make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 	if (bytelen > charlen)
 	{
 		/* Find multibyte character boundaries and call compact_bigram */
-		int			lenfirst = pg_mblen(str),
-					lenlast = pg_mblen(str + lenfirst);
+		int lenfirst = pg_mblen(str),
+			lenlast = pg_mblen(str + lenfirst);
 
 		while ((ptr - str) + lenfirst + lenlast <= bytelen)
 		{
@@ -232,7 +223,7 @@ make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 		/* Fast path when there are no multibyte characters */
 		Assert(bytelen == charlen);
 
-		while (ptr - str < bytelen - 1 /* number of bigrams = strlen - 1 */ )
+		while (ptr - str < bytelen - 1 /* number of bigrams = strlen - 1 */)
 		{
 			CPBIGM(bptr, ptr, 2);
 			ptr++;
@@ -246,26 +237,26 @@ make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 BIGM *
 generate_bigm(char *str, int slen)
 {
-	BIGM	   *bgm;
-	char	   *buf;
-	bigm	   *bptr;
-	int			len,
-				charlen,
-				bytelen;
-	char	   *bword,
-			   *eword;
+	BIGM *bgm;
+	char *buf;
+	bigm *bptr;
+	int len,
+		charlen,
+		bytelen;
+	char *bword,
+		*eword;
 
 	/*
 	 * Guard against possible overflow in the palloc requests below.
 	 * We need to prevent integer overflow in the multiplications here.
 	 */
-	if ((Size) slen > (MaxAllocSize - VARHDRSZ) / sizeof(bigm) - 1 ||
-		(Size) slen > MaxAllocSize - 4)
+	if ((Size)slen > (MaxAllocSize - VARHDRSZ) / sizeof(bigm) - 1 ||
+		(Size)slen > MaxAllocSize - 4)
 		ereport(ERROR,
 				(errcode(ERRCODE_PROGRAM_LIMIT_EXCEEDED),
 				 errmsg("out of memory")));
 
-	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (slen + 1));
+	bgm = (BIGM *)palloc(VARHDRSZ + sizeof(bigm) * (slen + 1));
 	SET_VARSIZE(bgm, VARHDRSZ);
 
 	if (slen + LPADDING + RPADDING < 2 || slen == 0)
@@ -308,9 +299,9 @@ generate_bigm(char *str, int slen)
 	 */
 	if (len > 1)
 	{
-		bool		haveDups = false;
+		bool haveDups = false;
 
-		qsort_arg((void *) GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *) &haveDups);
+		qsort_arg((void *)GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *)&haveDups);
 		if (haveDups)
 			len = unique_array(GETARR(bgm), len);
 	}
@@ -341,11 +332,11 @@ get_wildcard_part(const char *str, int lenstr,
 {
 	const char *beginword = str;
 	const char *endword;
-	char	   *s = buf;
-	bool		in_leading_wildcard_meta = false;
-	bool		in_trailing_wildcard_meta = false;
-	bool		in_escape = false;
-	int			clen;
+	char *s = buf;
+	bool in_leading_wildcard_meta = false;
+	bool in_trailing_wildcard_meta = false;
+	bool in_escape = false;
+	int clen;
 
 	/*
 	 * Find the first word character, remembering whether preceding character
@@ -485,12 +476,12 @@ get_wildcard_part(const char *str, int lenstr,
 BIGM *
 generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 {
-	BIGM	   *bgm;
-	char	   *buf;
-	bigm	   *bptr;
-	int			len,
-				charlen,
-				bytelen;
+	BIGM *bgm;
+	char *buf;
+	bigm *bptr;
+	int len,
+		charlen,
+		bytelen;
 	const char *eword;
 
 	*removeDups = false;
@@ -499,13 +490,13 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 	 * Guard against possible overflow in the palloc requests below.
 	 * We need to prevent integer overflow in the multiplications here.
 	 */
-	if ((Size) slen > (MaxAllocSize - VARHDRSZ) / sizeof(bigm) - 1 ||
-		(Size) slen > MaxAllocSize - 4)
+	if ((Size)slen > (MaxAllocSize - VARHDRSZ) / sizeof(bigm) - 1 ||
+		(Size)slen > MaxAllocSize - 4)
 		ereport(ERROR,
 				(errcode(ERRCODE_PROGRAM_LIMIT_EXCEEDED),
 				 errmsg("out of memory")));
 
-	bgm = (BIGM *) palloc(VARHDRSZ + sizeof(bigm) * (slen + 1));
+	bgm = (BIGM *)palloc(VARHDRSZ + sizeof(bigm) * (slen + 1));
 	SET_VARSIZE(bgm, VARHDRSZ);
 
 	if (slen + LPADDING + RPADDING < 2 || slen == 0)
@@ -538,9 +529,9 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 	 */
 	if (len > 1)
 	{
-		bool		haveDups = false;
+		bool haveDups = false;
 
-		qsort_arg((void *) GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *) &haveDups);
+		qsort_arg((void *)GETARR(bgm), len, sizeof(bigm), comp_bigm, (void *)&haveDups);
 		if (haveDups)
 		{
 			*removeDups = true;
@@ -553,34 +544,32 @@ generate_wildcard_bigm(const char *str, int slen, bool *removeDups)
 	return bgm;
 }
 
-Datum
-show_bigm(PG_FUNCTION_ARGS)
+Datum show_bigm(PG_FUNCTION_ARGS)
 {
-	text	   *in = PG_GETARG_TEXT_P(0);
-	BIGM	   *bgm;
-	Datum	   *d;
-	ArrayType  *a;
-	bigm	   *ptr;
-	int			i;
+	text *in = PG_GETARG_TEXT_P(0);
+	BIGM *bgm;
+	Datum *d;
+	ArrayType *a;
+	bigm *ptr;
+	int i;
 
 	bgm = generate_bigm(VARDATA(in), VARSIZE(in) - VARHDRSZ);
-	d = (Datum *) palloc(sizeof(Datum) * (1 + ARRNELEM(bgm)));
+	d = (Datum *)palloc(sizeof(Datum) * (1 + ARRNELEM(bgm)));
 
 	for (i = 0, ptr = GETARR(bgm); i < ARRNELEM(bgm); i++, ptr++)
 	{
-		text	   *item = cstring_to_text_with_len(ptr->str, ptr->bytelen);
+		text *item = cstring_to_text_with_len(ptr->str, ptr->bytelen);
 
 		d[i] = PointerGetDatum(item);
 	}
 
 	a = construct_array(
-						d,
-						ARRNELEM(bgm),
-						TEXTOID,
-						-1,
-						false,
-						'i'
-		);
+		d,
+		ARRNELEM(bgm),
+		TEXTOID,
+		-1,
+		false,
+		'i');
 
 	for (i = 0; i < ARRNELEM(bgm); i++)
 		pfree(DatumGetPointer(d[i]));
@@ -595,11 +584,11 @@ show_bigm(PG_FUNCTION_ARGS)
 static float4
 cnt_sml_bigm(BIGM *bgm1, BIGM *bgm2)
 {
-	bigm	   *ptr1,
-			   *ptr2;
-	int			count = 0;
-	int			len1,
-				len2;
+	bigm *ptr1,
+		*ptr2;
+	int count = 0;
+	int len1,
+		len2;
 
 	ptr1 = GETARR(bgm1);
 	ptr2 = GETARR(bgm2);
@@ -609,11 +598,11 @@ cnt_sml_bigm(BIGM *bgm1, BIGM *bgm2)
 
 	/* explicit test is needed to avoid 0/0 division when both lengths are 0 */
 	if (len1 <= 0 || len2 <= 0)
-		return (float4) 0.0;
+		return (float4)0.0;
 
 	while (ptr1 - GETARR(bgm1) < len1 && ptr2 - GETARR(bgm2) < len2)
 	{
-		int			res = CMPBIGM(ptr1, ptr2);
+		int res = CMPBIGM(ptr1, ptr2);
 
 		if (res < 0)
 			ptr1++;
@@ -628,20 +617,19 @@ cnt_sml_bigm(BIGM *bgm1, BIGM *bgm2)
 	}
 
 #ifdef DIVUNION
-	return ((float4) count) / ((float4) (len1 + len2 - count));
+	return ((float4)count) / ((float4)(len1 + len2 - count));
 #else
-	return ((float4) count) / ((float4) ((len1 > len2) ? len1 : len2));
+	return ((float4)count) / ((float4)((len1 > len2) ? len1 : len2));
 #endif
 }
 
-Datum
-bigm_similarity(PG_FUNCTION_ARGS)
+Datum bigm_similarity(PG_FUNCTION_ARGS)
 {
-	text	   *in1 = PG_GETARG_TEXT_P(0);
-	text	   *in2 = PG_GETARG_TEXT_P(1);
-	BIGM	   *bgm1,
-			   *bgm2;
-	float4		res;
+	text *in1 = PG_GETARG_TEXT_P(0);
+	text *in2 = PG_GETARG_TEXT_P(1);
+	BIGM *bgm1,
+		*bgm2;
+	float4 res;
 
 	bgm1 = generate_bigm(VARDATA(in1), VARSIZE(in1) - VARHDRSZ);
 	bgm2 = generate_bigm(VARDATA(in2), VARSIZE(in2) - VARHDRSZ);
@@ -656,26 +644,24 @@ bigm_similarity(PG_FUNCTION_ARGS)
 	PG_RETURN_FLOAT4(res);
 }
 
-Datum
-bigm_similarity_op(PG_FUNCTION_ARGS)
+Datum bigm_similarity_op(PG_FUNCTION_ARGS)
 {
-	float4		res = DatumGetFloat4(DirectFunctionCall2(bigm_similarity,
-														 PG_GETARG_DATUM(0),
-														 PG_GETARG_DATUM(1)));
+	float4 res = DatumGetFloat4(DirectFunctionCall2(bigm_similarity,
+													PG_GETARG_DATUM(0),
+													PG_GETARG_DATUM(1)));
 
-	PG_RETURN_BOOL(res >= (float4) bigm_similarity_limit);
+	PG_RETURN_BOOL(res >= (float4)bigm_similarity_limit);
 }
 
-Datum
-likequery(PG_FUNCTION_ARGS)
+Datum likequery(PG_FUNCTION_ARGS)
 {
-	text	   *query = PG_GETARG_TEXT_PP(0);
+	text *query = PG_GETARG_TEXT_PP(0);
 	const char *str;
-	int			len;
+	int len;
 	const char *sp;
-	text	   *result;
-	char	   *rp;
-	int			mblen;
+	text *result;
+	char *rp;
+	int mblen;
 
 	str = VARDATA_ANY(query);
 	len = VARSIZE_ANY_EXHDR(query);
@@ -683,7 +669,7 @@ likequery(PG_FUNCTION_ARGS)
 	if (len == 0)
 		PG_RETURN_NULL();
 
-	result = (text *) palloc((Size) len * 2 + 2 + VARHDRSZ);
+	result = (text *)palloc((Size)len * 2 + 2 + VARHDRSZ);
 	rp = VARDATA(result);
 	*rp++ = '%';
 
@@ -711,15 +697,14 @@ likequery(PG_FUNCTION_ARGS)
 	PG_RETURN_TEXT_P(result);
 }
 
-Datum
-bigmtextcmp(PG_FUNCTION_ARGS)
+Datum bigmtextcmp(PG_FUNCTION_ARGS)
 {
-	text	   *arg1 = PG_GETARG_TEXT_PP(0);
-	text	   *arg2 = PG_GETARG_TEXT_PP(1);
-	char	   *a1p = VARDATA_ANY(arg1);
-	char	   *a2p = VARDATA_ANY(arg2);
-	int			len1 = VARSIZE_ANY_EXHDR(arg1);
-	int			len2 = VARSIZE_ANY_EXHDR(arg2);
+	text *arg1 = PG_GETARG_TEXT_PP(0);
+	text *arg2 = PG_GETARG_TEXT_PP(1);
+	char *a1p = VARDATA_ANY(arg1);
+	char *a2p = VARDATA_ANY(arg2);
+	int len1 = VARSIZE_ANY_EXHDR(arg1);
+	int len2 = VARSIZE_ANY_EXHDR(arg2);
 
 	PG_RETURN_INT32(bigmstrcmp(a1p, len1, a2p, len2));
 }

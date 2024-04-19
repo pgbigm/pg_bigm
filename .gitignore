@@ -6,3 +6,6 @@ regression.*
 
 # Generated subdirectories
 /results/
+
+build/
+.vscode/
