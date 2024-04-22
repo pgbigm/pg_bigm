@@ -44,17 +44,14 @@ PGDLLEXPORT Datum gin_extract_query_bigm(PG_FUNCTION_ARGS);
 PGDLLEXPORT Datum gin_bigm_consistent(PG_FUNCTION_ARGS);
 PGDLLEXPORT Datum gin_bigm_compare_partial(PG_FUNCTION_ARGS);
 PGDLLEXPORT Datum pg_gin_pending_stats(PG_FUNCTION_ARGS);
+PGDLLEXPORT Datum gin_bigm_triconsistent(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(gin_extract_value_bigm);
 PG_FUNCTION_INFO_V1(gin_extract_query_bigm);
 PG_FUNCTION_INFO_V1(gin_bigm_consistent);
 PG_FUNCTION_INFO_V1(gin_bigm_compare_partial);
 PG_FUNCTION_INFO_V1(pg_gin_pending_stats);
-
-/* triConsistent function is available only in 9.4 or later */
-#if PG_VERSION_NUM >= 90400
 PG_FUNCTION_INFO_V1(gin_bigm_triconsistent);
-#endif
 
 Datum gin_extract_value_bigm(PG_FUNCTION_ARGS)
 {
