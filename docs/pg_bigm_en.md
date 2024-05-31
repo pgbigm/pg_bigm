@@ -474,6 +474,6 @@ of trgm indexed column is 238,609,291 Bytes (\~228MB).
 
 *****
 
-Copyright (c) 2017-2023, pg_bigm Development Group
+Copyright (c) 2017-2024, pg_bigm Development Group
 
 Copyright (c) 2012-2016, NTT DATA Corporation

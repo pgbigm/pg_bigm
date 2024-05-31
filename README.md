@@ -17,6 +17,6 @@ pg_bigm is released under the [PostgreSQL License](https://opensource.org/licens
 
 *****
 
-Copyright (c) 2017-2023, pg_bigm Development Group
+Copyright (c) 2017-2024, pg_bigm Development Group
 
 Copyright (c) 2012-2016, NTT DATA Corporation
