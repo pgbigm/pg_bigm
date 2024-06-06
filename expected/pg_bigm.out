@@ -12,7 +12,7 @@ SET extra_float_digits TO 0;
 SHOW pg_bigm.last_update;
  pg_bigm.last_update 
 ---------------------
- 2020.02.28
+ 2024.06.06
 (1 row)
 
 SET pg_bigm.last_update = '2013.09.18';
