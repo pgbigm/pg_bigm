@@ -133,6 +133,11 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			bgm = generate_wildcard_bigm(str, slen, &removeDups);
 			bgmlen = ARRNELEM(bgm);
 
+			*nentries = (bigm_gin_key_limit == 0) ?
+				bgmlen : Min(bigm_gin_key_limit, bgmlen);
+			if (*nentries == 0)
+				break;
+
 			/*
 			 * Check whether the heap tuple fetched by index search needs to
 			 * be rechecked against the query. If the search word consists of
@@ -141,8 +146,7 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			 * the heap tuple does match the query, so it doesn't need to be
 			 * rechecked.
 			 */
-			*extra_data = (Pointer *) palloc(sizeof(bool));
-			recheck = (bool *) *extra_data;
+			recheck = (bool *) palloc(sizeof(bool));
 			if (bgmlen == 1 && !removeDups)
 			{
 				const char *sp;
@@ -161,12 +165,18 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			}
 			else
 				*recheck = true;
+
+			*extra_data = (Pointer *) palloc(sizeof(Pointer) * *nentries);
+			for (i = 0; i < *nentries; i++)
+				(*extra_data)[i] = (Pointer) recheck;
 			break;
 		}
 		case SimilarityStrategyNumber:
 		{
 			bgm = generate_bigm(VARDATA(val), VARSIZE(val) - VARHDRSZ);
 			bgmlen = ARRNELEM(bgm);
+			*nentries = (bigm_gin_key_limit == 0) ?
+				bgmlen : Min(bigm_gin_key_limit, bgmlen);
 			break;
 		}
 		default:
@@ -175,8 +185,6 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			break;
 	}
 
-	*nentries = (bigm_gin_key_limit == 0) ?
-		bgmlen : Min(bigm_gin_key_limit, bgmlen);
 	*pmatch = NULL;
 
 	if (*nentries > 0)
@@ -232,9 +240,9 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 			 * pg_bigm.enable_recheck is disabled or the search word is the
 			 * special one so that the index can return the exact result.
 			 */
-			Assert(extra_data != NULL);
+			Assert(nkeys > 0 || extra_data == NULL);
 			*recheck = bigm_enable_recheck &&
-				(*((bool *) extra_data) || (nkeys != 1));
+				((nkeys != 1) || *((bool *) extra_data[0]));
 
 			/* Check if all extracted bigrams are presented. */
 			res = true;
@@ -308,8 +316,9 @@ gin_bigm_triconsistent(PG_FUNCTION_ARGS)
 			 * pg_bigm.enable_recheck is disabled or the search word is the
 			 * special one so that the index can return the exact result.
 			 */
+			Assert(nkeys > 0 || extra_data == NULL);
 			res = (bigm_enable_recheck &&
-				   (*((bool *) extra_data) || (nkeys != 1))) ?
+				   ((nkeys != 1) || *((bool *) extra_data[0]))) ?
 				GIN_MAYBE : GIN_TRUE;
 
 			/* Check if all extracted bigrams are presented. */

@@ -155,6 +155,30 @@ unique_array(bigm *a, int len)
 	return curend + 1 - a;
 }
 
+#if PG_VERSION_NUM >= 180000
+/*
+ * This function is equivalent to isspace() but supports multibyte
+ * characters and encoding. It was part of PostgreSQL 17 and earlier
+ * but was removed in commit d3aad4ac57c. This version is copied
+ * from PostgreSQL 17.
+ */
+int
+t_isspace(const char *ptr)
+{
+#define WC_BUF_LEN  3
+	int			clen = pg_mblen(ptr);
+	wchar_t		character[WC_BUF_LEN];
+	pg_locale_t mylocale = 0;	/* TODO */
+
+	if (clen == 1 || database_ctype_is_c)
+		return isspace(TOUCHAR(ptr));
+
+	char2wchar(character, WC_BUF_LEN, ptr, clen, mylocale);
+
+	return iswspace((wint_t) character[0]);
+}
+#endif
+
 #define iswordchr(c)	(!t_isspace(c))
 
 /*
