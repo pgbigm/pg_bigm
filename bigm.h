@@ -87,6 +87,10 @@ typedef struct
 #define GETARR(x)		( (bigm *)( (char*)x + VARHDRSZ ) )
 #define ARRNELEM(x) ( ( VARSIZE(x) - VARHDRSZ )/sizeof(bigm) )
 
+#if PG_VERSION_NUM >= 180000
+extern int t_isspace(const char *ptr);
+#endif
+
 extern BIGM *generate_bigm(char *str, int slen);
 extern BIGM *generate_wildcard_bigm(const char *str, int slen, bool *removeDups);
 
