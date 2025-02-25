@@ -115,6 +115,11 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			bgm = generate_wildcard_bigm(str, slen, &removeDups);
 			bgmlen = ARRNELEM(bgm);
 
+			*nentries = (bigm_gin_key_limit == 0) ?
+				bgmlen : Min(bigm_gin_key_limit, bgmlen);
+			if (*nentries == 0)
+				break;
+
 			/*
 			 * Check whether the heap tuple fetched by index search needs to
 			 * be rechecked against the query. If the search word consists of
@@ -123,8 +128,7 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			 * the heap tuple does match the query, so it doesn't need to be
 			 * rechecked.
 			 */
-			*extra_data = (Pointer *) palloc(sizeof(bool));
-			recheck = (bool *) *extra_data;
+			recheck = (bool *) palloc(sizeof(bool));
 			if (bgmlen == 1 && !removeDups)
 			{
 				const char *sp;
@@ -143,6 +147,10 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			}
 			else
 				*recheck = true;
+
+			*extra_data = (Pointer *) palloc(sizeof(Pointer) * *nentries);
+			for (i = 0; i < *nentries; i++)
+				(*extra_data)[i] = (Pointer) recheck;
 			break;
 		}
 		default:
@@ -151,8 +159,6 @@ gin_extract_query_bigm(PG_FUNCTION_ARGS)
 			break;
 	}
 
-	*nentries = (bigm_gin_key_limit == 0) ?
-		bgmlen : Min(bigm_gin_key_limit, bgmlen);
 	*pmatch = NULL;
 
 	if (*nentries > 0)
@@ -198,18 +204,18 @@ gin_bigm_consistent(PG_FUNCTION_ARGS)
 	bool		res;
 	int32		i;
 
-	/*
-	 * Don't recheck the heap tuple against the query if either
-	 * pg_bigm.enable_recheck is disabled or the search word is
-	 * the special one so that the index can return the exact
-	 * result.
-	 */
-	*recheck = bigm_enable_recheck &&
-		((nkeys != 1) || *((bool *) extra_data));
-
 	switch (strategy)
 	{
 		case LikeStrategyNumber:
+			/*
+			 * Don't recheck the heap tuple against the query if either
+			 * pg_bigm.enable_recheck is disabled or the search word is the
+			 * special one so that the index can return the exact result.
+			 */
+			Assert(nkeys > 0 || extra_data == NULL);
+			*recheck = bigm_enable_recheck &&
+				((nkeys != 1) || *((bool *) extra_data[0]));
+
 			/* Check if all extracted bigrams are presented. */
 			res = true;
 			for (i = 0; i < nkeys; i++)
