@@ -221,6 +221,8 @@ make_bigrams(bigm *bptr, char *str, int bytelen, int charlen)
 			bptr++;
 
 			lenfirst = lenlast;
+			if ((ptr - str) + lenfirst >= bytelen)
+				break;
 			lenlast = pg_mblen(ptr + lenfirst);
 		}
 	}
