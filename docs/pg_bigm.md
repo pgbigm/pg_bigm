@@ -464,6 +464,6 @@ pg_bigmでは、列サイズが107,374,180Byte
 
 *****
 
-Copyright (c) 2017-2024, pg_bigm Development Group
+Copyright (c) 2017-2025, pg_bigm Development Group
 
 Copyright (c) 2012-2016, NTT DATA Corporation
