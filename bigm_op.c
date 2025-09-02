@@ -168,7 +168,11 @@ t_isspace(const char *ptr)
 #define WC_BUF_LEN  3
 	int			clen = pg_mblen(ptr);
 	wchar_t		character[WC_BUF_LEN];
+#if PG_VERSION_NUM >= 190000
+	locale_t mylocale = 0;	/* TODO */
+#else
 	pg_locale_t mylocale = 0;	/* TODO */
+#endif	/* PG_VERSION_NUM >= 190000 */
 
 	if (clen == 1 || database_ctype_is_c)
 		return isspace(TOUCHAR(ptr));
@@ -177,7 +181,7 @@ t_isspace(const char *ptr)
 
 	return iswspace((wint_t) character[0]);
 }
-#endif
+#endif	/* PG_VERSION_NUM >= 180000 */
 
 #define iswordchr(c)	(!t_isspace(c))
 
