@@ -28,7 +28,7 @@
 PG_MODULE_MAGIC;
 
 /* Last update date of pg_bigm */
-#define BIGM_LAST_UPDATE	"2024.06.06"
+#define BIGM_LAST_UPDATE	"2025.09.03"
 
 /* GUC variable */
 bool		bigm_enable_recheck = false;
