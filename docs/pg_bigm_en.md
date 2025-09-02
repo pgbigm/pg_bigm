@@ -100,7 +100,7 @@ pg_bigm has been built and tested on the following platforms:
 | Category | Module Name                                                     |
 |----------|-----------------------------------------------------------------|
 | OS       | Linux, Mac OS X                                                 |
-| DBMS     | PostgreSQL 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 10, 11, 12, 13, 14, 15, 16, 17 |
+| DBMS     | PostgreSQL 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 10, 11, 12, 13, 14, 15, 16, 17, 18 |
 
 pg_bigm requires PostgreSQL 9.1 or later.
 
