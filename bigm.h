@@ -46,6 +46,13 @@ typedef struct
 
 #define BIGMSIZE	sizeof(bigm)
 
+#if PG_VERSION_NUM >= 180000
+/*
+ * Database clusters maintain their char signedness information since 18,
+ * therefore the CMPBIGM() function implementation is chosen at runtime.
+ */
+extern int	(*CMPBIGM) (const bigm *a, const bigm *b);
+#else
 static inline int
 bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
 {
@@ -66,6 +73,7 @@ bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
 }
 
 #define CMPBIGM(a,b) ( bigmstrcmp(((bigm *)a)->str, ((bigm *)a)->bytelen, ((bigm *)b)->str, ((bigm *)b)->bytelen) )
+#endif
 
 #define CPBIGM(bptr, s, len) do {		\
 	Assert(len <= 8);				\
