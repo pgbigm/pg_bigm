@@ -49,7 +49,7 @@ typedef struct
 #if PG_VERSION_NUM >= 180000
 /*
  * Database clusters maintain their char signedness information since 18,
- * therefore the CMPBIGM() function implementation is chosen at runtime.
+ * therefore the bigmstrcmp() function implementation is chosen at runtime.
  */
 extern int (*bigmstrcmp) (char *arg1, int len1, char *arg2, int len2);
 #else
