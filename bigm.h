@@ -51,7 +51,7 @@ typedef struct
  * Database clusters maintain their char signedness information since 18,
  * therefore the CMPBIGM() function implementation is chosen at runtime.
  */
-extern int	(*CMPBIGM) (const bigm *a, const bigm *b);
+extern int (*bigmstrcmp) (char *arg1, int len1, char *arg2, int len2);
 #else
 static inline int
 bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
@@ -71,9 +71,9 @@ bigmstrcmp(char *arg1, int len1, char *arg2, int len2)
 
 	return (len1 == len2) ? 0 : ((len1 < len2) ? -1 : 1);
 }
+#endif
 
 #define CMPBIGM(a,b) ( bigmstrcmp(((bigm *)a)->str, ((bigm *)a)->bytelen, ((bigm *)b)->str, ((bigm *)b)->bytelen) )
-#endif
 
 #define CPBIGM(bptr, s, len) do {		\
 	Assert(len <= 8);				\

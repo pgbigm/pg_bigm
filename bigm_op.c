@@ -60,8 +60,9 @@ void		_PG_init(void);
 void		_PG_fini(void);
 
 #if PG_VERSION_NUM >= 180000
-static int	CMPBIGM_CHOOSE(const bigm *a, const bigm *b);
-int			(*CMPBIGM) (const bigm *a, const bigm *b) = CMPBIGM_CHOOSE;
+static int	bigmstrcmp_choose(char *arg1, int len1, char *arg2, int len2);
+
+int	(*bigmstrcmp) (char *arg1, int len1, char *arg2, int len2) = bigmstrcmp_choose;
 #endif
 
 void
@@ -127,22 +128,19 @@ _PG_fini(void)
 }
 
 #if PG_VERSION_NUM >= 180000
-
-/*
- * Functions for comparing two bigms while treating each char as "signed char" or
- * "unsigned char".
- */
 static inline int
-bigmstrcmp_signed(const signed char *arg1, int len1, const signed char *arg2, int len2)
+bigmstrcmp_signed(char *arg1, int len1, char *arg2, int len2)
 {
+	signed char *s1 = (signed char *) arg1;
+	signed char *s2 = (signed char *) arg2;
 	int			i;
 	int			len = Min(len1, len2);
 
-	for (i = 0; i < len; i++, arg1++, arg2++)
+	for (i = 0; i < len; i++, s1++, s2++)
 	{
-		if (*arg1 == *arg2)
+		if (*s1 == *s2)
 			continue;
-		if (*arg1 < *arg2)
+		if (*s1 < *s2)
 			return -1;
 		else
 			return 1;
@@ -152,37 +150,25 @@ bigmstrcmp_signed(const signed char *arg1, int len1, const signed char *arg2, in
 
 }
 
-static int
-CMPBIGM_SIGNED(const bigm *a, const bigm *b)
-{
-	return bigmstrcmp_signed((const signed char *) a->str, a->bytelen,
-							 (const signed char *) b->str, b->bytelen);
-}
-
 static inline int
-bigmstrcmp_unsigned(const unsigned char *arg1, int len1, const unsigned char *arg2, int len2)
+bigmstrcmp_unsigned(char *arg1, int len1, char *arg2, int len2)
 {
+	unsigned char *s1 = (unsigned char *) arg1;
+	unsigned char *s2 = (unsigned char *) arg2;
 	int			i;
 	int			len = Min(len1, len2);
 
-	for (i = 0; i < len; i++, arg1++, arg2++)
+	for (i = 0; i < len; i++, s1++, s2++)
 	{
-		if (*arg1 == *arg2)
+		if (*s1 == *s2)
 			continue;
-		if (*arg1 < *arg2)
+		if (*s1 < *s2)
 			return -1;
 		else
 			return 1;
 	}
 
 	return (len1 == len2) ? 0 : ((len1 < len2) ? -1 : 1);
-}
-
-static int
-CMPBIGM_UNSIGNED(const bigm *a, const bigm *b)
-{
-	return bigmstrcmp_unsigned((const unsigned char *) a->str, a->bytelen,
-							   (const unsigned char *) b->str, b->bytelen);
 }
 
 /*
@@ -190,14 +176,14 @@ CMPBIGM_UNSIGNED(const bigm *a, const bigm *b)
  * that subsequent calls are routed directly to the chosen implementation.
  */
 static int
-CMPBIGM_CHOOSE(const bigm *a, const bigm *b)
+bigmstrcmp_choose(char *arg1, int len1, char *arg2, int len2)
 {
 	if (GetDefaultCharSignedness())
-		CMPBIGM = CMPBIGM_SIGNED;
+		bigmstrcmp = bigmstrcmp_signed;
 	else
-		CMPBIGM = CMPBIGM_UNSIGNED;
+		bigmstrcmp = bigmstrcmp_unsigned;
 
-	return CMPBIGM(a, b);
+	return bigmstrcmp(arg1, len1, arg2, len2);
 }
 #endif
 
@@ -831,11 +817,6 @@ bigmtextcmp(PG_FUNCTION_ARGS)
 	char	   *a2p = VARDATA_ANY(arg2);
 	int			len1 = VARSIZE_ANY_EXHDR(arg1);
 	int			len2 = VARSIZE_ANY_EXHDR(arg2);
-	bigm		bigm1;
-	bigm		bigm2;
 
-	CPBIGM((&bigm1), a1p, len1);
-	CPBIGM((&bigm2), a2p, len2);
-
-	PG_RETURN_INT32(CMPBIGM(&bigm1, &bigm2));
+	PG_RETURN_INT32(bigmstrcmp(a1p, len1, a2p, len2));
 }
