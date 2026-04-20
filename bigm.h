@@ -87,8 +87,13 @@ typedef struct
 #define GETARR(x)		( (bigm *)( (char*)x + VARHDRSZ ) )
 #define ARRNELEM(x) ( ( VARSIZE(x) - VARHDRSZ )/sizeof(bigm) )
 
-#if PG_VERSION_NUM >= 180000
-extern int t_isspace(const char *ptr);
+#if PG_VERSION_NUM < 140000
+extern int t_isspace_with_len(const char *ptr, int mblen);
+extern int pg_mblen_with_len(const char *mbstr, int limit);
+extern int pg_mblen_range(const char *mbstr, const char *end);
+extern int pg_mblen_unbounded(const char *mbstr);
+#elif PG_VERSION_NUM >= 180000
+extern int t_isspace_with_len(const char *ptr, int mblen);
 #endif
 
 extern BIGM *generate_bigm(char *str, int slen);
