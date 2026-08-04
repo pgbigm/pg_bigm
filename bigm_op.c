@@ -159,20 +159,29 @@ unique_array(bigm *a, int len)
 /*
  * This function is equivalent to isspace() but supports multibyte
  * characters and encoding. It was part of PostgreSQL 17 and earlier
- * but was removed in commit d3aad4ac57c. This version is copied
- * from PostgreSQL 17.
+ * but was removed in commit d3aad4ac57c.
  */
 int
 t_isspace(const char *ptr)
 {
+#if PG_VERSION_NUM >= 190000
+#define WC_BUF_LEN  2
+	int			clen = pg_mblen(ptr);
+	pg_wchar	character[WC_BUF_LEN];
+	int			wlen pg_attribute_unused();
+
+	wlen = pg_mb2wchar_with_len(ptr, character, clen);
+	Assert(wlen <= 1);
+
+	return pg_iswspace(character[0], pg_database_locale());
+#else
+	/*
+	 * This version is copied from PostgreSQL 17.
+	 */
 #define WC_BUF_LEN  3
 	int			clen = pg_mblen(ptr);
 	wchar_t		character[WC_BUF_LEN];
-#if PG_VERSION_NUM >= 190000
-	locale_t mylocale = 0;	/* TODO */
-#else
 	pg_locale_t mylocale = 0;	/* TODO */
-#endif	/* PG_VERSION_NUM >= 190000 */
 
 	if (clen == 1 || database_ctype_is_c)
 		return isspace(TOUCHAR(ptr));
@@ -180,6 +189,7 @@ t_isspace(const char *ptr)
 	char2wchar(character, WC_BUF_LEN, ptr, clen, mylocale);
 
 	return iswspace((wint_t) character[0]);
+#endif	/* PG_VERSION_NUM >= 190000 */
 }
 #endif	/* PG_VERSION_NUM >= 180000 */
 

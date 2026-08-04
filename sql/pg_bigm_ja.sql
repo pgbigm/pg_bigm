@@ -3,7 +3,13 @@ CREATE EXTENSION pg_bigm;
 \pset null '(null)'
 
 SET standard_conforming_strings = on;
-SET escape_string_warning = off;
+DO $$
+BEGIN
+	IF current_setting('server_version_num')::int < 190000 THEN
+		EXECUTE 'SET escape_string_warning = off';
+	END IF;
+END
+$$;
 SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;

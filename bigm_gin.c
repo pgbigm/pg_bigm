@@ -424,7 +424,11 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 	 * Obtain statistic information from the meta page
 	 */
 	metabuffer = ReadBuffer(indexRel, GIN_METAPAGE_BLKNO);
+#if PG_VERSION_NUM >= 190000
+	LockBufferInternal(metabuffer, GIN_SHARE);
+#else
 	LockBuffer(metabuffer, GIN_SHARE);
+#endif
 	metapage = BufferGetPage(metabuffer);
 	metadata = GinPageGetMeta(metapage);
 
@@ -432,7 +436,7 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 	 * Construct a tuple descriptor for the result row. This must match this
 	 * function's pg_bigm--x.x.sql entry.
 	 */
- #if PG_VERSION_NUM >= 120000
+#if PG_VERSION_NUM >= 120000
 	tupdesc = CreateTemplateTupleDesc(2);
 #else
 	tupdesc = CreateTemplateTupleDesc(2, false);
@@ -441,6 +445,9 @@ pg_gin_pending_stats(PG_FUNCTION_ARGS)
 					   "pages", INT4OID, -1, 0);
 	TupleDescInitEntry(tupdesc, (AttrNumber) 2,
 					   "tuples", INT8OID, -1, 0);
+#if PG_VERSION_NUM >= 190000
+	TupleDescFinalize(tupdesc);
+#endif
 	tupdesc = BlessTupleDesc(tupdesc);
 
 	/* pages */

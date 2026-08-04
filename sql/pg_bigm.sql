@@ -3,7 +3,13 @@ CREATE EXTENSION pg_bigm;
 \pset null '(null)'
 
 SET standard_conforming_strings = on;
-SET escape_string_warning = off;
+DO $$
+BEGIN
+	IF current_setting('server_version_num')::int < 190000 THEN
+		EXECUTE 'SET escape_string_warning = off';
+	END IF;
+END
+$$;
 SET enable_seqscan = off;
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
@@ -114,12 +120,18 @@ SELECT count(*) FROM test_bigm WHERE col1 LIKE likequery('she tore');
 SET pg_bigm.enable_recheck = on;
 SET pg_bigm.gin_key_limit = 0;
 
--- tests with standard_conforming_strings disabled
-SET standard_conforming_strings = off;
-SELECT likequery('\\_%');
-SELECT show_bigm('\\_%');
-SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('\\');
-SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('\\dx');
+-- tests for backslash handling using explicit string literals
+DO $$
+BEGIN
+	IF current_setting('server_version_num')::int < 190000 THEN
+		EXECUTE 'SET standard_conforming_strings = off';
+	END IF;
+END
+$$;
+SELECT likequery($$\_%$$);
+SELECT show_bigm($$\_%$$);
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery($$\$$);
+SELECT col1 FROM test_bigm WHERE col1 LIKE likequery($$\dx$$);
 SELECT col1 FROM test_bigm WHERE col1 LIKE likequery('200%');
 
 -- tests for full text search with multi-column index
@@ -153,9 +165,9 @@ SELECT col1 FROM test_bigm WHERE col1 =% NULL;
 SELECT col1 FROM test_bigm WHERE col1 =% '';
 
 SELECT col1 FROM test_bigm WHERE col1 =% '%';
-SELECT col1 FROM test_bigm WHERE col1 =% '\\';
+SELECT col1 FROM test_bigm WHERE col1 =% $$\$$;
 SELECT col1 FROM test_bigm WHERE col1 =% '_';
-SELECT col1 FROM test_bigm WHERE col1 =% '\\dx';
+SELECT col1 FROM test_bigm WHERE col1 =% $$\dx$$;
 SELECT col1 FROM test_bigm WHERE col1 =% '200%';
 SELECT col1 FROM test_bigm WHERE col1 =% '  ';
 
@@ -175,4 +187,11 @@ SELECT count(*), max(bigm_similarity(col1, 'performance')) FROM test_bigm WHERE 
 
 -- tests for drop of pg_bigm
 DROP EXTENSION pg_bigm CASCADE;
-SELECT likequery('test');
+SELECT NOT EXISTS
+	(SELECT 1
+	 FROM pg_proc
+	 WHERE proname = 'likequery'
+	   AND pronargs = 1
+	   AND proargtypes[0] = 'text'::regtype) AS missing;
+
+-- end of tests
