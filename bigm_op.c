@@ -17,6 +17,7 @@
 
 #include "bigm.h"
 
+#include "access/xlog.h"
 #include "catalog/pg_type.h"
 #include "tsearch/ts_locale.h"
 #include "utils/array.h"
@@ -57,6 +58,12 @@ Datum		bigm_similarity_op(PG_FUNCTION_ARGS);
 
 void		_PG_init(void);
 void		_PG_fini(void);
+
+#if PG_VERSION_NUM >= 180000
+static int	bigmstrcmp_choose(char *arg1, int len1, char *arg2, int len2);
+
+int	(*bigmstrcmp) (char *arg1, int len1, char *arg2, int len2) = bigmstrcmp_choose;
+#endif
 
 void
 _PG_init(void)
@@ -119,6 +126,66 @@ void
 _PG_fini(void)
 {
 }
+
+#if PG_VERSION_NUM >= 180000
+static inline int
+bigmstrcmp_signed(char *arg1, int len1, char *arg2, int len2)
+{
+	signed char *s1 = (signed char *) arg1;
+	signed char *s2 = (signed char *) arg2;
+	int			i;
+	int			len = Min(len1, len2);
+
+	for (i = 0; i < len; i++, s1++, s2++)
+	{
+		if (*s1 == *s2)
+			continue;
+		if (*s1 < *s2)
+			return -1;
+		else
+			return 1;
+	}
+
+	return (len1 == len2) ? 0 : ((len1 < len2) ? -1 : 1);
+
+}
+
+static inline int
+bigmstrcmp_unsigned(char *arg1, int len1, char *arg2, int len2)
+{
+	unsigned char *s1 = (unsigned char *) arg1;
+	unsigned char *s2 = (unsigned char *) arg2;
+	int			i;
+	int			len = Min(len1, len2);
+
+	for (i = 0; i < len; i++, s1++, s2++)
+	{
+		if (*s1 == *s2)
+			continue;
+		if (*s1 < *s2)
+			return -1;
+		else
+			return 1;
+	}
+
+	return (len1 == len2) ? 0 : ((len1 < len2) ? -1 : 1);
+}
+
+/*
+ * This gets called on the first call. It replaces the function pointer so
+ * that subsequent calls are routed directly to the chosen implementation.
+ */
+static int
+bigmstrcmp_choose(char *arg1, int len1, char *arg2, int len2)
+{
+	if (GetDefaultCharSignedness())
+		bigmstrcmp = bigmstrcmp_signed;
+	else
+		bigmstrcmp = bigmstrcmp_unsigned;
+
+	return bigmstrcmp(arg1, len1, arg2, len2);
+}
+#endif
 
 static int
 comp_bigm(const void *a, const void *b, void *arg)
