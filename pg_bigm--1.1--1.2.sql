@@ -6,7 +6,7 @@ DO $$
 DECLARE
     pgversion INTEGER;
 BEGIN
-    SELECT current_setting('server_version_num')::INTEGER INTO pgversion;
+    SELECT pg_catalog.current_setting('server_version_num')::INTEGER INTO pgversion;
     IF pgversion >= 90400 THEN
         CREATE FUNCTION gin_bigm_triconsistent(internal, int2, text, int4, internal, internal, internal)
         RETURNS "char"
@@ -23,7 +23,7 @@ DO $$
 DECLARE
     pgversion INTEGER;
 BEGIN
-    SELECT current_setting('server_version_num')::INTEGER INTO pgversion;
+    SELECT pg_catalog.current_setting('server_version_num')::INTEGER INTO pgversion;
     IF pgversion >= 90600 THEN
         EXECUTE 'ALTER FUNCTION show_bigm(text) PARALLEL SAFE';
         EXECUTE 'ALTER FUNCTION bigm_similarity(text, text) PARALLEL SAFE';
