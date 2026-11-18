@@ -4,6 +4,7 @@ OBJS = bigm_op.o bigm_gin.o
 EXTENSION = pg_bigm
 DATA = pg_bigm--1.2.sql pg_bigm--1.1--1.2.sql pg_bigm--1.0--1.1.sql
 PGFILEDESC = "pg_bigm - bigram matching"
+EXTRA_CLEAN = pg_bigm.control
 
 REGRESS = pg_bigm pg_bigm_ja
 
@@ -17,6 +18,11 @@ top_builddir = ../..
 include $(top_builddir)/src/Makefile.global
 include $(top_srcdir)/contrib/contrib-global.mk
 endif
+
+# Generate control file with trusted=true for PG13+
+pg_bigm.control: pg_bigm.control.in
+	cp $< $@
+	@if [ $(MAJORVERSION) -ge 13 ]; then echo "trusted = true" >> $@; fi
 
 installcheck-trgm: 
 	$(pg_regress_installcheck) $(REGRESS_OPTS) load_trgm $(REGRESS)
